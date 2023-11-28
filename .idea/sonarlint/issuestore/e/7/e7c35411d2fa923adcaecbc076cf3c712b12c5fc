@@ -1,0 +1,9 @@
+
+t	java:S116"XRename this field "JwtSigningKey" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ê„ıü8ë£Ù³¾1
+>
+java:S1170"!Make this final field static too.(Ê„ıü8î£Ù³¾1
+S
+java:S6437"6Revoke and change this password, as it is compromised.(“Š8õ£Ù³¾1
+]	java:S125%"<This block of commented-out lines of code should be removed.(Ş™”ºşÿÿÿÿ8û£Ù³¾1
+X
+java:S64376"6Revoke and change this password, as it is compromised.(ú¯¦”ıÿÿÿÿ8ü£Ù³¾1
