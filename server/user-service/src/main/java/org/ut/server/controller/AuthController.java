@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.ut.server.config.JwtUtils;
-import org.ut.server.model.AuthenticationRequest;
+import org.ut.server.dto.AuthenticationRequest;
+import org.ut.server.dto.LoginResponse;
+import org.ut.server.model.CustomUserDetails;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -24,15 +26,15 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<LoginResponse> login(@RequestBody AuthenticationRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
                 (request.getUsername(), request.getPassword()));
 
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
+        final CustomUserDetails user = (CustomUserDetails) userDetailsService.loadUserByUsername(request.getUsername());
         if(user != null) {
-            return new ResponseEntity<>(jwtUtils.generateToken(user), HttpStatus.OK);
+            return new ResponseEntity<>(new LoginResponse(jwtUtils.generateToken(user), "Login successful"), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

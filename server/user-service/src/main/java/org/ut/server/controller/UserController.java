@@ -10,7 +10,7 @@ import org.ut.server.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/api/v1/user")
 public class UserController {
     private UserService userService;
 
@@ -25,6 +25,7 @@ public class UserController {
 
     @GetMapping("/address")
     public ResponseEntity<List<Address>> getAddress() {
+
         return userService.getAllAddress();
     }
 

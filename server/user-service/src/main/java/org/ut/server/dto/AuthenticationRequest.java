@@ -1,4 +1,4 @@
-package org.ut.server.model;
+package org.ut.server.dto;
 
 import lombok.Data;
 

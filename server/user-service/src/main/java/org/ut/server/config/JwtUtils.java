@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.ut.server.model.CustomUserDetails;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ public class JwtUtils {
         return extractClaims(token, Claims::getSubject);
     }
 
+    public String extractUserID(String token) {
+        return extractClaims(token, Claims::getSubject);
+    }
     public <T> T extractClaims(String token, Function<Claims, T> claimsTResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsTResolver.apply(claims);
@@ -43,12 +47,13 @@ public class JwtUtils {
 
     public String generateToken(
             Map<String,Object> extraClaims,
-            UserDetails userDetails)
+            CustomUserDetails customUserDetails)
     {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(customUserDetails.getUsername())
+                //.setSubject(customUserDetails.getUserId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
                 .signWith(SignatureAlgorithm.HS256, JwtSigningKey)
@@ -56,14 +61,14 @@ public class JwtUtils {
     }
 
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(),userDetails);
+    public String generateToken(CustomUserDetails customUserDetails){
+        return generateToken(new HashMap<>(),customUserDetails);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
+    public boolean isTokenValid(String token, CustomUserDetails customUserDetails){
         final String username=extractUsername(token);
 
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (username.equals(customUserDetails.getUserId().toString())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
