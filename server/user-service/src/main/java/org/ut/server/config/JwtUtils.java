@@ -3,20 +3,20 @@ package org.ut.server.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.ut.server.model.CustomUserDetails;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 public class JwtUtils {
     private final String JwtSigningKey = "secret";
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaims(token, Claims::getSubject);
     }
 
@@ -52,7 +52,7 @@ public class JwtUtils {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(customUserDetails.getUsername())
+                .setSubject(customUserDetails.getUserId().toString())
                 //.setSubject(customUserDetails.getUserId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
@@ -62,13 +62,13 @@ public class JwtUtils {
 
 
     public String generateToken(CustomUserDetails customUserDetails){
-        return generateToken(new HashMap<>(),customUserDetails);
+        return generateToken(new HashMap<>(), customUserDetails);
     }
 
-    public boolean isTokenValid(String token, CustomUserDetails customUserDetails){
-        final String username=extractUsername(token);
+    public boolean isTokenValid(String token, CustomUserDetails userDetails){
+        final String userId= extractUserId(token);
 
-        return (username.equals(customUserDetails.getUserId().toString())) && !isTokenExpired(token);
+        return (userId.equals(userDetails.getUserId().toString())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

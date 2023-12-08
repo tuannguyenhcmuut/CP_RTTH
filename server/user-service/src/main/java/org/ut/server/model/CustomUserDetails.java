@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -30,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return user.getId();
     }
     @Override

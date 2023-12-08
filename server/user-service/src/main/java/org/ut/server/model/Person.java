@@ -12,7 +12,7 @@ public class Person {
     protected String username;
 
     @Column(nullable = false, length = 15)
-    protected String phone_number;
+    protected String phoneNumber;
 
     @Column(nullable = false)
     protected String address;

@@ -1,23 +1,30 @@
 package org.ut.server.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Type;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
 @Table(name="`user`")
-@Setter
-@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    @Type(type="org.hibernate.type.PostgresUUIDType")
+    @Column(name = "user_id")
+    private UUID id;
+
 
     @Column(nullable = false, length = 50, unique = true)
     private String email;
@@ -26,13 +33,14 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false, length = 50)
-    private String fistname;
+    private String firstName;
     @Column(nullable = false, length = 50)
-    private String lastname;
+    private String lastName;
     @Column(nullable = false, length = 15)
-    private String phone_number;
+    private String phoneNumber;
     private Gender gender;
-    private Date dob;
+//    @JsonFormat(pattern="dd-MM-yyyy") // date format: 20-10-2023
+    private Date dateOfBirth;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -40,10 +48,10 @@ public class User {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Receiver> list_receiver;
+    private List<Receiver> receivers;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Store> list_store;
+    private List<Store> stores;
 
 }

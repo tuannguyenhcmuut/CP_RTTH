@@ -2,11 +2,13 @@ package com.ut.server.productservice.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "product")
@@ -31,7 +33,8 @@ public class Product implements Serializable {
     private BigDecimal price;
 
     @Column(name = "user_id")
-    private Long userId;  // mapping to inventory-service
+    @Type(type="org.hibernate.type.PostgresUUIDType")
+    private UUID userId;  // mapping to inventory-service
 
     // bidirectional many-to-many association to Category
     @ManyToMany
