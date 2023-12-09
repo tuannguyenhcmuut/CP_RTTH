@@ -1,6 +1,8 @@
 package com.ut.server.productservice.service;
 
+import com.ut.server.productservice.config.UserFeign;
 import com.ut.server.productservice.dto.*;
+import com.ut.server.productservice.exception.ApiRequestException;
 import com.ut.server.productservice.model.Product;
 import com.ut.server.productservice.repo.CategoryRepository;
 import com.ut.server.productservice.repo.ProductRepository;
@@ -19,6 +21,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final UserFeign userFeign;
     public String createProduct(ProductRequest productRequest, UUID userId) {
 
         Product product = mapProductRequestToProduct(productRequest, userId);
@@ -31,7 +34,8 @@ public class ProductService {
     public List<ProductResponse> getAllProducts(UUID userId) {
 //        return productRepository.findProductsByUserId(userId);
         List<Product> products = productRepository.findProductsByUserId(userId);
-
+        List<UserDTO> users = (List<UserDTO>) userFeign.getUser();
+        log.info("Users: {}", users);
         return products.stream().map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }
@@ -39,7 +43,7 @@ public class ProductService {
     public ProductResponse updateProduct(UUID userId, Long productId, Product product) {
         Product productToUpdate = productRepository.findProductByUserIdAndId(userId, productId);
         if (productToUpdate == null) {
-            throw new RuntimeException("Product not found!");
+            throw new ApiRequestException("Product not found!" + productId);
         }
         productToUpdate.setCode(product.getCode());
         productToUpdate.setName(product.getName());

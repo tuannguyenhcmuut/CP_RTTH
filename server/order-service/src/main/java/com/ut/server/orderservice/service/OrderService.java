@@ -4,16 +4,18 @@ import com.ut.server.orderservice.dto.OrderOptionResponse;
 import com.ut.server.orderservice.dto.OrderRequest;
 import com.ut.server.orderservice.dto.OrderResponse;
 import com.ut.server.orderservice.dto.StatusRequest;
+import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
-    public OrderResponse getOrderById(Long user_id, Long order_id);
-    public String updateReceiver(Long user_id, Long order_id, String receiver_id);
-    public String updateOrderStatus(Long user_id, Long order_id, StatusRequest statusRequest);
-    public String deleteOrder(Long user_id, Long order_id);
-    public List<OrderOptionResponse> getAllOrderOptions(Long user_id, Long order_id);
-    public List<OrderResponse> getAllOrders(Long user_id);
-    public String createOrder(Long user_id, OrderRequest orderRequest);
+    public ResponseEntity<OrderResponse> getOrderById(UUID userId, Long orderId);
+    public String updateReceiver(UUID userId, Long orderId, String receiverId);
+    public ResponseEntity<String> updateOrderStatus(UUID userId, Long orderId, StatusRequest statusRequest);
+    public String deleteOrder(UUID userId, Long orderId);
+    public List<OrderOptionResponse> getAllOrderOptions(UUID userId, Long orderId);
+    public ResponseEntity<List<OrderResponse>> getAllOrders(UUID userId);
+    public ResponseEntity<?> createOrder(UUID userId, OrderRequest orderRequest);
 }

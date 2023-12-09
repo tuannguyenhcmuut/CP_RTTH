@@ -20,7 +20,7 @@ public class OrderPrice {
     private double collectionCharge;
 
     @Column(name = "total_items_price")
-    private double items_price;
+    private double itemsPrice;
 
     @Column(name = "shipping_fee")
     private double shippingFee;

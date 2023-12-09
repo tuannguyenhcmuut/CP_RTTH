@@ -1,8 +1,6 @@
 package org.ut.server.config;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,8 +12,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.ut.server.dao.UserDao;
-import org.ut.server.model.CustomUserDetails;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -63,14 +59,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authHeader.substring(7);
-        userId = jwtUtils.extractUserID(jwtToken);
 
 
         try {
+            userId = jwtUtils.extractUserID(jwtToken);
             if(userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDao.loadUserByUserId(userId);
 
-                if(jwtUtils.isTokenValid(jwtToken, (CustomUserDetails) userDetails)) {
+                if(jwtUtils.isTokenValid(jwtToken)) {
                     UsernamePasswordAuthenticationToken authToken=
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

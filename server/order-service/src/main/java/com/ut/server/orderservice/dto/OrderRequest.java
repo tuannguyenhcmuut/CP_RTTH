@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -20,11 +21,11 @@ public class OrderRequest {
     private Float height;
     private Float width;
     private Float depth;
-    private Long userId;
+    private UUID userId;
     private Long storeId;
     private Long receiverId;
     private Status statusId;
     private OrderPrice price;
-    private Long discount_id;
+    private Long discountId;
     List<OrderOptions> orderOptions;
 }

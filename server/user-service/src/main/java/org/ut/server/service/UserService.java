@@ -32,6 +32,13 @@ public class UserService {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK) ;
     }
 
+    public ResponseEntity<?> getUserInfo(UUID user_id) {
+        Optional<User> user = userRepository.findById(user_id);
+        if(user.isEmpty()) return new ResponseEntity<>("User Not found!", HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+    }
+
     public ResponseEntity<List<Address>> getAllAddress() {
         return new ResponseEntity<>(addressRepository.findAll(), HttpStatus.OK) ;
     }
@@ -53,6 +60,7 @@ public class UserService {
 //        newUserEntity.setUsername(newUser.getUsername());
         // mapping to User
         userRepository.save(newUser);
+
         return new ResponseEntity<>("Create user successfully", HttpStatus.CREATED);
     }
 

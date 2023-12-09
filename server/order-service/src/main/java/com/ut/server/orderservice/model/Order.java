@@ -2,13 +2,14 @@ package com.ut.server.orderservice.model;
 
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @Setter
 @Getter
 @Builder
@@ -29,7 +30,8 @@ public class Order {
     private Float depth;
 
     @Column(name = "user_id")
-    private Long userId;
+    @Type(type="org.hibernate.type.PostgresUUIDType")
+    private UUID userId;
 
     @Column(name = "store_id")
     private Long storeId;
@@ -38,16 +40,16 @@ public class Order {
     private Long receiverId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_code", nullable = false)
+    @JoinColumn(name = "status_code", nullable = true)
     private Status statusId;
 
     // join orderPrice
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "price_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinColumn(name = "price_id", nullable = true)
     private OrderPrice price;
 
     @Column(name = "discount_id")
-    private Long discount_id;
+    private Long discountId;
 
     @Column(name = "ship_id")
     private Long shipId;

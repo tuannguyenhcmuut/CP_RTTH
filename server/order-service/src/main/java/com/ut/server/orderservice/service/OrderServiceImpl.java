@@ -10,10 +10,15 @@ import com.ut.server.orderservice.repo.OrderRepository;
 import com.ut.server.orderservice.repo.StatusRepository;
 import com.ut.server.orderservice.utils.OrderUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,12 +29,12 @@ public class OrderServiceImpl implements OrderService{
     private final StatusRepository statusRepository;
 
     @Override
-    public OrderResponse getOrderById(Long user_id, Long order_id) {
-        Order order = orderRepository.findOrderByIdAndUserId(order_id, user_id);
+    public ResponseEntity<OrderResponse> getOrderById(UUID userId, Long order_id) {
+        Order order = orderRepository.findOrderByIdAndUserId(order_id, userId);
 
 
         // ok, found!
-        return OrderResponse.builder()
+        OrderResponse orderResponse =  OrderResponse.builder()
                             .id(order.getId())
                             .code(order.getCode())
                             .height(order.getHeight())
@@ -39,35 +44,36 @@ public class OrderServiceImpl implements OrderService{
                             .receiverId(order.getReceiverId())
                             .statusId(order.getStatusId())
                             .price(order.getPrice())
-                            .discount_id(order.getDiscount_id())
+                            .discountId(order.getDiscountId())
                             .shipId(order.getShipId())
                             .orderOptions(order.getOrderOptions())
                             .build();
+        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
 
 
-    public String updateReceiver(Long user_id, Long order_id, String receiver_id) {
+    public String updateReceiver(UUID userId, Long order_id, String receiver_id) {
         return null;
     }
 
-    public String updateOrderStatus(Long user_id, Long order_id, StatusRequest statusRequest){
-        Order order = orderRepository.findOrderByIdAndUserId(order_id, user_id);
+    public ResponseEntity<String> updateOrderStatus(UUID userId, Long order_id, StatusRequest statusRequest){
+        Order order = orderRepository.findOrderByIdAndUserId(order_id, userId);
         Status status = statusRepository.findById(statusRequest.getStatusId()).orElse(null);
         if (order == null) {
-            return "Order not found";
+            return new ResponseEntity<>("Order not found", HttpStatus.BAD_REQUEST);
         }
         if (status == null) {
-            return "Status not found";
+            return new ResponseEntity<>("Status not found", HttpStatus.BAD_REQUEST);
         }
         // update status
         order.setStatusId(status);
         // order.setLastStatusUpdate(LocalDateTime.now());
         orderRepository.save(order);
-        return "Updated order status successfully";
+        return new ResponseEntity<>("Updated order status successfully", HttpStatus.OK);
     }
 
-    public String deleteOrder(Long user_id, Long order_id){
-        Order order = orderRepository.findOrderByIdAndUserId(order_id, user_id);
+    public String deleteOrder(UUID userId, Long order_id){
+        Order order = orderRepository.findOrderByIdAndUserId(order_id, userId);
         if (order == null) {
             return "Order not found";
         }
@@ -75,19 +81,27 @@ public class OrderServiceImpl implements OrderService{
         return "Deleted order successfully";
     }
 
-    public List<OrderOptionResponse> getAllOrderOptions(Long user_id, Long order_id){
-        Order order = orderRepository.findOrderByIdAndUserId(order_id, user_id);
+    public List<OrderOptionResponse> getAllOrderOptions(UUID userId, Long order_id){
+        Order order = orderRepository.findOrderByIdAndUserId(order_id, userId);
         // mapping o
         //
 
         return null;
     }
 
-    public List<OrderResponse> getAllOrders(Long user_id){
-        return null;
+    public ResponseEntity<List<OrderResponse>> getAllOrders(UUID userId){
+        List<Order> orders = orderRepository.findOrdersByUserId(userId);
+        // mapping
+        if (orders == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        List<OrderResponse> orderResponse = orders.stream().map(order -> OrderUtils.mapOrderToOrderResponse(order))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
 
-    public String createOrder(Long user_id, OrderRequest orderRequest){
+    public ResponseEntity<?> createOrder(UUID userId, OrderRequest orderRequest){
         // tam thoi la chua validate
         Order newOrder = Order.builder()
                 .height(orderRequest.getHeight())
@@ -98,7 +112,7 @@ public class OrderServiceImpl implements OrderService{
                 .receiverId(orderRequest.getReceiverId())
                 .statusId(orderRequest.getStatusId())
                 .price(orderRequest.getPrice())
-                .discount_id(orderRequest.getDiscount_id())
+                .discountId(orderRequest.getDiscountId())
                 .orderOptions(orderRequest.getOrderOptions())
                 .build();
 
@@ -107,6 +121,6 @@ public class OrderServiceImpl implements OrderService{
         // tao code moi
         newOrder.setCode(OrderUtils.generateOrderCode(newOrder.getId()));
         orderRepository.save(newOrder);
-        return "Created order successfully";
+        return new ResponseEntity<>("Created order successfully",HttpStatus.CREATED);
     }
 }

@@ -1,21 +1,21 @@
-package org.ut.server.config;
+package com.ut.server.apigateway.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.ut.server.model.CustomUserDetails;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
-@Component
+@Service
 public class JwtUtils {
     private final String JwtSigningKey = "secret";
 
@@ -41,40 +41,6 @@ public class JwtUtils {
     }
 
 
-    private Key getSigningKey() {
-
-        byte[]keyBytes= Decoders.BASE64.decode(JwtSigningKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-
-    public String generateToken(
-            Map<String,Object> extraClaims,
-            CustomUserDetails customUserDetails)
-    {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(customUserDetails.getUserId().toString())
-                //.setSubject(customUserDetails.getUserId().toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
-                .signWith(SignatureAlgorithm.HS256, JwtSigningKey)
-                .compact();
-    }
-
-
-    public String generateToken(CustomUserDetails customUserDetails){
-        Map<String, Object> claims = new HashMap<>();
-        return generateToken(claims, customUserDetails);
-    }
-
-//    public boolean isTokenValid(String token, CustomUserDetails userDetails){
-//        final String userId= extractUserId(token);
-//
-//        return (userId.equals(userDetails.getUserId().toString())) && !isTokenExpired(token);
-//    }
-
     public boolean isTokenValid(String token){
         return !isTokenExpired(token);
     }
@@ -86,4 +52,5 @@ public class JwtUtils {
     private Date extractExpiration(String token) {
         return extractClaims(token, Claims::getExpiration);
     }
+
 }

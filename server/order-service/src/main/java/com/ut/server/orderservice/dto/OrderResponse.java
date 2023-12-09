@@ -24,7 +24,7 @@ public class OrderResponse {
     private Long receiverId;
     private Status statusId;
     private OrderPrice price;
-    private Long discount_id;
+    private Long discountId;
     private Long shipId;
     List<OrderOptions> orderOptions;
 }

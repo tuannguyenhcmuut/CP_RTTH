@@ -26,7 +26,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order_id;
+    private Order orderId;
 
     private Long product_id; // goi den product service
 

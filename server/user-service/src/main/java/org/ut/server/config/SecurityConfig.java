@@ -55,7 +55,9 @@ public class SecurityConfig {
             .antMatchers(
                     "/auth/login",
                     "/api/v1/user/create",
-                    "/auth/validate"
+                    "/auth/validate",
+                    "/auth/refresh",
+                    "/api/v1/product/**"
 
                 ).permitAll()
             .anyRequest().authenticated()
@@ -97,7 +99,7 @@ public class SecurityConfig {
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 Optional<User> user = userRepository.findByUsername(username);
                 if(user.isEmpty())
-                    throw new UsernameNotFoundException("Username not found");
+                    throw new UsernameNotFoundException("Username not found" + username);
 
                 return new CustomUserDetails(user.get());
             }

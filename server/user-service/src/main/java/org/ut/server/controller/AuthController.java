@@ -55,21 +55,41 @@ public class AuthController {
 
     @GetMapping("validate")
     public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String authHeader) {
-        String userId;
         if(authHeader == null || !authHeader.startsWith("Bearer")) {
             return new ResponseEntity<>("Invalid token", HttpStatus.BAD_REQUEST);
         }
 
         authHeader = authHeader.substring(7);
-        userId = jwtUtils.extractUserID(authHeader);
 
-        // && SecurityContextHolder.getContext().getAuthentication() == null
-        if(userId != null ) {
-            CustomUserDetails userDetails = (CustomUserDetails) userDao.loadUserByUserId(userId);
-                if(jwtUtils.isTokenValid(authHeader, userDetails)) {
-                    return new ResponseEntity<>("Valid token", HttpStatus.OK);
-            }
+        if (jwtUtils.isTokenValid(authHeader)) {
+            return new ResponseEntity<>("Valid token", HttpStatus.OK);
         }
+
+        return new ResponseEntity<>("Invalid token", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("refreshToken")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        if(authHeader == null || !authHeader.startsWith("Bearer")) {
+            return new ResponseEntity<>("Invalid token", HttpStatus.BAD_REQUEST);
+        }
+
+        authHeader = authHeader.substring(7);
+
+        if (jwtUtils.isTokenValid(authHeader)) {
+            String userId = jwtUtils.extractUserID(authHeader);
+            CustomUserDetails user = (CustomUserDetails) userDao.loadUserByUserId(userId);
+            String jwtToken = jwtUtils.generateToken(user);
+            return new ResponseEntity<>(
+                    new AuthResponseDTO (
+                            user.getUserId(),
+                            jwtToken,
+                            "Login successfully"
+                    ),
+                    HttpStatus.OK
+            );
+        }
+
         return new ResponseEntity<>("Invalid token", HttpStatus.BAD_REQUEST);
     }
 }

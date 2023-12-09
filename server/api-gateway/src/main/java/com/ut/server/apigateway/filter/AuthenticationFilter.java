@@ -2,34 +2,48 @@ package com.ut.server.apigateway.filter;
 
 
 import com.ut.server.apigateway.config.GatewayInterface;
+import com.ut.server.apigateway.util.JwtUtils;
 import com.ut.server.apigateway.util.RouteValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
+import reactor.core.publisher.Mono;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
+@Slf4j
+public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> implements HandlerInterceptor {
 
     @Autowired
     private RouteValidator validator;
 
-    private WebClient.Builder webClientBuilder;
-
-    //    @Autowired
     @Autowired
-    private RestTemplate template;
+    private JwtUtils jwtUtils;
 
-    public AuthenticationFilter(WebClient.Builder webClientBuilder) {
+//    @Autowired
+//    private HandlerExceptionResolver exceptionResolver;
+
+    @Autowired
+    public AuthenticationFilter() {
         super(Config.class);
-        this.webClientBuilder=webClientBuilder;
+//        this.exceptionResolver = exceptionResolver;
     }
+
 
     @Override
     public GatewayFilter apply(Config config) {
@@ -47,32 +61,30 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 try {
 //                    //REST call to AUTH service
 //                    template.getForObject("http://IDENTITY-SERVICE//validate?token" + authHeader, String.class);
-                    HttpHeaders headers = new HttpHeaders();
-//                    headers.setContentType(MediaType.APPLICATION_JSON);
-//                    headers.set("Authorization", authHeader);
-                    headers.setBearerAuth(authHeader);
-                    webClientBuilder.build()
-                            .method(HttpMethod.GET)
-                            .uri("http://user-service/auth/validate")
-                            .header(HttpHeaders.AUTHORIZATION, authHeader)
-                            .retrieve()
-                            .bodyToMono(String.class)
-                            .block();
-
-//                    template.exchange("http://user-service/auth/validate", HttpMethod.GET, new HttpEntity<>(headers), String.class);
-//                    Reponse gatewayInterface.validateToken(authHeader);
-//                    jwtUtils.isTokenValid(authHeader, null);
-//"http://user-service/auth/validate",  new HttpEntity<Object>(headers), String.class
-//                    jwtUtil.validateToken(authHeader);
+                    jwtUtils.isTokenValid(authHeader);
 
                 } catch (Exception e) {
-                    System.out.println("invalid access...!");
-                    throw new RuntimeException("un authorized access to application");
+//                    logger.error("Could not set user authentication in security context", e)
+                    log.error("Could not set user authentication in security context");
+//                    exceptionResolver.resolveException((HttpServletRequest) exchange.getRequest(), (HttpServletResponse) exchange.getResponse(), null, e);
+
+                    throw e;
                 }
             }
             return chain.filter(exchange);
         });
     }
+
+    private Mono<Void> onError(ServerWebExchange exchange, HttpStatus httpStatus) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(httpStatus);
+        return response.setComplete();
+    }
+
+    private boolean authMissing(ServerHttpRequest request) {
+        return !request.getHeaders().containsKey("Authorization");
+    }
+
 
     public static class Config {
 

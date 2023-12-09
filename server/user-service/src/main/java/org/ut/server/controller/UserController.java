@@ -21,8 +21,13 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getUser() {
+    public ResponseEntity<List<User>> getUsers() {
         return userService.getAllUser();
+    }
+
+    @GetMapping("/{user_id}")
+    public ResponseEntity<?> getUserById(@PathVariable UUID user_id) {
+        return userService.getUserInfo(user_id);
     }
 
     @GetMapping("/address")
