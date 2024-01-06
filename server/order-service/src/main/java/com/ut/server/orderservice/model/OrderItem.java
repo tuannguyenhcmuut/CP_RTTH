@@ -1,9 +1,6 @@
 package com.ut.server.orderservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,6 +10,8 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "orderId")
+@EqualsAndHashCode(exclude = "orderId")
 public class OrderItem {
 
     @Id
@@ -24,11 +23,11 @@ public class OrderItem {
 
     private double price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order orderId;
 
-    private Long product_id; // goi den product service
+    private Long productId; // goi den product service
 
 
 }

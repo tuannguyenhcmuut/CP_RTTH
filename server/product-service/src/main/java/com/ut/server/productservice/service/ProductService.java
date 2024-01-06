@@ -23,6 +23,11 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final UserFeign userFeign;
     public String createProduct(ProductRequest productRequest, UUID userId) {
+        // check user is existed
+
+        if (userFeign.getUserById(userId).getBody() == null) {
+            throw new ApiRequestException("User not found!");
+        }
 
         Product product = mapProductRequestToProduct(productRequest, userId);
         productRepository.save(product);
@@ -33,14 +38,19 @@ public class ProductService {
 //    getAllProducts
     public List<ProductResponse> getAllProducts(UUID userId) {
 //        return productRepository.findProductsByUserId(userId);
+        if (userFeign.getUserById(userId).getBody()  == null) {
+            throw new ApiRequestException("User not found!");
+        }
         List<Product> products = productRepository.findProductsByUserId(userId);
-        List<UserDTO> users = (List<UserDTO>) userFeign.getUser();
-        log.info("Users: {}", users);
+//        List<UserDTO> users = (List<UserDTO>) userFeign.getUser();
+//        log.info("Users: {}", users);
         return products.stream().map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }
 
     public ProductResponse updateProduct(UUID userId, Long productId, Product product) {
+        // verify user with product
+
         Product productToUpdate = productRepository.findProductByUserIdAndId(userId, productId);
         if (productToUpdate == null) {
             throw new ApiRequestException("Product not found!" + productId);

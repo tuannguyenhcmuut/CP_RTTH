@@ -24,6 +24,6 @@ public class OrderOptionType {
     private String description;
 
     @OneToMany(mappedBy = "orderOptionType")
-    List<OrderOptions> orderOptions;
+    List<OrderOption> orderOptions;
 
 }

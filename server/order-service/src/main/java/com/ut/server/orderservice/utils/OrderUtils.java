@@ -1,6 +1,6 @@
 package com.ut.server.orderservice.utils;
 
-import com.ut.server.orderservice.dto.OrderResponse;
+import com.ut.server.orderservice.dto.request.OrderResponse;
 import com.ut.server.orderservice.model.Order;
 
 public class OrderUtils {
@@ -23,9 +23,9 @@ public class OrderUtils {
                 .depth(order.getDepth())
                 .storeId(order.getStoreId())
                 .receiverId(order.getReceiverId())
-                .statusId(order.getStatusId())
+                .orderStatus(order.getOrderStatus())
                 .price(order.getPrice())
-                .discountId(order.getDiscountId())
+                .discountId(order.getDiscount().getId())
                 .shipId(order.getShipId())
                 .orderOptions(order.getOrderOptions())
                 .build();

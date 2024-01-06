@@ -3,6 +3,7 @@ package com.ut.server.orderservice.model;
 
 import lombok.*;
 import org.hibernate.annotations.Type;
+import org.ut.server.common.events.OrderStatus;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,7 +30,10 @@ public class Order {
     private Float width;
     private Float depth;
 
-    @Column(name = "user_id")
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderItem> items;
+
+    @Column(name = "user_id", nullable = false)
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID userId;
 
@@ -39,22 +43,24 @@ public class Order {
     @Column(name = "receiver_id")
     private Long receiverId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_code", nullable = true)
-    private Status statusId;
+//    @OneToOne(fetch = FetchType.LAZY)
+    @Column(name = "status_code", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
     // join orderPrice
     @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "price_id", nullable = true)
     private OrderPrice price;
 
-    @Column(name = "discount_id")
-    private Long discountId;
-
-    @Column(name = "ship_id")
+    @Column(name = "ship_id", insertable = false, updatable = false)
     private Long shipId;
 
     @OneToMany(mappedBy = "order")
-    List<OrderOptions> orderOptions;
+//    @JoinColumn(name = /)
+    private List<OrderOption> orderOptions;
 
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id", nullable=true)
+    private Discount discount;
 }
