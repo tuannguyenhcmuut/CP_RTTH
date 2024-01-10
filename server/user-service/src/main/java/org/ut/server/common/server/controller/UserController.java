@@ -1,14 +1,18 @@
 package org.ut.server.common.server.controller;
 
-import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.ut.server.common.dtos.GenericResponseDTO;
+import org.ut.server.common.exception.MessageCode;
+import org.ut.server.common.server.common.MessageConstants;
 import org.ut.server.common.server.dto.UserRequestDTO;
+import org.ut.server.common.server.dto.UserResponseDTO;
 import org.ut.server.common.server.model.Address;
-import org.ut.server.common.server.model.Receiver;
-import org.ut.server.common.server.model.User;
 import org.ut.server.common.server.service.UserService;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +25,20 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<User>> getUsers() {
-        return userService.getAllUser();
-    }
+//    @GetMapping("")
+//    public ResponseEntity<List<User>> getUsers() {
+//        return userService.getAllUser();
+//    }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<?> getUserById(@PathVariable UUID user_id) {
-        return userService.getUserInfo(user_id);
+    @GetMapping("/{userId}")
+    public GenericResponseDTO<UserResponseDTO> getUserById(@PathVariable UUID userId) {
+        UserResponseDTO user =  userService.getUserInfo(userId);
+        return GenericResponseDTO.<UserResponseDTO>builder()
+                .data(user)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_USER)
+                .timestamps(new Date())
+                .build();
     }
 
     @GetMapping("/address")
@@ -38,26 +48,62 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@RequestBody UserRequestDTO newUser) {
-        return userService.createNewUser(newUser);
+    public GenericResponseDTO<UserResponseDTO> createUser(@RequestBody UserRequestDTO newUser) {
+         UserResponseDTO newUserRes =  userService.createNewUser(newUser);
+         return GenericResponseDTO.<UserResponseDTO>builder()
+                 .data(newUserRes)
+                 .code(MessageCode.CREATED_SUCCESS.toString())
+                 .message(MessageConstants.SUCCESS_USER_CREATED)
+                 .timestamps(new Date())
+                 .build();
+    }
+
+    @PatchMapping("/update/{userId}")
+    public GenericResponseDTO<UserResponseDTO> updateUser(@PathVariable UUID userId, @RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
+        return GenericResponseDTO.<UserResponseDTO>builder()
+                .data(userResponseDTO)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_USER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+
+    @DeleteMapping("/{userId}")
+    public GenericResponseDTO<String> deleteUserById(@PathVariable UUID userId) {
+        userService.deleteUserById(userId);
+        return GenericResponseDTO.<String>builder()
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_USER_DELETED)
+                .timestamps(new Date())
+                .build();
+    }
+
+    @PostMapping("/avatar")
+    public GenericResponseDTO<UserResponseDTO> uploadAvatar(@RequestParam("file") MultipartFile file, @RequestParam("userId") UUID userId) throws IOException {
+        UserResponseDTO userResponseDTO = userService.uploadAvatar(file.getBytes(), userId);
+        return GenericResponseDTO.<UserResponseDTO>builder()
+                .data(userResponseDTO)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_USER_UPDATED)
+                .timestamps(new Date())
+                .build();
     }
 
     //Get list of addresses for user base on user_id
-    @GetMapping("/address/{id}")
-    public ResponseEntity<List<Address>> getAddressForUserById(@PathVariable UUID id) {
-        return userService.getAddressForUserById(id);
+    @GetMapping("/address/{userId}")
+    public ResponseEntity<List<Address>> getAddressForUserById(@PathVariable UUID userId) {
+        return userService.getAddressForUserById(userId);
     }
 
     //Add new address for user base on user_id
-    @PostMapping("/address/{id}")
-    public ResponseEntity<String> addAddressForUserById(@PathVariable UUID id, @RequestBody Address address) {
-        return userService.addAddressForUserById(id, address);
+    @PostMapping("/address/{userId}")
+    public ResponseEntity<String> addAddressForUserById(@PathVariable UUID userId, @RequestBody Address address) {
+        return userService.addAddressForUserById(userId, address);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable UUID id) {
-        return userService.deleteUserById(id);
-    }
+
 
     @DeleteMapping("/address/{addressId}")
     public ResponseEntity<String> deleteAddressById(@PathVariable Long addressId) {

@@ -31,6 +31,7 @@ public class Product implements Serializable {
     private String description;
 
     private BigDecimal price;
+    private String photo;
 
     @Column(name = "user_id")
     @Type(type="org.hibernate.type.PostgresUUIDType")

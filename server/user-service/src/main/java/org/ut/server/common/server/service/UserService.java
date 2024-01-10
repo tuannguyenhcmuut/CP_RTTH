@@ -1,12 +1,19 @@
 package org.ut.server.common.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.bridge.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.ut.server.common.server.common.MessageConstants;
 import org.ut.server.common.server.dto.UserRequestDTO;
+import org.ut.server.common.server.dto.UserResponseDTO;
+import org.ut.server.common.server.enums.Gender;
+import org.ut.server.common.server.exception.UserExistedException;
 import org.ut.server.common.server.exception.UserNotFoundException;
+import org.ut.server.common.server.mapper.UserMapper;
 import org.ut.server.common.server.util.UserMappingUtil;
 import org.ut.server.common.server.model.Address;
 import org.ut.server.common.server.model.Receiver;
@@ -17,6 +24,7 @@ import org.ut.server.common.server.repo.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,36 +37,37 @@ public class UserService {
     private final ReceiverRepository receiverRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
 
     public ResponseEntity<List<User>> getAllUser() {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK) ;
     }
 
-    public ResponseEntity<?> getUserInfo(UUID userId) {
+    public UserResponseDTO getUserInfo(UUID userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty()) throw new UserNotFoundException("User Not found!");
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
 //            return new ResponseEntity<>("User Not found!", HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        return userMapper.mapEntityToResponse(user.get());
     }
 
     public ResponseEntity<List<Address>> getAllAddress() {
         return new ResponseEntity<>(addressRepository.findAll(), HttpStatus.OK) ;
     }
 
-    public ResponseEntity<String> createNewUser(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO createNewUser(UserRequestDTO userRequestDTO) {
         // catch exception if email or username is already exist
         Optional<User> emailEntry = userRepository.findUserByEmail(userRequestDTO.getEmail());
         Optional<User> usernameEntry = userRepository.findByUsername(userRequestDTO.getUsername());
 
         if (emailEntry.isPresent()) {
-            return new ResponseEntity<>("Email is already exist!", HttpStatus.BAD_REQUEST);
+            throw new UserExistedException(MessageConstants.EMAIL_EXISTED);
         }
         if (usernameEntry.isPresent()) {
-            return new ResponseEntity<>("Username is already exist!", HttpStatus.BAD_REQUEST);
+            throw new UserExistedException(MessageConstants.USERNAME_EXISTED);
         }
-        User newUser = UserMappingUtil.mapUserRequestToUser(userRequestDTO);
+        User newUser = userMapper.mapRequestToUser(userRequestDTO);
         newUser.setId(UUID.randomUUID());
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         newUser.setRegisterAt(LocalDateTime.now());
@@ -66,7 +75,37 @@ public class UserService {
         // mapping to User
         userRepository.save(newUser);
 
-        return new ResponseEntity<>("Create user successfully", HttpStatus.CREATED);
+        return userMapper.mapEntityToResponse(newUser);
+    }
+
+    public UserResponseDTO updateUser(UUID userId, UserRequestDTO userRequestDTO) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
+        if (user.get().getId() != userId) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "User id not match!");
+        User userEntity = user.get();
+//        UserMappingUtil.mapUserRequestToUser(userRequestDTO, userEntity);
+        userEntity.setEmail(userRequestDTO.getEmail());
+        userEntity.setUsername(userRequestDTO.getUsername());
+        // dont update password
+        userEntity.setFirstName(userRequestDTO.getFirstName());
+        userEntity.setLastName(userRequestDTO.getLastName());
+        userEntity.setGender(userRequestDTO.getGender());
+        userEntity.setPhoneNumber(userRequestDTO.getPhoneNumber());
+        userEntity.setDateOfBirth(userRequestDTO.getDateOfBirth());
+//
+        // avatar
+        // address
+
+        userRepository.save(userEntity);
+        return userMapper.mapEntityToResponse(userEntity);
+    }
+
+    public void deleteUserById(UUID id) {
+        // find
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
+
+        userRepository.deleteById(id);
     }
 
     public ResponseEntity<String> addAddressForUserById(UUID id, Address address) {
@@ -90,15 +129,24 @@ public class UserService {
         return new ResponseEntity<>(user.get().getAddresses(), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> deleteUserById(UUID id) {
-        userRepository.deleteById(id);
-        return new ResponseEntity<>("Delete user successfully", HttpStatus.OK);
-    }
+
 
     public ResponseEntity<String> deleteAddressById(Long id) {
         addressRepository.deleteById(id);
         return new ResponseEntity<>("Delete address successfully", HttpStatus.OK);
     }
+
+    public UserResponseDTO uploadAvatar(byte[] avatar, UUID userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()) throw new UserNotFoundException("User Not found!");
+
+        User userEntity = user.get();
+        String avatarString = Base64.getEncoder().encodeToString(avatar);
+        userEntity.setAvatar(avatarString);
+        userRepository.save(userEntity);
+        return userMapper.mapEntityToResponse(userEntity);
+    }
+
 
 //    public ResponseEntity<List<Receiver>> getReceiverOfUser(UUID user_id) {
 //        Optional<User> user = userRepository.findById(user_id);

@@ -21,7 +21,7 @@ public class OrderDto {
     private Float height;
     private Float width;
     private Float depth;
-    private List<OrderItem> items;
+    private List<OrderItemDto> items;
     @NotNull
     private UUID userId;
     private Long storeId;
@@ -30,5 +30,9 @@ public class OrderDto {
     private OrderPrice price;
     private Discount discount;
     private Long shipId;
-    List<OrderOptionDto> orderOptions;
+    //    List<OrderOptionDto> orderOptions;
+    private Boolean isBulky;
+    private Boolean isFragile;
+    private Boolean isValuable;
+
 }

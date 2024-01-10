@@ -23,6 +23,4 @@ public class UserRequestDTO {
     private Gender gender;
     private LocalDate dateOfBirth;
     private List<Address> addresses;
-    private List<Receiver> receivers;
-    private List<Store> stores;
 }

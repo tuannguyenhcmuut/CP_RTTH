@@ -12,6 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @ToString(exclude = "orderId")
 @EqualsAndHashCode(exclude = "orderId")
+@Builder
 public class OrderItem {
 
     @Id
@@ -25,7 +26,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order orderId;
+    private Order   orderId;
 
     private Long productId; // goi den product service
 

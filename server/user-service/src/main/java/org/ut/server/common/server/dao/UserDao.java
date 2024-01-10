@@ -28,7 +28,7 @@ public class UserDao implements UserDetailsService {
                 .build();
     }
 
-    public UserDetails loadUserByUserId(String userId) {
+    public CustomUserDetails loadUserByUserId(String userId) {
         User user = userRepository.findById(UUID.fromString(userId)).get();
         if (user == null) {
             throw new UsernameNotFoundException("User not found with id: " + userId);

@@ -1,16 +1,20 @@
 package org.ut.server.common.server.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import javax.persistence.*;
 
-@Entity
-//@MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+//@Entity
+@MappedSuperclass
+@Data
+//@Builder
+@AllArgsConstructor
 public class Person {
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    protected Long id;
 
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     protected String username;
 
     @Column(nullable = false, length = 15)
@@ -18,5 +22,10 @@ public class Person {
 
     @Column(nullable = false)
     protected String address;
+
+    public Person() {
+
+    }
+
 
 }

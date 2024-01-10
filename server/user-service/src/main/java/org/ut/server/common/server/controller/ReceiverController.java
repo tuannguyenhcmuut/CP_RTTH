@@ -1,14 +1,24 @@
 package org.ut.server.common.server.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.ut.server.common.constants.MessageConstant;
+import org.ut.server.common.dtos.GenericResponseDTO;
+import org.ut.server.common.exception.MessageCode;
+import org.ut.server.common.server.dto.ReceiverDto;
 import org.ut.server.common.server.model.Receiver;
 import org.ut.server.common.server.service.ReceiverService;
 
+import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("receiver")
+@RequestMapping("/api/v1/receivers")
+//@Transactional
+@Slf4j
 public class ReceiverController {
     private final ReceiverService receiverService;
 
@@ -16,15 +26,58 @@ public class ReceiverController {
         this.receiverService = receiverService;
     }
     //Get list receiver of store
-    @GetMapping("")
-    public ResponseEntity<List<Receiver>> getReceiverByUserId() {
-        return receiverService.getAllReceiver();
+    @GetMapping("/user/{userId}")
+    public GenericResponseDTO<List<ReceiverDto>> getReceiverByUserId(@PathVariable UUID userId) {
+        try {
+            List<ReceiverDto> receiverDtos = receiverService.getAllReceivers(userId);
+            return GenericResponseDTO.<List<ReceiverDto>>builder()
+                    .data(receiverDtos)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstant.SUCCESS_GET_ORDER)
+                    .timestamps(new Date())
+                    .build();
+        }
+        catch  (Exception e){
+            log.error(e.getMessage());
+//            return GenericResponseDTO.<List<ReceiverDto>>builder()
+//                    .code(e.getMessage())
+//                    .timestamps(new Date())
+//                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
+//                    .build();
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     //add new receiver
     @PostMapping("/create")
-    public ResponseEntity<String> addPerson(@RequestBody Receiver newPerson) {
-        return receiverService.addNewReceiver(newPerson);
+    public GenericResponseDTO<ReceiverDto> addReceiver(@RequestBody ReceiverDto newReceiver) {
+//        try {
+//        ReceiverDto receiverDto = receiverService.addNewReceiver(newReceiver, newReceiver.getShowOwnerId());
+//            return GenericResponseDTO.<ReceiverDto>builder()
+//                    .data(receiverDto)
+//                    .code(MessageCode.SUCCESS.toString())
+//                    .message(MessageConstant.SUCCESS_GET_ORDER)
+//                    .timestamps(new Date())
+//                    .build();
+//
+//        }
+//        catch (Exception e) {
+//            log.error(e.getMessage());
+////            return GenericResponseDTO.<ReceiverDto>builder()
+////                    .code(e.getMessage())
+////                    .timestamps(new Date())
+////                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
+////                    .build();
+//            throw new RuntimeException(e.getMessage());
+//        }
+        ReceiverDto receiverDto = receiverService.addNewReceiver(newReceiver, newReceiver.getUserId());
+        return GenericResponseDTO.<ReceiverDto>builder()
+                .data(receiverDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstant.SUCCESS_GET_ORDER)
+                .timestamps(new Date())
+                .build();
     }
 
     //delete receiver by id

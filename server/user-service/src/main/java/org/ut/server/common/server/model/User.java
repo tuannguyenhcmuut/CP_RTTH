@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.lang.Nullable;
 import org.ut.server.common.server.enums.Gender;
 import org.ut.server.common.server.enums.Role;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +21,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@MappedSuperclass
 public class User {
 
     @Id
@@ -54,9 +56,18 @@ public class User {
 
     private LocalDateTime lastLogin;
 
-    byte[] photo;
+    private String avatar;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Nullable
+    private Set<Receiver> receivers;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Store> stores;
 }

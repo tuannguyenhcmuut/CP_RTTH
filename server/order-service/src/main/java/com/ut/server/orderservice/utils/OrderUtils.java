@@ -27,7 +27,9 @@ public class OrderUtils {
                 .price(order.getPrice())
                 .discountId(order.getDiscount().getId())
                 .shipId(order.getShipId())
-                .orderOptions(order.getOrderOptions())
+                .isBulky(order.getIsBulky())
+                .isFragile(order.getIsFragile())
+                .isValuable(order.getIsValuable())
                 .build();
     }
 }

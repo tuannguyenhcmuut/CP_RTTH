@@ -2,6 +2,7 @@ package com.ut.server.orderservice.mapper;
 
 import com.ut.server.orderservice.dto.OrderDto;
 import com.ut.server.orderservice.model.Order;
+import com.ut.server.orderservice.model.OrderItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class OrderMapper {
 
     @Autowired
-    private OrderOptionMapper orderOptionMapper;
+    private OrderItemMapper orderItemMapper;
 
 //    @Autowired
 //    private DiscountRepository discountRepository;
@@ -31,24 +32,26 @@ public class OrderMapper {
                 .height(orderDto.getHeight())
                 .width(orderDto.getWidth())
                 .depth(orderDto.getDepth())
-                .items(orderDto.getItems())
+                .items(
+                        orderItemMapper.mapDtosToEntities(orderDto.getItems())
+                )
                 .userId(orderDto.getUserId())
                 .storeId(orderDto.getStoreId())
                 .receiverId(orderDto.getReceiverId())
-                .orderStatus(OrderStatus.valueOf(orderDto.getOrderStatus()))
+                .orderStatus(orderDto.getOrderStatus() != null ? OrderStatus.valueOf(orderDto.getOrderStatus()) : null)
                 .price(orderDto.getPrice())
                 .discount(orderDto.getDiscount())
                 .shipId(orderDto.getShipId())
-                .orderOptions(
-                        orderDto.getOrderOptions() != null ? orderOptionMapper.mapDtosToEntities(orderDto.getOrderOptions()) : null
-                )
+                .isBulky(orderDto.getIsBulky())
+                .isFragile(orderDto.getIsFragile())
+                .isValuable(orderDto.getIsValuable())
                 .build();
     }
 
     public List<Order> mapDtosToEntities(List<OrderDto> orderDtos) {
-        return orderDtos.stream().map(
+        return orderDtos != null ? orderDtos.stream().map(
                 orderDto -> mapDtoToEntity(orderDto)
-        ).collect(Collectors.toList());
+        ).collect(Collectors.toList()) : null;
     }
 
     public OrderDto mapToDto(Order order) {
@@ -59,7 +62,9 @@ public class OrderMapper {
                     .height(order.getHeight())
                     .width(order.getWidth())
                     .depth(order.getDepth())
-                    .items(order.getItems())
+                    .items(
+                            orderItemMapper.mapToDtos(order.getItems())
+                    )
                     .userId(order.getUserId()) // Todo: verify userId
                     .storeId(order.getStoreId())
                     .receiverId(order.getReceiverId())
@@ -67,18 +72,18 @@ public class OrderMapper {
                     .price(order.getPrice())
                     .discount(order.getDiscount())
                     .shipId(order.getShipId()) // todo: verify the ship
-                    .orderOptions(
-                            order.getOrderOptions() != null ? orderOptionMapper.mapToDtos(order.getOrderOptions()) : null
-                    )
+                    .isBulky(order.getIsBulky())
+                    .isFragile(order.getIsFragile())
+                    .isValuable(order.getIsValuable())
                     .build();
         }
         return null;
     }
 
     public List<OrderDto> mapToDtos(List<Order> orders) {
-        return orders.stream().map(
+        return orders != null ? orders.stream().map(
                 order -> mapToDto(order)
-        ).collect(Collectors.toList());
+        ).collect(Collectors.toList()) : null;
     }
 
 //    public List<Order>

@@ -21,5 +21,6 @@ public class ProductResponse {
     private Float height;
     private Float width;
     private Float depth;
+    private String photo;
     private List<CategoryResponse> categories;
 }

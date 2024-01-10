@@ -1,11 +1,8 @@
 package com.ut.server.orderservice.dto.request;
 
-import com.ut.server.orderservice.model.OrderOption;
 import com.ut.server.orderservice.model.OrderPrice;
 import lombok.*;
 import org.ut.server.common.events.OrderStatus;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -24,5 +21,8 @@ public class OrderResponse {
     private OrderPrice price;
     private Long discountId;
     private Long shipId;
-    List<OrderOption> orderOptions;
+    //    List<OrderOption> orderOptions;
+    private Boolean isBulky;
+    private Boolean isFragile;
+    private Boolean isValuable;
 }

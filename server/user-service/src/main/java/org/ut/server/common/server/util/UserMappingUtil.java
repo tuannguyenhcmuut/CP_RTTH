@@ -10,7 +10,6 @@ public class UserMappingUtil {
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
-                .password(user.getPassword())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .dateOfBirth(user.getDateOfBirth())

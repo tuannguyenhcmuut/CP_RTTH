@@ -1,7 +1,6 @@
 package com.ut.server.orderservice.controller;
 
 import com.ut.server.orderservice.common.MessageConstant;
-import com.ut.server.orderservice.dto.response.OrderOptionResponse;
 import com.ut.server.orderservice.dto.OrderDto;
 import com.ut.server.orderservice.exception.MessageCode;
 import com.ut.server.orderservice.service.OrderService;
@@ -31,6 +30,8 @@ public class OrderController {
         try {
 
             List<OrderDto> orders = orderService.getAllOrders(userId);
+
+
             return GenericResponseDTO.<List<OrderDto>>builder()
                     .data(orders)
                     .code(MessageCode.SUCCESS.toString())
@@ -41,9 +42,9 @@ public class OrderController {
         catch (Exception e){
             log.error(e.getMessage());
             return GenericResponseDTO.<List<OrderDto>>builder()
-                    .code(e.getMessage())
-                    .timestamps(new Date())
-                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
+                            .code(e.getMessage())
+                            .timestamps(new Date())
+                            .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
                     .build();
         }
     }
@@ -147,9 +148,4 @@ public class OrderController {
         }
     }
 
-    // retrieve all order options of an order
-    @GetMapping("/{orderId}/user/{userId}/orderOptions")
-    public List<OrderOptionResponse> getAllOrderOptions(@PathVariable UUID userId, @PathVariable Long orderId) {
-        return orderService.getAllOrderOptions(userId, orderId);
-    }
 }

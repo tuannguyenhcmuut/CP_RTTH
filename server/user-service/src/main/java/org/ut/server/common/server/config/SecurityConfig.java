@@ -44,14 +44,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .cors().and().csrf().disable()
             .authorizeRequests()
             .antMatchers(
                     "/auth/login",
                     "/api/v1/user/create",
                     "/auth/validate",
                     "/auth/refresh",
-                    "/api/v1/product/**"
+                    "/api/v1/product/**",
+                    "/api/v1/order/**",
+                    "http://localhost:8080/api/v1/product/**",
+                    "http://localhost:8080/api/v1/order/**",
+                    "http://localhost:8080/api/v1/user/**"
 
                 ).permitAll()
             .anyRequest().authenticated()

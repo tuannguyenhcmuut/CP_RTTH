@@ -14,20 +14,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "shop_owner")
-@Data
-//@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "user_id")
+//@Entity
+//@Table(name = "shop_owner")
+//@Data
+////@Builder
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "user_id")
 public class ShopOwner extends User {
-    @JsonManagedReference
-    @OneToMany(mappedBy = "shopOwner", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "shopOwner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Receiver> receivers;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "shopOwner", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "shopOwner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Store> stores;
 
 }
