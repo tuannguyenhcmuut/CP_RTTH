@@ -73,11 +73,11 @@ public class OrderController {
 
     // create an order
     // http://localhost:8083/api/v1/order/user/1
-    @PostMapping("/user/{userId}")
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public GenericResponseDTO<OrderDto> createOrder(@PathVariable UUID userId, @RequestBody OrderDto orderDto) {
+    public GenericResponseDTO<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
         try {
-            OrderDto newOrderDto = orderService.createOrder(userId, orderDto);
+            OrderDto newOrderDto = orderService.createOrder(orderDto);
             return GenericResponseDTO.<OrderDto>builder()
                     .data(newOrderDto)
                     .code(MessageCode.CREATED_SUCCESS.toString())

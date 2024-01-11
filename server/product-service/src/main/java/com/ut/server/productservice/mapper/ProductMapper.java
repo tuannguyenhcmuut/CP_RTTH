@@ -4,11 +4,13 @@ import com.ut.server.productservice.dto.CategoryResponse;
 import com.ut.server.productservice.dto.ProductRequest;
 import com.ut.server.productservice.dto.ProductResponse;
 import com.ut.server.productservice.model.Product;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Component
 public class ProductMapper {
     public ProductResponse mapToProductResponse(Product product) {
         if (product == null) {

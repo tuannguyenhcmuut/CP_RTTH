@@ -25,10 +25,15 @@ public class OrderItem {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order   orderId;
+    @JoinColumn(name = "order_id")
+    private Order orderId;
 
     private Long productId; // goi den product service
 
 
+    public OrderItem(int quantity, double price, Long productId) {
+        this.quantity = quantity;
+        this.price = price;
+        this.productId = productId;
+    }
 }

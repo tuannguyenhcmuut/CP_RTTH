@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.ut.server.common.events.OrderStatus;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,7 +64,7 @@ public class OrderMapper {
                     .width(order.getWidth())
                     .depth(order.getDepth())
                     .items(
-                            orderItemMapper.mapToDtos(order.getItems())
+                            order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getUserId()) : null
                     )
                     .userId(order.getUserId()) // Todo: verify userId
                     .storeId(order.getStoreId())

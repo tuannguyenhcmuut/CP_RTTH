@@ -17,6 +17,6 @@ import java.util.UUID;
 public interface ProductFeign {
     @GetMapping
     public GenericResponseDTO<List<ProductResponse>> getAllProduct(@RequestParam UUID userId);
-    @GetMapping
+    @GetMapping("/{productId}")
     public GenericResponseDTO<ProductResponse> getProduct(@PathVariable Long productId, @RequestParam UUID userId);
 }

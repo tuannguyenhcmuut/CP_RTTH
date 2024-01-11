@@ -4,22 +4,27 @@ import com.ut.server.orderservice.common.MessageConstant;
 import com.ut.server.orderservice.config.ProductFeign;
 import com.ut.server.orderservice.config.UserFeign;
 import com.ut.server.orderservice.dto.OrderDto;
+import com.ut.server.orderservice.dto.OrderItemDto;
 import com.ut.server.orderservice.mapper.OrderItemMapper;
 import com.ut.server.orderservice.mapper.OrderMapper;
 import com.ut.server.orderservice.model.Order;
 import com.ut.server.orderservice.model.OrderItem;
+import com.ut.server.orderservice.repo.OrderItemRepository;
 import com.ut.server.orderservice.repo.OrderRepository;
 import com.ut.server.orderservice.utils.OrderUtils;
+import com.ut.server.orderservice.utils.RandomGenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.ut.server.common.dtos.GenericResponseDTO;
 import org.ut.server.common.events.OrderStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -39,7 +44,20 @@ public class OrderService {
     private final OrderItemService orderItemService;
     @PersistenceContext
     private EntityManager entityManager;
+    private final OrderItemRepository orderItemRepository;
 
+    public List<OrderItem> saveItems(OrderDto orderDto, Order order) {
+        // save order items
+        List<OrderItem> res = new ArrayList<>();
+        List<OrderItemDto> orderItemDtos = orderDto.getItems();
+        List<OrderItem> orderItems = orderItemMapper.mapDtosToEntities(orderItemDtos);
+        orderItems.forEach(orderItem -> {
+            orderItem.setOrderId(order);
+            orderItemRepository.save(orderItem);
+            res.add(orderItem);
+        });
+        return res;
+    }
 
     public OrderDto getOrderById(UUID userId, Long orderId) {
         Order order = orderRepository.findOrderByIdAndUserId(orderId, userId);
@@ -59,7 +77,7 @@ public class OrderService {
                 .depth(order.getDepth())
                 .userId(order.getUserId())
                 .items(
-                        orderItemMapper.mapToDtos(order.getItems())
+                        orderItemMapper.mapToDtos(order.getItems(), userId)
                  )
                 .storeId(order.getStoreId())
                 .receiverId(order.getReceiverId())
@@ -73,26 +91,33 @@ public class OrderService {
     }
 
 
-    public OrderDto createOrder(UUID userId, OrderDto orderDto) {
+    public OrderDto createOrder( OrderDto orderDto) {
         // tam thoi la chua validate
 
 //        if (userFeign.getUserById(userId).getBody() == null) {
 //            throw new RuntimeException("User not found");
 //        }
-        // add order items
+        if (orderDto.getUserId() == null) {
+            throw new RuntimeException("Missing user ID");
+        }
+
+        UUID userId = orderDto.getUserId();
+
+        List<OrderItem> orderItems = new ArrayList<>();
 
 
         // TODO: auto generate the ship id
         // request to delivery service and get back shipId
         Order newOrder = Order.builder()
+                .code("ORDER-" + RandomGenUtils.getRandomInt(1, 1000000))
                 .height(orderDto.getHeight())
                 .width(orderDto.getWidth())
                 .depth(orderDto.getDepth())
-                .items(orderDto.getItems() != null ?
-                        orderDto.getItems().stream().map(orderItemDto -> {
-                    return orderItemMapper.mapDtoToEntity(orderItemDto);
-                }).collect(Collectors.toList()) : null
-                )
+//                .items(orderDto.getItems() != null ?
+//                        orderDto.getItems().stream().map(orderItemDto -> {
+//                    return orderItemMapper.mapDtoToEntity(orderItemDto);
+//                }).collect(Collectors.toList()) : null
+//                )
                 .userId(userId)
                 .storeId(orderDto.getStoreId())
                 .receiverId(orderDto.getReceiverId())
@@ -104,20 +129,39 @@ public class OrderService {
                 .isFragile(orderDto.getIsFragile())
                 .isValuable(orderDto.getIsValuable())
                 .build();
-
-
-
-
-
-
-        // tu dong tao 1 ship id moi, gui request toi shipping service voi param la orderid
+//        UUID newOrderId = UUID.randomUUID();
+//        newOrder.setId(newOrderId);
+        // tu dong tao 1 ship id moi, gui request toi shipping service voi param la orderId
         // tao code moi
+        if (!CollectionUtils.isEmpty(orderDto.getItems())) {
+            orderDto.getItems().forEach(orderItemDto -> {
+//                orderItemMapper.mapDtoToEntity(orderItemDto);
+                orderItems.add(
+                        new OrderItem(orderItemDto.getQuantity(), orderItemDto.getPrice(), orderItemDto.getProduct().getId())
+                );
+            });
+        }
+        newOrder.setItems(orderItems);
         orderRepository.save(newOrder);
+
         Order orderNew = orderRepository.findOrderByIdAndUserId(newOrder.getId(), userId);
-        orderNew.setCode(OrderUtils.generateOrderCode(orderNew.getId()));
-        orderRepository.save(orderNew);
+        log.error("ORDER-SERVICE: DEBUG MODE AT createOrder with orderNew: {}", orderNew);
+        return orderMapper.mapToDto(newOrder);
+
+
+//        Order orderNew = orderRepository.findOrderByIdAndUserId(newOrder.getId(), userId);
+//
+//        // add order items
+//
+//
+//
+//
+////        orderNew.setCode(OrderUtils.generateOrderCode(orderNew.getId()));
+////        orderNew.setCode("ORDER-" + RandomGenUtils.getRandomInt(1, 1000000));
+//        orderRepository.save(orderNew);
+//        entityManager.persist(orderNew);
 //        entityManager.getTransaction().commit();
-        return orderMapper.mapToDto(orderNew);
+//        return orderMapper.mapToDto(orderNew);
     }
 
 
@@ -133,8 +177,8 @@ public class OrderService {
         log.debug("ORDER-SERVICE: DEBUG MODE AT getAllOrders");
 
         // Test feign client to product service
-        GenericResponseDTO<?> products = productFeign.getAllProduct(userId);
-        log.error(String.valueOf(products.getData()));
+//        GenericResponseDTO<?> products = productFeign.getAllProduct(userId);
+//        log.error(String.valueOf(products.getData()));
         return orderMapper.mapToDtos(orders);
     }
 

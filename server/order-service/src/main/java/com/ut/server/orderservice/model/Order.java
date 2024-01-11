@@ -21,18 +21,20 @@ import java.util.UUID;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue
+//    @Type(type="org.hibernate.type.PostgresUUIDType")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     // order code
-    @Column(name = "code",  insertable = false, updatable = false, nullable = false, unique = true)
+    @Column(name = "code",  insertable = false, updatable = false, nullable = true, unique = true)
     private String code;
 
     private Float height;
     private Float width;
     private Float depth;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
     @Column(name = "user_id", nullable = false)
@@ -73,4 +75,16 @@ public class Order {
     private Boolean isFragile;
     @Column(name = "is_valuable")
     private Boolean isValuable;
+
+
+//    @Override
+    public void setItems(List<OrderItem> items) {
+
+        for (OrderItem item : items) {
+            // initializing the TestObj instance in Children class (Owner side)
+            // so that it is not a null and PK can be created
+            item.setOrderId(this);
+        }
+        this.items = items;
+    }
 }

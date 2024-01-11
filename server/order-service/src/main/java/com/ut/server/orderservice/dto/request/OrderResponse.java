@@ -4,6 +4,8 @@ import com.ut.server.orderservice.model.OrderPrice;
 import lombok.*;
 import org.ut.server.common.events.OrderStatus;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @NoArgsConstructor

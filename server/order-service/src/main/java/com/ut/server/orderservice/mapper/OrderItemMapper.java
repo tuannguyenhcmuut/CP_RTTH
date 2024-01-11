@@ -1,6 +1,7 @@
 package com.ut.server.orderservice.mapper;
 
 import com.ut.server.orderservice.config.ProductFeign;
+import com.ut.server.orderservice.dao.OrderItemDao;
 import com.ut.server.orderservice.dto.OrderItemDto;
 import com.ut.server.orderservice.dto.ProductResponse;
 import com.ut.server.orderservice.model.OrderItem;
@@ -8,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,7 +26,7 @@ public class OrderItemMapper {
                 .id(orderItemDto.getId())
                 .price(orderItemDto.getPrice())
                 .quantity(orderItemDto.getQuantity())
-                .orderId(orderItemDto.getOrderId())
+//                .orderId(orderItemDto.getOrderId())
                 .productId(orderItemDto.getProduct().getId())
                 .build();
     }
@@ -34,16 +37,17 @@ public class OrderItemMapper {
         ).collect(Collectors.toList()) : null;
     }
 
-    public OrderItemDto mapToDto(OrderItem orderItem) {
+    @Transactional
+    public OrderItemDto mapToDto(OrderItem orderItem, UUID userId) {
         // find product
         try {
             if (orderItem != null) {
-            ProductResponse product = productFeign.getProduct(orderItem.getProductId(), orderItem.getOrderId().getUserId()).getData();
+            ProductResponse product = productFeign.getProduct(orderItem.getProductId(), userId).getData();
                 return OrderItemDto.builder()
                         .id(orderItem.getId())
                         .price(orderItem.getPrice())
                         .quantity(orderItem.getQuantity())
-                        .orderId(orderItem.getOrderId())
+                        .orderId(orderItem.getOrderId().getId())
                         .product(product)
                         .build();
             }
@@ -54,10 +58,17 @@ public class OrderItemMapper {
         }
     }
 
-    public List<OrderItemDto> mapToDtos(List<OrderItem> orderItems) {
+    public List<OrderItemDto> mapToDtos(List<OrderItem> orderItems, UUID userId) {
         return orderItems != null ? orderItems.stream().map(
-                orderItem -> mapToDto(orderItem)
+                orderItem -> mapToDto(orderItem, userId)
         ).collect(Collectors.toList()) : null;
     }
 
+    public OrderItemDao mapDtoToDao(OrderItemDto orderItemDto) {
+        return OrderItemDao.builder()
+                .price(orderItemDto.getPrice())
+                .quantity(orderItemDto.getQuantity())
+                .productId(orderItemDto.getProduct().getId())
+                .build();
+    }
 }

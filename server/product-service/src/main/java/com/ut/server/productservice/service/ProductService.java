@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -64,7 +66,7 @@ public class ProductService {
             }
         }
         else {
-            throw new ApiRequestException("Product not found!");
+                throw new ApiRequestException("Product not found!");
         }
 
     }

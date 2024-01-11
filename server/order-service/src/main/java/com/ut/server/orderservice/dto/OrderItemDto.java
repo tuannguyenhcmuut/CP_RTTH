@@ -6,17 +6,19 @@ import lombok.Data;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.UUID;
 
 @Builder
 @Data
 public class OrderItemDto {
+    private static final long serialVersionUID = 1L;
     private Long id;
 
     private int quantity;
 
     private double price;
 
-    private Order orderId;
+    private Long orderId;
 
     private ProductResponse product;
 
