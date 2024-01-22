@@ -21,6 +21,7 @@
         <module>inventory-service</module>
         <module>api-gateway</module>
         <module>user-service</module>
+        <module>auth-service</module>
         <module>common</module>
     </modules>
 

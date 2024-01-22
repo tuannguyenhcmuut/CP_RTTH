@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.ut.server.common.dtos.GenericResponseDTO;
+import org.ut.server.authservice.server.common.dtos.GenericResponseDTO;
 
 import javax.transaction.Transactional;
 import java.util.Date;

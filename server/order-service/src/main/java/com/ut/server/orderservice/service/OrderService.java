@@ -1,6 +1,5 @@
 package com.ut.server.orderservice.service;
 
-import com.ut.server.orderservice.common.MessageConstant;
 import com.ut.server.orderservice.config.ProductFeign;
 import com.ut.server.orderservice.config.UserFeign;
 import com.ut.server.orderservice.dto.OrderDto;
@@ -11,15 +10,12 @@ import com.ut.server.orderservice.model.Order;
 import com.ut.server.orderservice.model.OrderItem;
 import com.ut.server.orderservice.repo.OrderItemRepository;
 import com.ut.server.orderservice.repo.OrderRepository;
-import com.ut.server.orderservice.utils.OrderUtils;
 import com.ut.server.orderservice.utils.RandomGenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.ut.server.common.dtos.GenericResponseDTO;
-import org.ut.server.common.events.OrderStatus;
+import org.ut.server.authservice.server.common.events.OrderStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,8 +23,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

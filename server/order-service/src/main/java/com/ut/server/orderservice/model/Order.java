@@ -1,10 +1,9 @@
 package com.ut.server.orderservice.model;
 
 
-import com.ut.server.orderservice.listener.OrderListener;
 import lombok.*;
 import org.hibernate.annotations.Type;
-import org.ut.server.common.events.OrderStatus;
+import org.ut.server.authservice.server.common.events.OrderStatus;
 
 import javax.persistence.*;
 import java.util.List;

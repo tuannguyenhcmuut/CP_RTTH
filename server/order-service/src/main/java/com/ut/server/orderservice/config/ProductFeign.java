@@ -2,13 +2,10 @@ package com.ut.server.orderservice.config;
 
 import com.ut.server.orderservice.dto.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.ut.server.common.dtos.GenericResponseDTO;
+import org.ut.server.authservice.server.common.dtos.GenericResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
