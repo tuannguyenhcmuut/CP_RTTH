@@ -77,6 +77,8 @@ public class ProductController {
         }
     }
 
+
+
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<ProductResponse> getProduct(@PathVariable Long productId, @RequestParam UUID userId) {

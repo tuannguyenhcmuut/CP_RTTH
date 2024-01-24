@@ -4,6 +4,7 @@ import com.ut.server.productservice.config.UserFeign;
 import com.ut.server.productservice.dto.*;
 import com.ut.server.productservice.exception.ApiRequestException;
 import com.ut.server.productservice.mapper.ProductMapper;
+import com.ut.server.productservice.model.Category;
 import com.ut.server.productservice.model.Product;
 import com.ut.server.productservice.repo.CategoryRepository;
 import com.ut.server.productservice.repo.ProductRepository;
@@ -84,7 +85,7 @@ public class ProductService {
         productToUpdate.setPrice(product.getPrice());
         productToUpdate.setHeight(product.getHeight());
         productToUpdate.setWidth(product.getWidth());
-        productToUpdate.setDepth(product.getDepth());
+        productToUpdate.setLength(product.getLength());
         productToUpdate.setCategories(product.getCategories());
         productRepository.save(productToUpdate);
         return productMapper.mapToProductResponse(productToUpdate);
@@ -128,10 +129,11 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         if (productRepository.findById(productId) != null) {
-            productRepository.deleteProductById(productId);;
+            productRepository.deleteProductById(productId);
         }
         else {
             throw new ApiRequestException("Product not found!");
         }
     }
+
 }

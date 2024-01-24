@@ -2,19 +2,19 @@ package com.ut.server.productservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "category")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Category implements Serializable {
@@ -28,6 +28,10 @@ public class Category implements Serializable {
     private String categoryName;
 
     private String description;
+
+    @Column(name = "user_id")
+    @Type(type="org.hibernate.type.PostgresUUIDType")
+    private UUID userId;
 
     //bi-directional many-to-many association to Product
     @ManyToMany(mappedBy = "categories")

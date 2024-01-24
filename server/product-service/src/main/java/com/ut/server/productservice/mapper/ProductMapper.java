@@ -24,7 +24,7 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .height(product.getHeight())
                 .width(product.getWidth())
-                .depth(product.getDepth())
+                .length(product.getLength())
                 .categories(product.getCategories() != null ? product.getCategories().stream().map( category ->
                                 CategoryResponse.builder()
                                         .categoryName(category.getCategoryName())
@@ -47,7 +47,7 @@ public class ProductMapper {
                 .price(productRequest.getPrice())
                 .height(productRequest.getHeight())
                 .width(productRequest.getWidth())
-                .depth(productRequest.getDepth())
+                .length(productRequest.getLength())
                 .userId(userId)
                 .categories(productRequest.getCategories())
                 .build();

@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DimensionRequest {
-    private Float height;
-    private Float width;
-    private Float length;
+public class CategoryRequest {
+    private Long id;
+    private String categoryName;
+    private String description;
 }

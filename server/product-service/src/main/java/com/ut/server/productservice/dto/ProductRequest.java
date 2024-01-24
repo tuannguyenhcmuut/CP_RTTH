@@ -1,5 +1,6 @@
 package com.ut.server.productservice.dto;
 
+import com.ut.server.productservice.enums.Status;
 import com.ut.server.productservice.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +18,13 @@ public class ProductRequest {
     private String code;
     private String name;
     private String description;
+    private Status status;
     private BigDecimal price;
+    private Integer weight;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private String photo;
     private List<Category> categories;
-    private DimensionRequest dimension;
+//    private DimensionRequest dimension;
 }

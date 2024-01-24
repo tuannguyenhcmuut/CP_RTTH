@@ -21,10 +21,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-webflux</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-starter-webflux</artifactId>-->
+<!--    </dependency>-->
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
@@ -36,8 +36,17 @@
         <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-starter-gateway</artifactId>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgres.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
     <!--Eureka-->
     <dependency>
@@ -89,9 +98,9 @@
         <artifactId>lombok</artifactId>
         <optional>true</optional>
     </dependency>
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--        <groupId>org.springframework</groupId>-->
+<!--        <artifactId>spring-webmvc</artifactId>-->
+<!--    </dependency>-->
 </dependencies>
 </project>

@@ -1,6 +1,7 @@
 package com.ut.server.productservice.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ut.server.productservice.enums.Status;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -30,8 +31,12 @@ public class Product implements Serializable {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     private BigDecimal price;
     private String photo;
+    private Integer weight;
 
     @Column(name = "user_id")
     @Type(type="org.hibernate.type.PostgresUUIDType")
@@ -49,6 +54,6 @@ public class Product implements Serializable {
 
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
 
 }

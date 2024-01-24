@@ -1,5 +1,6 @@
 package com.ut.server.productservice.repo;
 
+import com.ut.server.productservice.model.Category;
 import com.ut.server.productservice.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
