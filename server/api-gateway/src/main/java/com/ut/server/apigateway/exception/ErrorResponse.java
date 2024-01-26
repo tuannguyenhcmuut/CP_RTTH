@@ -17,7 +17,7 @@ public class ErrorResponse implements Serializable {
 
     private String stackTrace;
 
-    private Object data;
+//    private Object data;
     // customizing timestamp serialization format
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date timestamp;
@@ -48,20 +48,5 @@ public class ErrorResponse implements Serializable {
         );
 
         this.stackTrace = stackTrace;
-    }
-
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message,
-            String stackTrace,
-            Object data
-    ) {
-        this(
-                httpStatus,
-                message,
-                stackTrace
-        );
-
-        this.data = data;
     }
 }

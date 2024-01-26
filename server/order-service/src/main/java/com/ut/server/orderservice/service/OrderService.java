@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.ut.server.authservice.server.common.events.OrderStatus;
+import org.ut.server.common.events.OrderStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

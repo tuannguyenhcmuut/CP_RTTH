@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.ut.server.authservice.server.common.dtos.GenericResponseDTO;
+import org.ut.server.common.dtos.GenericResponseDTO;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -24,13 +24,13 @@ public class OrderController {
 
     private final OrderService orderService;
     // retrieve all orders of a user
-    @GetMapping("/user/{userId}")
+    @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<List<OrderDto>> getAllOrders(@PathVariable UUID userId) {
+    public GenericResponseDTO<List<OrderDto>> getAllOrders(
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
-
             List<OrderDto> orders = orderService.getAllOrders(userId);
-
 
             return GenericResponseDTO.<List<OrderDto>>builder()
                     .data(orders)
@@ -51,8 +51,11 @@ public class OrderController {
 
     // retrieve an order of a user by order id
     // http://localhost:8083/api/v1/order/1/user/1
-    @GetMapping("/{orderId}/user/{userId}")
-    public GenericResponseDTO<OrderDto> getOrderById(@PathVariable UUID userId, @PathVariable Long orderId) {
+    @GetMapping("/{orderId}")
+    public GenericResponseDTO<OrderDto> getOrderById(
+            @RequestHeader("userId") UUID userId,
+            @PathVariable Long orderId
+    ) {
         try {
             OrderDto orderDto = orderService.getOrderById(userId, orderId);
             return GenericResponseDTO.<OrderDto>builder()
@@ -75,8 +78,12 @@ public class OrderController {
     // http://localhost:8083/api/v1/order/user/1
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public GenericResponseDTO<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
+    public GenericResponseDTO<OrderDto> createOrder(
+            @RequestBody OrderDto orderDto,
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
+            orderDto.setUserId(userId);
             OrderDto newOrderDto = orderService.createOrder(orderDto);
             return GenericResponseDTO.<OrderDto>builder()
                     .data(newOrderDto)
@@ -94,12 +101,48 @@ public class OrderController {
                     .build();
         }
     }
+
+    // update an order status
+//    @PatchMapping("/{order_id}/user/{userId}/status/{status_value}")
+//    public ResponseEntity<String> updateOrderStatus(@PathVariable UUID userId, @PathVariable Long order_id, @PathVariable StatusRequest statusRequest) {
+//        return orderService.updateOrderStatus(userId, order_id, statusRequest);
+//    }
+
+
+    // delete an order
+    @DeleteMapping("/{orderId}")
+    public GenericResponseDTO<String> deleteOrder(
+            @PathVariable Long orderId,
+            @RequestHeader("userId") UUID userId
+    ) {
+        try {
+            orderService.deleteOrder(userId, orderId);
+            return GenericResponseDTO.<String>builder()
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstant.SUCCESS_ORDER_DELETED)
+                    .timestamps(new Date())
+                    .build();
+        }
+        catch (Exception e) {
+            log.error(MessageCode.CREATED_FAILED.toString());
+            return GenericResponseDTO.<String>builder()
+                    .code(e.getMessage())
+                    .timestamps(new Date())
+                    .message(MessageConstant.UNSUCCESSFUL_ORDER_DELETED)
+                    .build();
+        }
+    }
+
     // retrieve order form information for order: orderOptionType, receipt by userId, products by userId, store by userId
 
 
     // http://localhost:8083/api/v1/order/2/user/1/receiver/1
-    @PatchMapping("/{orderId}/user/{userId}/receiver/{receiverId}")
-    public GenericResponseDTO<OrderDto> updateReceiver(@PathVariable UUID userId, @PathVariable Long orderId, @PathVariable Long receiverId) {
+    @PatchMapping("/{orderId}/receiver/{receiverId}")
+    public GenericResponseDTO<OrderDto> updateReceiver(
+            @PathVariable Long orderId,
+            @PathVariable Long receiverId,
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
             OrderDto orderDto = orderService.updateReceiver(userId, orderId, receiverId);
             return GenericResponseDTO.<OrderDto>builder()
@@ -120,32 +163,5 @@ public class OrderController {
     }
     // update receiver
 
-    // update an order status
-//    @PatchMapping("/{order_id}/user/{userId}/status/{status_value}")
-//    public ResponseEntity<String> updateOrderStatus(@PathVariable UUID userId, @PathVariable Long order_id, @PathVariable StatusRequest statusRequest) {
-//        return orderService.updateOrderStatus(userId, order_id, statusRequest);
-//    }
-
-
-    // delete an order
-    @DeleteMapping("/{orderId}/user/{userId}")
-    public GenericResponseDTO<String> deleteOrder(@PathVariable UUID userId, @PathVariable Long orderId) {
-        try {
-            orderService.deleteOrder(userId, orderId);
-            return GenericResponseDTO.<String>builder()
-                    .code(MessageCode.SUCCESS.toString())
-                    .message(MessageConstant.SUCCESS_ORDER_DELETED)
-                    .timestamps(new Date())
-                    .build();
-        }
-        catch (Exception e) {
-            log.error(MessageCode.CREATED_FAILED.toString());
-            return GenericResponseDTO.<String>builder()
-                    .code(e.getMessage())
-                    .timestamps(new Date())
-                    .message(MessageConstant.UNSUCCESSFUL_ORDER_DELETED)
-                    .build();
-        }
-    }
 
 }

@@ -2,7 +2,7 @@ package com.ut.server.orderservice.dto.request;
 
 import com.ut.server.orderservice.model.OrderPrice;
 import lombok.*;
-import org.ut.server.authservice.server.common.events.OrderStatus;
+import org.ut.server.common.events.OrderStatus;
 
 @Setter
 @Getter

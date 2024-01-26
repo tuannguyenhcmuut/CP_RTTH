@@ -28,13 +28,6 @@ public class ProductService {
     private final UserFeign userFeign;
     private final ProductMapper productMapper;
     public ProductResponse createProduct(ProductRequest productRequest, UUID userId) {
-        // check user is existed
-
-        // TODO: fix request is authenticated when request to user-service
-//        if (userFeign.getUserById(userId).getBody() == null) {
-//            throw new ApiRequestException("User not found!");
-//        }
-
         Product product = productMapper.mapProductRequestToProduct(productRequest, userId);
         productRepository.save(product);
         log.info("Product {} is saved", product.getId());
@@ -44,12 +37,7 @@ public class ProductService {
 
 //    getAllProducts
     public List<ProductResponse> getAllProducts(UUID userId) {
-        // TODO: fix request is authenticated when request to user-service
-//        if (userFeign.getUserById(userId).getBody()  == null) {
-//            throw new ApiRequestException("User not found!");
-//        }
         List<Product> products = productRepository.findProductsByUserId(userId);
-//        List<UserDTO> users = (List<UserDTO>) userFeign.getUser();
         log.info("Products: {}", products);
         return productMapper.mapEntitiesToResponses(products);
     }
@@ -72,8 +60,6 @@ public class ProductService {
     }
 
     public ProductResponse updateProduct(UUID userId, Long productId, Product product) {
-        // verify user with product
-
         Product productToUpdate = productRepository.findProductByUserIdAndId(userId, productId);
         if (productToUpdate == null) {
             throw new ApiRequestException("Product not found!" + productId);
@@ -89,41 +75,6 @@ public class ProductService {
         productRepository.save(productToUpdate);
         return productMapper.mapToProductResponse(productToUpdate);
     }
-
-//    private ProductResponse mapToProductResponse(Product product) {
-//        return ProductResponse.builder()
-//                .id(product.getId())
-//                .code(product.getCode())
-//                .name(product.getName())
-//                .description(product.getDescription())
-//                .price(product.getPrice())
-//                .height(product.getHeight())
-//                .width(product.getWidth())
-//                .depth(product.getDepth())
-//                .categories(product.getCategories() != null ? product.getCategories().stream().map( category ->
-//                                CategoryResponse.builder()
-//                                        .categoryName(category.getCategoryName())
-//                                        .description(category.getDescription())
-//                                        .build()
-//                        ).collect(Collectors.toList())
-//                        : null
-//                )
-//                .build();
-//    }
-//
-//    private Product mapProductRequestToProduct(ProductRequest productRequest, UUID userId) {
-//        return Product.builder()
-//                .code(productRequest.getCode())
-//                .name(productRequest.getName())
-//                .description(productRequest.getDescription())
-//                .price(productRequest.getPrice())
-//                .height(productRequest.getHeight())
-//                .width(productRequest.getWidth())
-//                .depth(productRequest.getDepth())
-//                .userId(userId)
-//                .categories(productRequest.getCategories())
-//                .build();
-//    }
 
 
     public void deleteProduct(Long productId) {

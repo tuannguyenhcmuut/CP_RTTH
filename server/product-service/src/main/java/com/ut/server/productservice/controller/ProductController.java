@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.ut.server.authservice.server.common.dtos.GenericResponseDTO;
+import org.ut.server.common.dtos.GenericResponseDTO;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -31,7 +31,8 @@ public class ProductController {
      * */
     @PostMapping(consumes = "application/json;charset=UTF-8")
     @ResponseStatus(HttpStatus.CREATED)
-    public GenericResponseDTO<ProductResponse> createProduct(@RequestBody ProductRequest productRequest, @RequestParam UUID userId) {
+    public GenericResponseDTO<ProductResponse> createProduct( @RequestBody ProductRequest productRequest,
+                                                              @RequestHeader("userId") UUID userId) {
 
         try {
             ProductResponse product = productService.createProduct(productRequest, userId);
@@ -53,11 +54,13 @@ public class ProductController {
     }
 
     /*
-    * http://localhost:8081/api/v1/products?userId=1
+    * http://localhost:8081/api/v1/products
     * */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<List<ProductResponse>> getAllProduct(@RequestParam UUID userId) {
+    public GenericResponseDTO<List<ProductResponse>> getAllProduct(
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
             List<ProductResponse> products = productService.getAllProducts(userId);
             return GenericResponseDTO.<List<ProductResponse>>builder()
@@ -79,7 +82,10 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<ProductResponse> getProduct(@PathVariable Long productId, @RequestParam UUID userId) {
+    public GenericResponseDTO<ProductResponse> getProduct(
+            @PathVariable Long productId,
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
             ProductResponse product = productService.getProductById(productId, userId);
             return GenericResponseDTO.<ProductResponse>builder()
@@ -100,10 +106,14 @@ public class ProductController {
     }
 
     /*
-     * http://localhost:8081/api/v1/products/1?userId=1
+     * http://localhost:8081/api/v1/products/1
      * */
     @PutMapping("/{productId}")
-    public GenericResponseDTO<ProductResponse> updateProduct(@RequestParam UUID userId, @PathVariable Long productId, @RequestBody Product product) {
+    public GenericResponseDTO<ProductResponse> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody Product product,
+            @RequestHeader("userId") UUID userId
+    ) {
         try {
             ProductResponse productRes = productService.updateProduct(userId, productId, product);
             return GenericResponseDTO.<ProductResponse>builder()
@@ -126,10 +136,12 @@ public class ProductController {
     /*
      * http://localhost:8081/api/v1/products/1
      * */
-    @DeleteMapping("/{id}")
-    public GenericResponseDTO<String> deleteProduct(@PathVariable Long id) {
+    @DeleteMapping("/{productId}")
+    public GenericResponseDTO<String> deleteProduct(
+            @PathVariable Long productId
+    ) {
         try {
-            productService.deleteProduct(id);
+            productService.deleteProduct(productId);
             return GenericResponseDTO.<String>builder()
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_ORDER_DELETED)

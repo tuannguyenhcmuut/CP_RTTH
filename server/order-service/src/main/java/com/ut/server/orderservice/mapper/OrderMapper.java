@@ -5,7 +5,7 @@ import com.ut.server.orderservice.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.ut.server.authservice.server.common.events.OrderStatus;
+import org.ut.server.common.events.OrderStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
