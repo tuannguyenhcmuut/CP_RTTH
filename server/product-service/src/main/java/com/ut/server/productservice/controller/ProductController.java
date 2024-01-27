@@ -1,7 +1,6 @@
 package com.ut.server.productservice.controller;
 
 import com.ut.server.productservice.common.MessageConstant;
-import com.ut.server.productservice.dto.ProductRequest;
 import com.ut.server.productservice.dto.ProductDto;
 import com.ut.server.productservice.exception.MessageCode;
 import com.ut.server.productservice.model.Product;

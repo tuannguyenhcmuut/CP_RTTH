@@ -17,16 +17,17 @@ public class  Receiver extends Person {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-//    private ShopOwner shopOwner;
+
     @Column(name = "received_at_post")
     private Boolean receivedAtPost;
     @Column(nullable = true)
     private String postAddress;
     private String note;
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+//    private ShopOwner shopOwner;
 
     @Builder
     public Receiver(Long id, String username, String phoneNumber, String address,

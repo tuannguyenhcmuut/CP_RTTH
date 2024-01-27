@@ -11,7 +11,6 @@ public class ReceiverDto {
     private String username;
     private String phoneNumber;
     private String address;
-    private UUID userId;
     private Boolean receivedAtPost;
     private String postAddress;
     private String note;

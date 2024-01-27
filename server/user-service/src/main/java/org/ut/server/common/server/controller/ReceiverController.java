@@ -25,7 +25,7 @@ public class ReceiverController {
     }
     //Get list receiver of store
     @GetMapping("")
-    public GenericResponseDTO<List<ReceiverDto>> getReceiverByUserId(@RequestHeader("userId") UUID userId) {
+    public GenericResponseDTO<List<ReceiverDto>> getReceiversByUserId(@RequestHeader("userId") UUID userId) {
         try {
             List<ReceiverDto> receiverDtos = receiverService.getAllReceivers(userId);
             return GenericResponseDTO.<List<ReceiverDto>>builder()
@@ -79,9 +79,17 @@ public class ReceiverController {
     }
 
     //delete receiver by id
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteReceiverById(@PathVariable Long id, @RequestHeader("userId") UUID userId) {
-        return  receiverService.deleteReceiverById(id);
+    @DeleteMapping("/{receiverId}")
+    public ResponseEntity<String> deleteReceiverById(@PathVariable Long receiverId, @RequestHeader("userId") UUID userId) {
+        try {
+            receiverService.deleteReceiverById(receiverId, userId);
+            return ResponseEntity.ok("Delete receiver successfully");
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+
     }
 
     //update receiver by id

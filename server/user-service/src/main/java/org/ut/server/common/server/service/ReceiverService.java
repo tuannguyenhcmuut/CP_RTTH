@@ -1,8 +1,6 @@
 package org.ut.server.common.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.ut.server.common.server.common.MessageConstants;
 import org.ut.server.common.server.model.Receiver;
@@ -51,9 +49,14 @@ public class ReceiverService {
         return receiverMapper.mapToDto(receiver);
     }
 
-    public ResponseEntity<String> deleteReceiverById(Long id) {
-        receiverRepository.deleteById(id);
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    public void deleteReceiverById(Long receiverId, UUID userId) {
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        if (receiver.getUser().getId().equals(userId)) {
+            receiverRepository.deleteById(receiverId);
+        }
+        else {
+            throw new RuntimeException("Receiver and User are not matched!");
+        }
     }
 
 //    public ResponseEntity<String> updateReceiverById(Long id, Receiver updatedReceiver) {

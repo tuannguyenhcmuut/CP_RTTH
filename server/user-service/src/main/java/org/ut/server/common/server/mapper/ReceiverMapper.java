@@ -8,6 +8,7 @@ import org.ut.server.common.server.model.User;
 import org.ut.server.common.server.repo.UserRepository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,7 +21,6 @@ public class ReceiverMapper {
                 .username(receiver.getUsername())
                 .phoneNumber(receiver.getPhoneNumber())
                 .address(receiver.getAddress())
-                .userId(receiver.getUser().getId())
                 .receivedAtPost(receiver.getReceivedAtPost())
                 .postAddress(receiver.getPostAddress())
                 .note(receiver.getNote())
@@ -38,8 +38,8 @@ public class ReceiverMapper {
         }
     }
 
-    public Receiver mapDtoToEntity(ReceiverDto receiverDto) {
-        User user = userRepository.findById(receiverDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+    public Receiver mapDtoToEntity(ReceiverDto receiverDto, UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return Receiver.builder()
                 .id(receiverDto.getId())
                 .user(user)
@@ -52,10 +52,10 @@ public class ReceiverMapper {
                 .build();
     }
 
-    public List<Receiver> mapDtosToEntities(List<ReceiverDto> receiverDtos) {
+    public List<Receiver> mapDtosToEntities(List<ReceiverDto> receiverDtos, UUID userId) {
         if (receiverDtos != null) {
             return receiverDtos.stream().map(
-                    receiverDto -> mapDtoToEntity(receiverDto)
+                    receiverDto -> mapDtoToEntity(receiverDto, userId)
             ).collect(Collectors.toList());
         }
         else {

@@ -1,6 +1,5 @@
 package com.ut.server.productservice.mapper;
 
-import com.ut.server.productservice.dto.ProductRequest;
 import com.ut.server.productservice.dto.ProductDto;
 import com.ut.server.productservice.model.Product;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
