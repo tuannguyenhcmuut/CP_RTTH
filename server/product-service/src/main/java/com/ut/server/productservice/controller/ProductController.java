@@ -2,7 +2,7 @@ package com.ut.server.productservice.controller;
 
 import com.ut.server.productservice.common.MessageConstant;
 import com.ut.server.productservice.dto.ProductRequest;
-import com.ut.server.productservice.dto.ProductResponse;
+import com.ut.server.productservice.dto.ProductDto;
 import com.ut.server.productservice.exception.MessageCode;
 import com.ut.server.productservice.model.Product;
 import com.ut.server.productservice.service.ProductService;
@@ -31,12 +31,13 @@ public class ProductController {
      * */
     @PostMapping(consumes = "application/json;charset=UTF-8")
     @ResponseStatus(HttpStatus.CREATED)
-    public GenericResponseDTO<ProductResponse> createProduct( @RequestBody ProductRequest productRequest,
-                                                              @RequestHeader("userId") UUID userId) {
+    public GenericResponseDTO<ProductDto> createProduct(@RequestBody ProductDto productDto,
+                                                        @RequestHeader("userId") UUID userId) {
 
         try {
-            ProductResponse product = productService.createProduct(productRequest, userId);
-            return GenericResponseDTO.<ProductResponse>builder()
+            productDto.setUserId(userId);
+            ProductDto product = productService.createProduct(productDto, userId);
+            return GenericResponseDTO.<ProductDto>builder()
                     .data(product)
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_GET_ORDER)
@@ -45,7 +46,7 @@ public class ProductController {
         }
         catch (Exception e){
             log.error(e.getMessage());
-            return GenericResponseDTO.<ProductResponse>builder()
+            return GenericResponseDTO.<ProductDto>builder()
                     .code(e.getMessage())
                     .timestamps(new Date())
                     .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
@@ -58,12 +59,12 @@ public class ProductController {
     * */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<List<ProductResponse>> getAllProduct(
+    public GenericResponseDTO<List<ProductDto>> getAllProduct(
             @RequestHeader("userId") UUID userId
     ) {
         try {
-            List<ProductResponse> products = productService.getAllProducts(userId);
-            return GenericResponseDTO.<List<ProductResponse>>builder()
+            List<ProductDto> products = productService.getAllProducts(userId);
+            return GenericResponseDTO.<List<ProductDto>>builder()
                     .data(products)
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_GET_ORDER)
@@ -72,7 +73,7 @@ public class ProductController {
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error(e.getMessage());
-            return GenericResponseDTO.<List<ProductResponse>>builder()
+            return GenericResponseDTO.<List<ProductDto>>builder()
                     .code(e.getMessage())
                     .timestamps(new Date())
                     .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
@@ -82,13 +83,13 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<ProductResponse> getProduct(
+    public GenericResponseDTO<ProductDto> getProduct(
             @PathVariable Long productId,
             @RequestHeader("userId") UUID userId
     ) {
         try {
-            ProductResponse product = productService.getProductById(productId, userId);
-            return GenericResponseDTO.<ProductResponse>builder()
+            ProductDto product = productService.getProductById(productId, userId);
+            return GenericResponseDTO.<ProductDto>builder()
                     .data(product)
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_GET_ORDER)
@@ -97,7 +98,7 @@ public class ProductController {
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error(e.getMessage());
-            return GenericResponseDTO.<ProductResponse>builder()
+            return GenericResponseDTO.<ProductDto>builder()
                     .code(e.getMessage())
                     .timestamps(new Date())
                     .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
@@ -109,14 +110,14 @@ public class ProductController {
      * http://localhost:8081/api/v1/products/1
      * */
     @PutMapping("/{productId}")
-    public GenericResponseDTO<ProductResponse> updateProduct(
+    public GenericResponseDTO<ProductDto> updateProduct(
             @PathVariable Long productId,
             @RequestBody Product product,
             @RequestHeader("userId") UUID userId
     ) {
         try {
-            ProductResponse productRes = productService.updateProduct(userId, productId, product);
-            return GenericResponseDTO.<ProductResponse>builder()
+            ProductDto productRes = productService.updateProduct(userId, productId, product);
+            return GenericResponseDTO.<ProductDto>builder()
                     .data(productRes)
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_ORDER_UPDATED)
@@ -125,7 +126,7 @@ public class ProductController {
         }
         catch (Exception e) {
             log.error("Update product error: ",e.getMessage());
-            return GenericResponseDTO.<ProductResponse>builder()
+            return GenericResponseDTO.<ProductDto>builder()
                     .code(e.getMessage())
                     .timestamps(new Date())
                     .message(MessageConstant.UNSUCCESSFUL_ORDER_UPDATED)

@@ -1,6 +1,5 @@
 package com.ut.server.productservice.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -36,6 +35,9 @@ public class Product implements Serializable {
     @Column(name = "user_id")
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID userId;  // mapping to inventory-service
+
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     // bidirectional many-to-many association to Category
     @ManyToMany

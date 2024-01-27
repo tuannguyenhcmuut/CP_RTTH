@@ -23,5 +23,5 @@ public class ProductRequest {
     private Float depth;
     private String photo;
     private List<Category> categories;
-    private DimensionRequest dimension;
+    private DimensionDto dimension;
 }

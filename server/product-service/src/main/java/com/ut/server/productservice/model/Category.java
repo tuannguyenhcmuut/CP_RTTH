@@ -2,14 +2,13 @@ package com.ut.server.productservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.sun.istack.NotNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "category")
@@ -17,6 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Category implements Serializable {
 
     @Id
@@ -29,9 +29,12 @@ public class Category implements Serializable {
 
     private String description;
 
-    //bi-directional many-to-many association to Product
-    @ManyToMany(mappedBy = "categories")
-    @JsonBackReference
-    private List<Product> products;
+    @NotNull
+    private UUID userId;
+
+//    //un-directional many-to-many association to Product
+//    @ManyToMany(mappedBy = "categories")
+//    @JsonBackReference
+//    private List<Product> products;
 
 }

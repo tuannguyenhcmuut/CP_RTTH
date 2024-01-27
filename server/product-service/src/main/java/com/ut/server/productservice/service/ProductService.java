@@ -15,7 +15,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,27 +26,26 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final UserFeign userFeign;
     private final ProductMapper productMapper;
-    public ProductResponse createProduct(ProductRequest productRequest, UUID userId) {
-        Product product = productMapper.mapProductRequestToProduct(productRequest, userId);
+    public ProductDto createProduct(ProductDto productDto, UUID userId) {
+        Product product = productMapper.mapDtoToEntity(productDto);
         productRepository.save(product);
         log.info("Product {} is saved", product.getId());
-        ProductResponse productResponse = productMapper.mapToProductResponse(product);
-        return productResponse;
+        return productMapper.mapToDto(product);
     }
 
 //    getAllProducts
-    public List<ProductResponse> getAllProducts(UUID userId) {
+    public List<ProductDto> getAllProducts(UUID userId) {
         List<Product> products = productRepository.findProductsByUserId(userId);
         log.info("Products: {}", products);
-        return productMapper.mapEntitiesToResponses(products);
+        return productMapper.mapEntitiesToDtos(products);
     }
 
 
-    public ProductResponse getProductById( Long productId, UUID userId) {
+    public ProductDto getProductById(Long productId, UUID userId) {
         Optional<Product> product = productRepository.findProductByIdAndUserId(productId, userId);
         if (product.isPresent()) {
             if (product.get().getUserId().equals(userId)) {
-                return productMapper.mapToProductResponse(product.get());
+                return productMapper.mapToDto(product.get());
             }
             else {
                 throw new ApiRequestException("Product not found!");
@@ -59,7 +57,7 @@ public class ProductService {
 
     }
 
-    public ProductResponse updateProduct(UUID userId, Long productId, Product product) {
+    public ProductDto updateProduct(UUID userId, Long productId, Product product) {
         Product productToUpdate = productRepository.findProductByUserIdAndId(userId, productId);
         if (productToUpdate == null) {
             throw new ApiRequestException("Product not found!" + productId);
@@ -73,7 +71,7 @@ public class ProductService {
         productToUpdate.setDepth(product.getDepth());
         productToUpdate.setCategories(product.getCategories());
         productRepository.save(productToUpdate);
-        return productMapper.mapToProductResponse(productToUpdate);
+        return productMapper.mapToDto(productToUpdate);
     }
 
 

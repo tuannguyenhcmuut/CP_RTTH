@@ -1,5 +1,6 @@
 package com.ut.server.productservice.dto;
 
+import com.ut.server.productservice.model.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,12 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse {
+public class ProductDto {
     private Long id;
     private String code;
     private String name;
@@ -22,5 +24,7 @@ public class ProductResponse {
     private Float width;
     private Float depth;
     private String photo;
-    private List<CategoryResponse> categories;
+    private ProductStatus status;
+    private List<CategoryDto> categories;
+    private UUID userId;
 }

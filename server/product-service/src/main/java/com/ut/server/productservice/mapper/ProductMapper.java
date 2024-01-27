@@ -1,9 +1,10 @@
 package com.ut.server.productservice.mapper;
 
-import com.ut.server.productservice.dto.CategoryResponse;
 import com.ut.server.productservice.dto.ProductRequest;
-import com.ut.server.productservice.dto.ProductResponse;
+import com.ut.server.productservice.dto.ProductDto;
 import com.ut.server.productservice.model.Product;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,63 +12,65 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ProductMapper {
-    public ProductResponse mapToProductResponse(Product product) {
+    @Autowired
+    private final CategoryMapper categoryMapper;
+
+    public List<ProductDto> mapEntitiesToDtos(List<Product> products) {
+        if (products == null) {
+            return null;
+        }
+        return products.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    public List<Product> mapDtosToEntities(List<ProductDto> productDtos) {
+        if (productDtos == null) {
+            return null;
+        }
+        return productDtos.stream().map(this::mapDtoToEntity).collect(Collectors.toList());
+    }
+
+    public Product mapDtoToEntity(ProductDto productDto) {
+        if (productDto == null) {
+            return null;
+        }
+        return Product.builder()
+                .id(productDto.getId())
+                .code(productDto.getCode())
+                .name(productDto.getName())
+                .description(productDto.getDescription())
+                .status(productDto.getStatus())
+                .price(productDto.getPrice())
+                .height(productDto.getHeight())
+                .width(productDto.getWidth())
+                .depth(productDto.getDepth())
+                .categories(
+                        categoryMapper.mapToEntities(productDto.getCategories(), productDto.getUserId())
+                )
+                .userId(productDto.getUserId())
+                .build();
+
+    }
+
+    public ProductDto mapToDto(Product product) {
         if (product == null) {
             return null;
         }
-        return ProductResponse.builder()
+        return ProductDto.builder()
                 .id(product.getId())
                 .code(product.getCode())
                 .name(product.getName())
                 .description(product.getDescription())
+                .status(product.getStatus())
                 .price(product.getPrice())
                 .height(product.getHeight())
                 .width(product.getWidth())
                 .depth(product.getDepth())
-                .categories(product.getCategories() != null ? product.getCategories().stream().map( category ->
-                                CategoryResponse.builder()
-                                        .categoryName(category.getCategoryName())
-                                        .description(category.getDescription())
-                                        .build()
-                        ).collect(Collectors.toList())
-                                : null
+                .categories(
+                        categoryMapper.mapToDtos(product.getCategories())
                 )
+                .userId(product.getUserId())
                 .build();
-    }
-
-    public Product mapProductRequestToProduct(ProductRequest productRequest, UUID userId) {
-        if (productRequest == null) {
-            return null;
-        }
-        return Product.builder()
-                .code(productRequest.getCode())
-                .name(productRequest.getName())
-                .description(productRequest.getDescription())
-                .price(productRequest.getPrice())
-                .height(productRequest.getHeight())
-                .width(productRequest.getWidth())
-                .depth(productRequest.getDepth())
-                .userId(userId)
-                .categories(productRequest.getCategories())
-                .build();
-    }
-
-//    public List<Product> mapRequestsToEntities(List<ProductRequest> productRequests, UUID userId) {
-//        if (productRequests == null) {
-//            return null;
-//        }
-//        return productRequests.stream().map(productRequest -> {
-//            return mapProductRequestToProduct(productRequest, userId);
-//        }).collect(Collectors.toList());
-//    }
-
-    public List<ProductResponse> mapEntitiesToResponses(List<Product> products) {
-        if (products == null) {
-            return null;
-        }
-        return products.stream().map(product -> {
-            return mapToProductResponse(product);
-        }).collect(Collectors.toList());
     }
 }
