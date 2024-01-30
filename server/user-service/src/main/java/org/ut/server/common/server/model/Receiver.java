@@ -2,6 +2,8 @@ package org.ut.server.common.server.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.ut.server.common.server.enums.DeliveryTime;
+import org.ut.server.common.server.enums.ReceivedPlace;
 
 import javax.persistence.*;
 
@@ -16,13 +18,17 @@ public class  Receiver extends Person {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-
-
-    @Column(name = "received_at_post")
-    private Boolean receivedAtPost;
-    @Column(nullable = true)
-    private String postAddress;
     private String note;
+    @Column(name = "received_place")
+    @Enumerated(EnumType.STRING)
+    private ReceivedPlace receivedPlace;
+
+    @Column(name = "delivery_time_frame")
+    @Enumerated(EnumType.STRING)
+    private DeliveryTime deliveryTimeFrame;
+    @Column(name = "call_before_send")
+    private Boolean callBeforeSend;
+
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -30,13 +36,15 @@ public class  Receiver extends Person {
 //    private ShopOwner shopOwner;
 
     @Builder
-    public Receiver(Long id, String username, String phoneNumber, String address,
-                    User user, Boolean receivedAtPost, String postAddress, String note) {
-        super(username, phoneNumber, address);
+    public Receiver(Long id, String name, String phoneNumber, String address,
+                    User user, String detailedAddress, String note, ReceivedPlace receivedPlace,
+                    DeliveryTime deliveryTimeFrame, Boolean callBeforeSend) {
+        super(name, phoneNumber, address, detailedAddress);
         this.id = id;
         this.user = user;
-        this.receivedAtPost = receivedAtPost;
-        this.postAddress = postAddress;
         this.note = note;
+        this.receivedPlace = receivedPlace;
+        this.deliveryTimeFrame = deliveryTimeFrame;
+        this.callBeforeSend = callBeforeSend;
     }
 }

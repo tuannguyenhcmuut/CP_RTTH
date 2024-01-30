@@ -6,9 +6,9 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.nio.charset.Charset;
 
-public class UserExistedException extends HttpClientErrorException {
+public class UserExistedException extends RuntimeException {
     public UserExistedException(String message) {
-        super(message, HttpStatus.BAD_REQUEST, "Bad Request", new HttpHeaders(), null, Charset.defaultCharset());
+        super(message);
 
     }
 }

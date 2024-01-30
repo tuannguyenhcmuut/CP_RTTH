@@ -61,7 +61,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        ErrorResponse errorDetail = new ErrorResponse();
         if (ex instanceof ExceptionHandler) {
             HttpStatus status = HttpStatus.UNAUTHORIZED; // 401
 

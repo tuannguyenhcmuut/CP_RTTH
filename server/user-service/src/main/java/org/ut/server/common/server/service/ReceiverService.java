@@ -36,15 +36,7 @@ public class ReceiverService {
         if (owner.isEmpty()) {
             throw new RuntimeException(MessageConstants.USER_NOT_FOUND);
         }
-        Receiver receiver = Receiver.builder()
-                .username(newReceiver.getUsername())
-                .phoneNumber(newReceiver.getPhoneNumber())
-                .address(newReceiver.getAddress())
-                .user(owner.get())
-                .receivedAtPost(newReceiver.getReceivedAtPost())
-                .postAddress(newReceiver.getPostAddress())
-                .note(newReceiver.getNote())
-                .build();
+        Receiver receiver = receiverMapper.mapDtoToEntity(newReceiver, userId);
         receiverRepository.save(receiver);
         return receiverMapper.mapToDto(receiver);
     }

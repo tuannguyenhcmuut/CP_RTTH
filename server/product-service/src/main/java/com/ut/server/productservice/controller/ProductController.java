@@ -61,7 +61,7 @@ public class ProductController {
     public GenericResponseDTO<List<ProductDto>> getAllProduct(
             @RequestHeader("userId") UUID userId
     ) {
-        try {
+//        try {
             List<ProductDto> products = productService.getAllProducts(userId);
             return GenericResponseDTO.<List<ProductDto>>builder()
                     .data(products)
@@ -69,15 +69,15 @@ public class ProductController {
                     .message(MessageConstant.SUCCESS_GET_ORDER)
                     .timestamps(new Date())
                     .build();
-        } catch (Exception e) {
-//            e.printStackTrace();
-            log.error(e.getMessage());
-            return GenericResponseDTO.<List<ProductDto>>builder()
-                    .code(e.getMessage())
-                    .timestamps(new Date())
-                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
-                    .build();
-        }
+//        } catch (Exception e) {
+////            e.printStackTrace();
+//            log.error(e.getMessage());
+//            return GenericResponseDTO.<List<ProductDto>>builder()
+//                    .code(e.getMessage())
+//                    .timestamps(new Date())
+//                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
+//                    .build();
+//        }
     }
 
     @GetMapping("/{productId}")
@@ -86,7 +86,7 @@ public class ProductController {
             @PathVariable Long productId,
             @RequestHeader("userId") UUID userId
     ) {
-        try {
+//        try {
             ProductDto product = productService.getProductById(productId, userId);
             return GenericResponseDTO.<ProductDto>builder()
                     .data(product)
@@ -94,15 +94,15 @@ public class ProductController {
                     .message(MessageConstant.SUCCESS_GET_ORDER)
                     .timestamps(new Date())
                     .build();
-        } catch (Exception e) {
-//            e.printStackTrace();
-            log.error(e.getMessage());
-            return GenericResponseDTO.<ProductDto>builder()
-                    .code(e.getMessage())
-                    .timestamps(new Date())
-                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
-                    .build();
-        }
+//        } catch (Exception e) {
+////            e.printStackTrace();
+//            log.error(e.getMessage());
+//            return GenericResponseDTO.<ProductDto>builder()
+//                    .code(HttpStatus.BAD_REQUEST.toString())
+//                    .timestamps(new Date())
+//                    .message(e.getMessage())
+//                    .build();
+//        }
     }
 
     /*

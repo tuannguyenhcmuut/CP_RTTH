@@ -2,6 +2,7 @@ package org.ut.server.authservice.controller;
 
 import feign.Response;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
@@ -36,11 +38,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getUsername(),
-                        loginDTO.getPassword()
-                )
-        );
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getUsername(),
+                            loginDTO.getPassword()
+                    )
+            );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -65,7 +67,13 @@ public class AuthController {
     // register
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDTO) {
-        return authService.register(registerDTO);
+        try {
+            return authService.register(registerDTO);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 

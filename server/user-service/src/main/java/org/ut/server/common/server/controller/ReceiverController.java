@@ -31,7 +31,7 @@ public class ReceiverController {
             return GenericResponseDTO.<List<ReceiverDto>>builder()
                     .data(receiverDtos)
                     .code(MessageCode.SUCCESS.toString())
-                    .message(MessageConstant.SUCCESS_GET_ORDER)
+                    .message(MessageConstant.SUCCESS_GET_RECEIVERS)
                     .timestamps(new Date())
                     .build();
         }
@@ -73,7 +73,7 @@ public class ReceiverController {
         return GenericResponseDTO.<ReceiverDto>builder()
                 .data(receiverDto)
                 .code(MessageCode.SUCCESS.toString())
-                .message(MessageConstant.SUCCESS_GET_ORDER)
+                .message(MessageConstant.SUCCESS_RECEIVER_CREATED)
                 .timestamps(new Date())
                 .build();
     }
@@ -83,7 +83,7 @@ public class ReceiverController {
     public ResponseEntity<String> deleteReceiverById(@PathVariable Long receiverId, @RequestHeader("userId") UUID userId) {
         try {
             receiverService.deleteReceiverById(receiverId, userId);
-            return ResponseEntity.ok("Delete receiver successfully");
+            return ResponseEntity.ok(MessageConstant.SUCCESS_RECEIVER_DELETED);
         }
         catch (Exception e) {
             log.error(e.getMessage());

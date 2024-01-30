@@ -5,6 +5,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -128,6 +129,25 @@ public class RestExceptionHandler {
                     new ErrorResponse(
                             status,
                             "Illegal token format!",
+                            stackTrace
+                    ),
+                    status
+            );
+        }
+        // BadCredentialsException
+        if (ex instanceof BadCredentialsException) {
+            HttpStatus status = HttpStatus.FORBIDDEN; // 403
+
+            // converting the stack trace to a String
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            ex.printStackTrace(printWriter);
+            String stackTrace = stringWriter.toString();
+
+            return new ResponseEntity<>(
+                    new ErrorResponse(
+                            status,
+                            "Username or password is incorrect!",
                             stackTrace
                     ),
                     status

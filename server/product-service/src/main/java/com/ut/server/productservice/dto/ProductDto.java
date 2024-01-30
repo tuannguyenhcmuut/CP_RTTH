@@ -20,9 +20,10 @@ public class ProductDto {
     private String name;
     private String description;
     private BigDecimal price;
+    private Float weight;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private String photo;
     private ProductStatus status;
     private List<CategoryDto> categories;

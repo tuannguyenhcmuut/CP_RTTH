@@ -19,13 +19,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+//@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserFeign userFeign;
     private final ProductMapper productMapper;
+
     public ProductDto createProduct(ProductDto productDto, UUID userId) {
         Product product = productMapper.mapDtoToEntity(productDto);
         productRepository.save(product);
@@ -33,7 +34,7 @@ public class ProductService {
         return productMapper.mapToDto(product);
     }
 
-//    getAllProducts
+    //    getAllProducts
     public List<ProductDto> getAllProducts(UUID userId) {
         List<Product> products = productRepository.findProductsByUserId(userId);
         log.info("Products: {}", products);
@@ -47,13 +48,8 @@ public class ProductService {
             if (product.get().getUserId().equals(userId)) {
                 return productMapper.mapToDto(product.get());
             }
-            else {
-                throw new ApiRequestException("Product not found!");
-            }
         }
-        else {
-                throw new ApiRequestException("Product not found!");
-        }
+        throw new ApiRequestException("Product not found!");
 
     }
 
@@ -66,9 +62,10 @@ public class ProductService {
         productToUpdate.setName(product.getName());
         productToUpdate.setDescription(product.getDescription());
         productToUpdate.setPrice(product.getPrice());
+        productToUpdate.setWeight(product.getWeight());
         productToUpdate.setHeight(product.getHeight());
         productToUpdate.setWidth(product.getWidth());
-        productToUpdate.setDepth(product.getDepth());
+        productToUpdate.setLength(product.getLength());
         productToUpdate.setCategories(product.getCategories());
         productRepository.save(productToUpdate);
         return productMapper.mapToDto(productToUpdate);
@@ -77,9 +74,9 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         if (productRepository.findById(productId) != null) {
-            productRepository.deleteProductById(productId);;
-        }
-        else {
+            productRepository.deleteProductById(productId);
+            ;
+        } else {
             throw new ApiRequestException("Product not found!");
         }
     }

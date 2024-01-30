@@ -40,9 +40,10 @@ public class ProductMapper {
                 .description(productDto.getDescription())
                 .status(productDto.getStatus())
                 .price(productDto.getPrice())
+                .weight(productDto.getWeight())
                 .height(productDto.getHeight())
                 .width(productDto.getWidth())
-                .depth(productDto.getDepth())
+                .length(productDto.getLength())
                 .categories(
                         categoryMapper.mapToEntities(productDto.getCategories(), productDto.getUserId())
                 )
@@ -62,9 +63,10 @@ public class ProductMapper {
                 .description(product.getDescription())
                 .status(product.getStatus())
                 .price(product.getPrice())
+                .weight(product.getWeight())
                 .height(product.getHeight())
                 .width(product.getWidth())
-                .depth(product.getDepth())
+                .length(product.getLength())
                 .categories(
                         categoryMapper.mapToDtos(product.getCategories())
                 )

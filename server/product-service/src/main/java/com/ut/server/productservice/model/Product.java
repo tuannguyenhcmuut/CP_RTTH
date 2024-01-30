@@ -49,8 +49,9 @@ public class Product implements Serializable {
 //    @JsonManagedReference
     private List<Category> categories;
 
+    private Float weight;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
 
 }

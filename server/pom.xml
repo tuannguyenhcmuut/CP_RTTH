@@ -56,11 +56,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.ut</groupId>
-                <artifactId>common</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.ut</groupId>-->
+<!--                <artifactId>common</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
     <build>

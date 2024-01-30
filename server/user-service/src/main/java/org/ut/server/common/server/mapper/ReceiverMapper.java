@@ -18,12 +18,14 @@ public class ReceiverMapper {
     public ReceiverDto mapToDto(Receiver receiver) {
         return ReceiverDto.builder()
                 .id(receiver.getId())
-                .username(receiver.getUsername())
+                .name(receiver.getName())
                 .phoneNumber(receiver.getPhoneNumber())
                 .address(receiver.getAddress())
-                .receivedAtPost(receiver.getReceivedAtPost())
-                .postAddress(receiver.getPostAddress())
+                .detailedAddress(receiver.getDetailedAddress())
                 .note(receiver.getNote())
+                .receivedPlace(receiver.getReceivedPlace())
+                .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
+                .callBeforeSend(receiver.getCallBeforeSend())
                 .build();
     }
 
@@ -41,14 +43,15 @@ public class ReceiverMapper {
     public Receiver mapDtoToEntity(ReceiverDto receiverDto, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return Receiver.builder()
-                .id(receiverDto.getId())
-                .user(user)
-                .username(receiverDto.getUsername())
+                .name(receiverDto.getName())
                 .phoneNumber(receiverDto.getPhoneNumber())
                 .address(receiverDto.getAddress())
-                .receivedAtPost(receiverDto.getReceivedAtPost())
-                .postAddress(receiverDto.getPostAddress())
+                .detailedAddress(receiverDto.getDetailedAddress())
+                .user(user)
                 .note(receiverDto.getNote())
+                .receivedPlace(receiverDto.getReceivedPlace())
+                .deliveryTimeFrame(receiverDto.getDeliveryTimeFrame())
+                .callBeforeSend(receiverDto.getCallBeforeSend())
                 .build();
     }
 

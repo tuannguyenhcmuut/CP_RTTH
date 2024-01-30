@@ -1,7 +1,6 @@
 package com.ut.server.orderservice.config;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.ut.server.common.dtos.GenericResponseDTO;
