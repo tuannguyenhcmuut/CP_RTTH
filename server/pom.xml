@@ -23,6 +23,7 @@
         <module>user-service</module>
         <module>auth-service</module>
         <module>common</module>
+        <module>delivery-service</module>
     </modules>
 
     <properties>

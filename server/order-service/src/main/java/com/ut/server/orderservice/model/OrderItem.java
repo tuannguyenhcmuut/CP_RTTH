@@ -31,9 +31,10 @@ public class OrderItem {
     private Long productId; // goi den product service
 
 
-    public OrderItem(int quantity, double price, Long productId) {
+    public OrderItem(int quantity, double price, Long productId, Order orderId) {
         this.quantity = quantity;
         this.price = price;
         this.productId = productId;
+        this.orderId = orderId;
     }
 }

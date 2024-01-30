@@ -2,10 +2,12 @@ package com.ut.server.orderservice.model;
 
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.ut.server.common.events.OrderStatus;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +35,7 @@ public class Order {
     private Float width;
     private Float depth;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderId", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<OrderItem> items;
 
     @Column(name = "user_id", nullable = false)
@@ -56,8 +58,8 @@ public class Order {
     @JoinColumn(name = "price_id", nullable = true)
     private OrderPrice price;
 
-    @Column(name = "ship_id", insertable = false, updatable = false)
-    private Long shipId;
+    @Column(name = "delivery_id", insertable = false, updatable = false)
+    private Long deliveryId;
 
 //    @OneToMany(mappedBy = "order")
 ////    @JoinColumn(name = /)
@@ -67,6 +69,9 @@ public class Order {
     @JoinColumn(name = "discount_id", nullable=true)
     private Discount discount;
 
+    @Column(name = "is_document")
+    private Boolean isDocument; // tai lieu
+
     // options
     @Column(name = "is_bulky")
     private Boolean isBulky;
@@ -74,6 +79,10 @@ public class Order {
     private Boolean isFragile;
     @Column(name = "is_valuable")
     private Boolean isValuable;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Date createdDate;
 
 
 //    @Override

@@ -2,6 +2,7 @@ package com.ut.server.orderservice.controller;
 
 import com.ut.server.orderservice.common.MessageConstant;
 import com.ut.server.orderservice.dto.OrderDto;
+import com.ut.server.orderservice.dto.request.OrderRequest;
 import com.ut.server.orderservice.exception.MessageCode;
 import com.ut.server.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -79,12 +80,12 @@ public class OrderController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public GenericResponseDTO<OrderDto> createOrder(
-            @RequestBody OrderDto orderDto,
+            @RequestBody OrderRequest orderRequest,
             @RequestHeader("userId") UUID userId
     ) {
         try {
-            orderDto.setUserId(userId);
-            OrderDto newOrderDto = orderService.createOrder(orderDto);
+            orderRequest.setUserId(userId);
+            OrderDto newOrderDto = orderService.createOrder(orderRequest);
             return GenericResponseDTO.<OrderDto>builder()
                     .data(newOrderDto)
                     .code(MessageCode.CREATED_SUCCESS.toString())
@@ -161,6 +162,8 @@ public class OrderController {
                     .build();
         }
     }
+
+
     // update receiver
 
 

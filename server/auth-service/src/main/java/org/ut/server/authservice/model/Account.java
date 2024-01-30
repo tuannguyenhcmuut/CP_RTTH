@@ -1,11 +1,7 @@
 package org.ut.server.authservice.model;
 
 import lombok.*;
-import org.bouncycastle.util.Times;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

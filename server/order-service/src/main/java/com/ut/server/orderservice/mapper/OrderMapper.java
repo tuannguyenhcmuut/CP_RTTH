@@ -1,6 +1,11 @@
 package com.ut.server.orderservice.mapper;
 
+import com.ut.server.orderservice.config.ReceiverFeign;
+import com.ut.server.orderservice.config.StoreFeign;
 import com.ut.server.orderservice.dto.OrderDto;
+import com.ut.server.orderservice.dto.ReceiverDto;
+import com.ut.server.orderservice.dto.StoreDto;
+import com.ut.server.orderservice.dto.request.OrderRequest;
 import com.ut.server.orderservice.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +21,34 @@ public class OrderMapper {
 
     @Autowired
     private OrderItemMapper orderItemMapper;
+    @Autowired
+    private ReceiverFeign receiverFeign;
+    @Autowired
+    private StoreFeign storeFeign;
 
 //    @Autowired
 //    private DiscountRepository discountRepository;
+    public Order mapRequestToEntity(OrderRequest orderRequest) {
+        if (orderRequest == null) return null;
+        return Order.builder()
+                .code(orderRequest.getCode())
+                .height(orderRequest.getHeight())
+                .width(orderRequest.getWidth())
+                .depth(orderRequest.getDepth())
+                .items(orderItemMapper.mapDtosToEntities(orderRequest.getItems()))
+                .userId(orderRequest.getUserId())
+                .storeId(orderRequest.getStore().getId())
+                .receiverId(orderRequest.getReceiver().getId())
+                .orderStatus(orderRequest.getOrderStatus())
+                .price(orderRequest.getPrice())
+                .deliveryId(null)
+                .discount(orderRequest.getDiscount())
+                .isDocument(orderRequest.getIsDocument())
+                .isBulky(orderRequest.getIsBulky())
+                .isFragile(orderRequest.getIsFragile())
+                .isValuable(orderRequest.getIsValuable())
+                .build();
+    }
 
     public Order mapDtoToEntity(OrderDto orderDto) {
         // recheck db
@@ -26,21 +56,19 @@ public class OrderMapper {
 //        Optional<Discount> discount = discountRepository.findById(orderDto.getDiscountId().)
 
         return Order.builder()
-                .id(orderDto.getId())
                 .code(orderDto.getCode())
                 .height(orderDto.getHeight())
                 .width(orderDto.getWidth())
                 .depth(orderDto.getDepth())
-                .items(
-                        orderItemMapper.mapDtosToEntities(orderDto.getItems())
-                )
+                .items(orderItemMapper.mapDtosToEntities(orderDto.getItems()))
                 .userId(orderDto.getUserId())
-                .storeId(orderDto.getStoreId())
-                .receiverId(orderDto.getReceiverId())
-                .orderStatus(orderDto.getOrderStatus() != null ? OrderStatus.valueOf(orderDto.getOrderStatus()) : null)
+                .storeId(orderDto.getStore().getId())
+                .receiverId(orderDto.getReceiver().getId())
+                .orderStatus(orderDto.getOrderStatus())
                 .price(orderDto.getPrice())
+                .deliveryId(orderDto.getDeliveryId())
                 .discount(orderDto.getDiscount())
-                .shipId(orderDto.getShipId())
+                .isDocument(orderDto.getIsDocument())
                 .isBulky(orderDto.getIsBulky())
                 .isFragile(orderDto.getIsFragile())
                 .isValuable(orderDto.getIsValuable())
@@ -54,6 +82,10 @@ public class OrderMapper {
     }
 
     public OrderDto mapToDto(Order order) {
+        ReceiverDto receiverDto = receiverFeign.getReceiverById(order.getReceiverId(), order.getUserId()).getData();
+
+        StoreDto storeDto = storeFeign.getStoreById(order.getStoreId(), order.getUserId()).getData();
+
         if (order != null) {
             return OrderDto.builder()
                     .id(order.getId())
@@ -64,16 +96,17 @@ public class OrderMapper {
                     .items(
                             order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getUserId()) : null
                     )
-                    .userId(order.getUserId()) // Todo: verify userId
-                    .storeId(order.getStoreId())
-                    .receiverId(order.getReceiverId())
-                    .orderStatus(order.getOrderStatus() != null ? order.getOrderStatus().toString() : OrderStatus.CREATED.toString())
+                    .userId(order.getUserId())
+                    .store(storeDto)
+                    .receiver(receiverDto)
+                    .orderStatus(order.getOrderStatus() != null ? order.getOrderStatus() : OrderStatus.CREATED)
                     .price(order.getPrice())
                     .discount(order.getDiscount())
-                    .shipId(order.getShipId()) // todo: verify the ship
+                    .isDocument(order.getIsDocument())
                     .isBulky(order.getIsBulky())
                     .isFragile(order.getIsFragile())
                     .isValuable(order.getIsValuable())
+                    .deliveryId(order.getDeliveryId())
                     .build();
         }
         return null;

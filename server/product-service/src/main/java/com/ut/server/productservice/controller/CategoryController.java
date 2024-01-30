@@ -2,7 +2,6 @@ package com.ut.server.productservice.controller;
 
 import com.ut.server.productservice.common.MessageConstant;
 import com.ut.server.productservice.dto.CategoryDto;
-import com.ut.server.productservice.model.Category;
 import com.ut.server.productservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

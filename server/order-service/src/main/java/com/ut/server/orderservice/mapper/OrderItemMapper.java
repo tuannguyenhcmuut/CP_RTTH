@@ -26,7 +26,7 @@ public class OrderItemMapper {
                 .id(orderItemDto.getId())
                 .price(orderItemDto.getPrice())
                 .quantity(orderItemDto.getQuantity())
-//                .orderId(orderItemDto.getOrderId())
+//                .orderId(orderItemDto.getOrderId())  // todo: fix this code
                 .productId(orderItemDto.getProduct().getId())
                 .build();
     }
@@ -47,7 +47,7 @@ public class OrderItemMapper {
                         .id(orderItem.getId())
                         .price(orderItem.getPrice())
                         .quantity(orderItem.getQuantity())
-                        .orderId(orderItem.getOrderId().getId())
+                        .orderId(orderItem.getOrderId() == null ? null : orderItem.getOrderId().getId())
                         .product(product)
                         .build();
             }

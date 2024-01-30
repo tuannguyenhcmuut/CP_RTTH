@@ -3,8 +3,6 @@ package org.ut.server.authservice.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 public class AuthResponseDTO {

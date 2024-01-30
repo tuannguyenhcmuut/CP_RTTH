@@ -4,10 +4,7 @@ import com.ut.server.orderservice.model.OrderPrice;
 import lombok.*;
 import org.ut.server.common.events.OrderStatus;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
 public class OrderResponse {
     private Long id;
@@ -20,7 +17,7 @@ public class OrderResponse {
     private OrderStatus orderStatus;
     private OrderPrice price;
     private Long discountId;
-    private Long shipId;
+    private Long deliveryId;
     //    List<OrderOption> orderOptions;
     private Boolean isBulky;
     private Boolean isFragile;

@@ -1,8 +1,6 @@
 package org.ut.server.authservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.ut.server.authservice.config.UserFeign;
 import org.ut.server.authservice.dto.RegisterDto;
-import org.ut.server.authservice.exception.ErrorResponse;
 import org.ut.server.authservice.model.Account;
 import org.ut.server.authservice.repository.AccountRepository;
 import org.ut.server.common.dtos.user.UserRequestDTO;
-import org.ut.server.common.exception.MessageCode;
 import org.ut.server.common.utils.JsonMapperUtils;
 
 import javax.transaction.Transactional;

@@ -1,6 +1,5 @@
 package org.ut.server.authservice.controller;
 
-import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.ut.server.authservice.config.JwtUtils;
 import org.ut.server.authservice.dto.AuthResponseDTO;
 import org.ut.server.authservice.dto.LoginDto;
 import org.ut.server.authservice.dto.RegisterDto;
-import org.ut.server.authservice.model.Account;
 import org.ut.server.authservice.model.CustomUserDetails;
 import org.ut.server.authservice.service.AuthService;
 
