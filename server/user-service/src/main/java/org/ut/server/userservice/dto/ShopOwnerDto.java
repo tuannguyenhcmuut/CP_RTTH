@@ -1,11 +1,11 @@
-package org.ut.server.common.server.dto;
+package org.ut.server.userservice.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.ut.server.common.server.model.Address;
-import org.ut.server.common.server.model.Receiver;
-import org.ut.server.common.server.model.Store;
 import org.ut.server.common.dtos.user.Gender;
+import org.ut.server.userservice.model.Address;
+import org.ut.server.userservice.model.Receiver;
+import org.ut.server.userservice.model.Store;
 
 import java.time.LocalDate;
 import java.util.List;

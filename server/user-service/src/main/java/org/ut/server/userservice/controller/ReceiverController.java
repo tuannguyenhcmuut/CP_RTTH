@@ -1,4 +1,4 @@
-package org.ut.server.common.server.controller;
+package org.ut.server.userservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import org.ut.server.common.constants.MessageConstant;
 import org.ut.server.common.dtos.GenericResponseDTO;
 import org.ut.server.common.exception.MessageCode;
-import org.ut.server.common.server.dto.ReceiverDto;
-import org.ut.server.common.server.service.ReceiverService;
+import org.ut.server.userservice.dto.ReceiverDto;
+import org.ut.server.userservice.service.ReceiverService;
 
 import java.util.Date;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 public enum Permission {
 }

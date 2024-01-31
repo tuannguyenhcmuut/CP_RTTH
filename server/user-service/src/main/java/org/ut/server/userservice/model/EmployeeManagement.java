@@ -1,10 +1,10 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ut.server.common.server.enums.EmployeeRequestStatus;
-import org.ut.server.common.server.enums.PermissionLevel;
+import org.ut.server.userservice.enums.EmployeeRequestStatus;
+import org.ut.server.userservice.enums.PermissionLevel;
 
 import javax.persistence.*;
 

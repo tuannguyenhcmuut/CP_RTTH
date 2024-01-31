@@ -1,4 +1,4 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +16,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "user_id")
-public class Shipper extends org.ut.server.common.server.model.User {
+public class Shipper extends User {
     private Float rating;
 }

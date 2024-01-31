@@ -1,9 +1,9 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.ut.server.common.server.enums.DeliveryTime;
-import org.ut.server.common.server.enums.ReceivedPlace;
+import org.ut.server.userservice.enums.DeliveryTime;
+import org.ut.server.userservice.enums.ReceivedPlace;
 
 import javax.persistence.*;
 

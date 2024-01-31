@@ -1,22 +1,22 @@
-package org.ut.server.common.server.service;
+package org.ut.server.userservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.ut.server.common.server.common.MessageConstants;
-import org.ut.server.common.server.exception.UserExistedException;
 import org.ut.server.common.dtos.user.UserRequestDTO;
 import org.ut.server.common.dtos.user.UserResponseDTO;
-import org.ut.server.common.server.exception.UserNotFoundException;
-import org.ut.server.common.server.mapper.UserMapper;
-import org.ut.server.common.server.model.Address;
-import org.ut.server.common.server.model.User;
-import org.ut.server.common.server.repo.AddressRepository;
-import org.ut.server.common.server.repo.ReceiverRepository;
-import org.ut.server.common.server.repo.UserRepository;
+import org.ut.server.userservice.common.MessageConstants;
+import org.ut.server.userservice.exception.AddressException;
+import org.ut.server.userservice.exception.UserExistedException;
+import org.ut.server.userservice.exception.UserNotFoundException;
+import org.ut.server.userservice.mapper.UserMapper;
+import org.ut.server.userservice.model.Address;
+import org.ut.server.userservice.model.User;
+import org.ut.server.userservice.repo.AddressRepository;
+import org.ut.server.userservice.repo.ReceiverRepository;
+import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.Base64;
 import java.util.List;
@@ -45,8 +45,8 @@ public class UserService {
         return userMapper.mapEntityToResponse(user.get());
     }
 
-    public ResponseEntity<List<Address>> getAllAddress() {
-        return new ResponseEntity<>(addressRepository.findAll(), HttpStatus.OK) ;
+    public List<Address> getAllAddress() {
+        return addressRepository.findAll() ;
     }
 
     public UserResponseDTO createNewUser(UserRequestDTO userRequestDTO) {
@@ -101,32 +101,36 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public ResponseEntity<String> addAddressForUserById(UUID id, Address address) {
-            Optional<User> user = userRepository.findById(id);
-            if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public Address addAddressForUserById(UUID id, Address address) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
 
-            List<Address> newList = user.get().getAddresses();
+        List<Address> newList = user.get().getAddresses();
         newList.add(newList.size(), address);
         user.get().setAddresses(newList);
 
         address.setUser(user.get());
-        addressRepository.save(address);
+        Address newAddress = addressRepository.save(address);
 
-        return new ResponseEntity<>("Add address to user address  ", HttpStatus.CREATED);
+        return newAddress;
     }
 
-    public ResponseEntity<List<Address>> getAddressForUserById(UUID id) {
+    public List<Address> getAddressForUserById(UUID id) {
         Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
 
-        return new ResponseEntity<>(user.get().getAddresses(), HttpStatus.OK);
+        return user.get().getAddresses();
     }
 
 
 
-    public ResponseEntity<String> deleteAddressById(Long id) {
+    public void deleteAddressById(UUID userId, Long id) {
+//        find address
+        Optional<Address> address = addressRepository.findById(id);
+        if(address.isEmpty()) throw new AddressException("Address not found!");
+
+        if (address.get().getUser().getId() != userId) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "User id not match!");
         addressRepository.deleteById(id);
-        return new ResponseEntity<>("Delete address successfully", HttpStatus.OK);
     }
 
     public UserResponseDTO uploadAvatar(byte[] avatar, UUID userId) {

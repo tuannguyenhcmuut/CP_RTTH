@@ -1,4 +1,4 @@
-package org.ut.server.common.server.mapper;
+package org.ut.server.userservice.mapper;
 
 public class ShopOwnerMapper {
 }

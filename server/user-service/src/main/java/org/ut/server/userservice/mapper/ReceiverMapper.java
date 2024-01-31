@@ -1,11 +1,11 @@
-package org.ut.server.common.server.mapper;
+package org.ut.server.userservice.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.ut.server.common.server.dto.ReceiverDto;
-import org.ut.server.common.server.model.Receiver;
-import org.ut.server.common.server.model.User;
-import org.ut.server.common.server.repo.UserRepository;
+import org.ut.server.userservice.dto.ReceiverDto;
+import org.ut.server.userservice.model.Receiver;
+import org.ut.server.userservice.model.User;
+import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.List;
 import java.util.UUID;

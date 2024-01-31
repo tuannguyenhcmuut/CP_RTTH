@@ -1,10 +1,10 @@
-package org.ut.server.common.server.mapper;
+package org.ut.server.userservice.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.ut.server.common.server.model.User;
 import org.ut.server.common.dtos.user.UserRequestDTO;
 import org.ut.server.common.dtos.user.UserResponseDTO;
+import org.ut.server.userservice.model.User;
 
 @Component
 public class UserMapper {

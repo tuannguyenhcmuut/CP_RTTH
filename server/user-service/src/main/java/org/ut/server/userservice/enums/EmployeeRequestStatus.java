@@ -1,4 +1,4 @@
-package org.ut.server.common.server.enums;
+package org.ut.server.userservice.enums;
 
 public enum EmployeeRequestStatus {
     PENDING,

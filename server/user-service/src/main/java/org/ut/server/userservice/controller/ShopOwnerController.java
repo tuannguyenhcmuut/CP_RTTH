@@ -1,4 +1,4 @@
-package org.ut.server.common.server.controller;
+package org.ut.server.userservice.controller;
 
 //
 //@RestController

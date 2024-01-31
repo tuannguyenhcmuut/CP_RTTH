@@ -1,8 +1,8 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.ut.server.common.server.enums.StorePickUpTime;
+import org.ut.server.userservice.enums.StorePickUpTime;
 
 import javax.persistence.*;
 
@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 //@Builder
 //@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
-public class Store extends org.ut.server.common.server.model.Person {
+public class Store extends Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -30,10 +30,10 @@ public class Store extends org.ut.server.common.server.model.Person {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private org.ut.server.common.server.model.User user;
+    private User user;
     @Builder
     public Store(Long id, String name, String phoneNumber, String address, String detailedAddress,
-                 org.ut.server.common.server.model.User user, String description, StorePickUpTime storePickUpTime , Boolean isDefault, Boolean sendAtPost) {
+                 User user, String description, StorePickUpTime storePickUpTime , Boolean isDefault, Boolean sendAtPost) {
         super(name, phoneNumber, address, detailedAddress);
         this.id = id;
         this.user = user;

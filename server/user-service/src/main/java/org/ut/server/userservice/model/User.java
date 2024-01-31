@@ -1,11 +1,10 @@
-package org.ut.server.common.server.model;
+package org.ut.server.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 import org.ut.server.common.dtos.user.Gender;
-import org.ut.server.common.server.enums.Role;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -31,10 +30,8 @@ public class User {
     private UUID id;
     @Column(nullable = false, length = 50, unique = true)
     private String email;
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 20, unique = true)
     private String username;
-//    @Column(nullable = false)
-//    private String password;
     @Column(nullable = false, length = 50)
     private String firstName;
     @Column(nullable = false, length = 50)
@@ -45,9 +42,6 @@ public class User {
     private Gender gender;
 //    @JsonFormat(pattern="dd-MM-yyyy") // date format: 20-10-2023
     private LocalDate dateOfBirth;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
 //    @Column(nullable = false, name = "register_at")
 //    @CreatedDate

@@ -1,8 +1,8 @@
-package org.ut.server.common.server.repo;
+package org.ut.server.userservice.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.ut.server.common.server.model.Store;
-import org.ut.server.common.server.model.User;
+import org.ut.server.userservice.model.Store;
+import org.ut.server.userservice.model.User;
 
 import java.util.List;
 

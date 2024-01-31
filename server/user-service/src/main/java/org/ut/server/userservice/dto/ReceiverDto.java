@@ -1,9 +1,9 @@
-package org.ut.server.common.server.dto;
+package org.ut.server.userservice.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.ut.server.common.server.enums.DeliveryTime;
-import org.ut.server.common.server.enums.ReceivedPlace;
+import org.ut.server.userservice.enums.DeliveryTime;
+import org.ut.server.userservice.enums.ReceivedPlace;
 
 @Data
 @Builder

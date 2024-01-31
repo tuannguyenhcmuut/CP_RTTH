@@ -50,15 +50,8 @@ public class SecurityConfig {
                         "/auth/login",
                         "/auth/register",
                         "/auth/validate",
-                        "/api/v1/user/create",
                         "/auth/validate",
-                        "/auth/refresh",
-                        "/api/v1/product/**",
-                        "/api/v1/order/**",
-                        "http://localhost:8080/api/v1/product/**",
-                        "http://localhost:8080/api/v1/order/**",
-                        "http://localhost:8080/api/v1/user/**"
-
+                        "/auth/refreshToken"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -112,7 +105,7 @@ public class SecurityConfig {
                         throw new UsernameNotFoundException("Username not found via userFeign: " + username);
 
                     log.debug("UserId found: " + userId);
-                    return new CustomUserDetails(user.get(), userId);
+                    return CustomUserDetails.build(user.get(), userId);
                 }
                 catch (Exception e) {
                     throw new UsernameNotFoundException("Username not found" + username);

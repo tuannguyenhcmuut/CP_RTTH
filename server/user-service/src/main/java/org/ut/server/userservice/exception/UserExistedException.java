@@ -1,4 +1,4 @@
-package org.ut.server.common.server.exception;
+package org.ut.server.userservice.exception;
 
 public class UserExistedException extends RuntimeException {
     public UserExistedException(String message) {

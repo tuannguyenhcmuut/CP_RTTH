@@ -1,4 +1,4 @@
-package org.ut.server.authservice.exception;
+package org.ut.server.authservice.exception.handler;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -9,6 +9,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.ut.server.authservice.exception.ErrorResponse;
+import org.ut.server.authservice.exception.TokenRefreshException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -40,6 +42,20 @@ public class RestExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         ErrorResponse errorDetail = new ErrorResponse();
+
+        // TokenRefreshException
+        if (ex instanceof TokenRefreshException) {
+            HttpStatus status = HttpStatus.FORBIDDEN; // 403
+
+            return new ResponseEntity<>(
+                    new ErrorResponse(
+                            status,
+                            ex.getMessage()
+                    ),
+                    status
+            );
+        }
+
         if (ex instanceof ExceptionHandler) {
             HttpStatus status = HttpStatus.UNAUTHORIZED; // 401
 

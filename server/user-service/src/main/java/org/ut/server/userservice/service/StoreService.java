@@ -1,14 +1,14 @@
-package org.ut.server.common.server.service;
+package org.ut.server.userservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.ut.server.common.server.common.MessageConstants;
-import org.ut.server.common.server.dto.StoreDto;
-import org.ut.server.common.server.mapper.StoreMapper;
-import org.ut.server.common.server.model.Store;
-import org.ut.server.common.server.model.User;
-import org.ut.server.common.server.repo.StoreRepository;
-import org.ut.server.common.server.repo.UserRepository;
+import org.ut.server.userservice.common.MessageConstants;
+import org.ut.server.userservice.dto.StoreDto;
+import org.ut.server.userservice.mapper.StoreMapper;
+import org.ut.server.userservice.model.Store;
+import org.ut.server.userservice.model.User;
+import org.ut.server.userservice.repo.StoreRepository;
+import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
