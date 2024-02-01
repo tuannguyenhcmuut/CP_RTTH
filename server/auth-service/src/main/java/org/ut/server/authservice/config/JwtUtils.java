@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.ut.server.authservice.model.CustomUserDetails;
 
@@ -15,8 +17,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtils {
-    private final String JwtSigningKey = "secret";
+    @Value("${oms.app.jwtSecret}")
+    private String JwtSigningKey;
+    @Value("${oms.app.jwtExpirationMs}")
+    private Long jwtDurationMs;
 
     public String extractUsername(String token) {
         return extractClaims(token, Claims::getSubject);
@@ -66,7 +72,7 @@ public class JwtUtils {
                 .claim("userId", customUserDetails.getUserId())
                 //.setSubject(customUserDetails.getUserId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtDurationMs))
                 .signWith(SignatureAlgorithm.HS256, JwtSigningKey)
                 .compact();
     }

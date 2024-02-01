@@ -2,14 +2,18 @@ package com.ut.server.apigateway.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUtils {
-    private final String JwtSigningKey = "secret";
+    @Value("${oms.app.jwtSecret}")
+    private String JwtSigningKey;
 
 //    public String extractUserId(String token) {
 //        return extractClaims(token, Claims::getSubject);
