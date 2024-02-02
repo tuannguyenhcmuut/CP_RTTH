@@ -1,14 +1,18 @@
 package com.ut.server.productservice.controller;
 
 import com.ut.server.productservice.common.MessageConstant;
+import com.ut.server.productservice.dto.FileDto;
 import com.ut.server.productservice.dto.ProductDto;
+import com.ut.server.productservice.exception.FileUploadException;
 import com.ut.server.productservice.exception.MessageCode;
 import com.ut.server.productservice.model.Product;
 import com.ut.server.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.common.dtos.GenericResponseDTO;
 
 import javax.transaction.Transactional;
@@ -29,28 +33,18 @@ public class ProductController {
      * http://localhost:8082/api/v1/products?userId=1
      * */
     @PostMapping(consumes = "application/json;charset=UTF-8")
-    @ResponseStatus(HttpStatus.CREATED)
     public GenericResponseDTO<ProductDto> createProduct(@RequestBody ProductDto productDto,
                                                         @RequestHeader("userId") UUID userId) {
 
-        try {
             productDto.setUserId(userId);
-            ProductDto product = productService.createProduct(productDto, userId);
+            ProductDto product = productService.createProduct(productDto);
             return GenericResponseDTO.<ProductDto>builder()
                     .data(product)
                     .code(MessageCode.SUCCESS.toString())
                     .message(MessageConstant.SUCCESS_GET_ORDER)
                     .timestamps(new Date())
                     .build();
-        }
-        catch (Exception e){
-            log.error(e.getMessage());
-            return GenericResponseDTO.<ProductDto>builder()
-                    .code(e.getMessage())
-                    .timestamps(new Date())
-                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
-                    .build();
-        }
+
     }
 
     /*
@@ -157,4 +151,38 @@ public class ProductController {
                     .build();
         }
     }
+
+    // proceed product avatar to base64 from  multipart file
+    @PostMapping("/image")
+    public ResponseEntity<FileDto> uploadProductImage(@RequestParam("file") MultipartFile imageFile) {
+        try {
+            FileDto photo = productService.uploadImage(imageFile.getBytes());
+            return ResponseEntity.ok(photo);
+        }
+        catch (Exception e) {
+            log.error("Delete product error: ",e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("{productId}/image")
+    public GenericResponseDTO<ProductDto> uploadProductImage(
+            @PathVariable Long productId,
+            @RequestParam("file") MultipartFile imageFile
+    ) {
+        try {
+            ProductDto productDto = productService.uploadImageToProduct(productId, imageFile.getBytes());
+            return GenericResponseDTO.<ProductDto>builder()
+                    .data(productDto)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstant.SUCCESS_UPLOAD_IMAGE)
+                    .timestamps(new Date())
+                    .build();
+        }
+        catch (Exception e) {
+            log.error("Upload product image error: ",e.getMessage());
+            throw new FileUploadException(e.getMessage());
+        }
+    }
+
 }

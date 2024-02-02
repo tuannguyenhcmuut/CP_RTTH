@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,11 @@ public class Product implements Serializable {
     private String description;
 
     private BigDecimal price;
-    private String photo;
+
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] photo;
+
 
     @Column(name = "user_id")
     @Type(type="org.hibernate.type.PostgresUUIDType")
@@ -46,7 +51,6 @@ public class Product implements Serializable {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-//    @JsonManagedReference
     private List<Category> categories;
 
     private Float weight;

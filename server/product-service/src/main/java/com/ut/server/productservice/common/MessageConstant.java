@@ -12,4 +12,8 @@ public class MessageConstant {
 
     public static final String SUCCESS_ORDER_DELETED = "Deleted product successfully!";
     public static final String UNSUCCESSFUL_ORDER_DELETED = "Deleted product unsuccessfully!";
+
+    // upload image to product
+    public static final String SUCCESS_UPLOAD_IMAGE = "Uploaded image successfully!";
+    public static final String UNSUCCESSFUL_UPLOAD_IMAGE = "Uploaded image unsuccessfully!";
 }
