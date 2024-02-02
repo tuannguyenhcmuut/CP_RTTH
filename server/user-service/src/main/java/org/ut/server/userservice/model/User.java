@@ -49,18 +49,30 @@ public class User {
 
     private LocalDateTime lastLogin;
 
-    private String avatar;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] avatar;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> addresses;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Nullable
     private Set<Receiver> receivers;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Store> stores;
+
+    public void setAddresses(List<Address> addresses) {
+        //1. remove the existing addresses that are not found in the new ones
+        this.addresses.retainAll(addresses);
+        //2. add the new addresses too, the common ones will be ignored by the Set semantics
+        for (Address address : addresses) {
+            address.setUser(this);
+        }
+        this.addresses.addAll(addresses);
+    }
 }

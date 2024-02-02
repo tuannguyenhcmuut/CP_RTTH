@@ -15,11 +15,13 @@ public class AddressMapper {
         }
         return AddressDto.builder()
                 .id(address.getId())
-                .city(address.getCity())
+                .homeNumber(address.getHomeNumber())
                 .country(address.getCountry())
+                .city(address.getCity())
                 .district(address.getDistrict())
-                .street(address.getStreet())
                 .ward(address.getWard())
+                .street(address.getStreet())
+                .description(address.getDescription())
                 .build();
     }
     public Address mapDtoToEntity(AddressDto addressDto) {
@@ -28,11 +30,13 @@ public class AddressMapper {
         }
         return Address.builder()
                 .id(addressDto.getId())
-                .city(addressDto.getCity())
+                .homeNumber(addressDto.getHomeNumber())
                 .country(addressDto.getCountry())
+                .city(addressDto.getCity())
                 .district(addressDto.getDistrict())
-                .street(addressDto.getStreet())
                 .ward(addressDto.getWard())
+                .street(addressDto.getStreet())
+                .description(addressDto.getDescription())
                 .build();
     }
 

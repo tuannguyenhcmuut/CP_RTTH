@@ -1,5 +1,6 @@
 package org.ut.server.userservice.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,6 +9,7 @@ import org.ut.server.common.exception.MessageCode;
 import org.ut.server.common.dtos.user.UserRequestDTO;
 import org.ut.server.common.dtos.user.UserResponseDTO;
 import org.ut.server.userservice.common.MessageConstants;
+import org.ut.server.userservice.dto.FileDto;
 import org.ut.server.userservice.model.Address;
 import org.ut.server.userservice.service.UserService;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -96,8 +99,23 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/avatar")
-    public GenericResponseDTO<UserResponseDTO> uploadAvatar(@RequestParam("file") MultipartFile file, @RequestParam("userId") UUID userId) throws IOException {
+    @PostMapping("/image")
+    public ResponseEntity<FileDto> uploadProductImage(@RequestParam("file") MultipartFile imageFile) {
+        try {
+            FileDto photo = userService.uploadImage(imageFile.getBytes());
+            return ResponseEntity.ok(photo);
+        }
+        catch (Exception e) {
+            log.error("Image upload error: ",e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{userId}/avatar")
+    public GenericResponseDTO<UserResponseDTO> uploadAvatar(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable UUID userId
+    ) throws IOException {
         UserResponseDTO userResponseDTO = userService.uploadAvatar(file.getBytes(), userId);
         return GenericResponseDTO.<UserResponseDTO>builder()
                 .data(userResponseDTO)

@@ -1,6 +1,7 @@
 package org.ut.server.userservice.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -8,16 +9,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.ut.server.common.dtos.user.UserRequestDTO;
 import org.ut.server.common.dtos.user.UserResponseDTO;
 import org.ut.server.userservice.common.MessageConstants;
-import org.ut.server.userservice.exception.AddressException;
-import org.ut.server.userservice.exception.UserExistedException;
-import org.ut.server.userservice.exception.UserNotFoundException;
+import org.ut.server.userservice.dto.FileDto;
+import org.ut.server.userservice.exception.*;
+import org.ut.server.userservice.mapper.AddressMapper;
 import org.ut.server.userservice.mapper.UserMapper;
 import org.ut.server.userservice.model.Address;
 import org.ut.server.userservice.model.User;
 import org.ut.server.userservice.repo.AddressRepository;
-import org.ut.server.userservice.repo.ReceiverRepository;
 import org.ut.server.userservice.repo.UserRepository;
+import utils.FileUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.transaction.Transactional;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -25,12 +31,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-    private final ReceiverRepository receiverRepository;
 
+    private final AddressMapper addressMapper;
     private final UserMapper userMapper;
+    private final EntityManagerFactory emf;
 
 
     public ResponseEntity<List<User>> getAllUser() {
@@ -73,23 +81,51 @@ public class UserService {
         return userMapper.mapEntityToResponse(newUser);
     }
 
+    @Transactional
     public UserResponseDTO updateUser(UUID userId, UserRequestDTO userRequestDTO) {
         Optional<User> user = userRepository.findById(userId);
         if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         if (user.get().getId() != userId) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "User id not match!");
         User userEntity = user.get();
-        userEntity.setEmail(userRequestDTO.getEmail());
-        userEntity.setUsername(userRequestDTO.getUsername());
-        userEntity.setFirstName(userRequestDTO.getFirstName());
-        userEntity.setLastName(userRequestDTO.getLastName());
-        userEntity.setGender(userRequestDTO.getGender());
-        userEntity.setPhoneNumber(userRequestDTO.getPhoneNumber());
-        userEntity.setDateOfBirth(userRequestDTO.getDateOfBirth());
-//
-        // avatar
-        // address
+        userEntity.setFirstName(
+                userRequestDTO.getFirstName() != null ? userRequestDTO.getFirstName() : userEntity.getFirstName()
+        );
+        userEntity.setLastName(
+                userRequestDTO.getLastName() != null ? userRequestDTO.getLastName() : userEntity.getLastName()
+        );
+        userEntity.setGender(
+                userRequestDTO.getGender() != null ? userRequestDTO.getGender() : userEntity.getGender()
+        );
+        try {
+            userEntity.setPhoneNumber(
+                    userRequestDTO.getPhoneNumber() != null ? userRequestDTO.getPhoneNumber() : userEntity.getPhoneNumber()
+            );
+        } catch (Exception e) {
+            throw new UserException("Phone number is registered!");
+        }
 
-        userRepository.save(userEntity);
+        userEntity.setDateOfBirth(
+                userRequestDTO.getDateOfBirth() != null ? userRequestDTO.getDateOfBirth() : userEntity.getDateOfBirth()
+        );
+        try {
+            userEntity.setAvatar(
+                (userRequestDTO.getAvatar() != null && userRequestDTO.getAvatar().length() > 0) ?
+                    FileUtils.base64ToBlob(userRequestDTO.getAvatar()) :
+                    userEntity.getAvatar()
+            );
+
+        } catch (SQLException e) {
+            throw new FileUploadException(e.getMessage());
+        }
+        if (userRequestDTO.getAddresses() != null ) {
+            userEntity.getAddresses().clear();
+            userEntity.setAddresses(
+                    addressMapper.mapDtosToEntities(userRequestDTO.getAddresses())
+                );
+        }
+        userEntity.setLastLogin(LocalDateTime.now());
+        
+        userEntity = userRepository.save(userEntity);
         return userMapper.mapEntityToResponse(userEntity);
     }
 
@@ -138,8 +174,13 @@ public class UserService {
         if(user.isEmpty()) throw new UserNotFoundException("User Not found!");
 
         User userEntity = user.get();
-        String avatarString = Base64.getEncoder().encodeToString(avatar);
-        userEntity.setAvatar(avatarString);
+        String avatarString = uploadImage(avatar).getBase64();
+
+        try {
+            userEntity.setAvatar(FileUtils.base64ToBlob(avatarString));
+        } catch (SQLException e) {
+            throw new FileUploadException("Error converting photo to Blob. " +e.getMessage());
+        }
         userRepository.save(userEntity);
         return userMapper.mapEntityToResponse(userEntity);
     }
@@ -151,35 +192,18 @@ public class UserService {
         return user.get().getId();
     }
 
-
-//    public ResponseEntity<List<Receiver>> getReceiverOfUser(UUID user_id) {
-//        Optional<User> user = userRepository.findById(user_id);
-//        if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//
-//        return new ResponseEntity<>(user.get().getReceivers(), HttpStatus.OK);
-//    }
-
-//    public ResponseEntity<String> addReceiverOfUser(UUID user_id, Receiver newReceiver) {
-//        Optional<User> user = userRepository.findById(user_id);
-//        if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//
-//        List<Receiver> newListReceiver = user.get().getList_receiver();
-//        newListReceiver.add(newListReceiver.size(), newReceiver);
-//        user.get().setList_receiver(newListReceiver);
-//
-//        //TODO update receiver table
-//
-//        List<User> newListUser = newReceiver.getList_user();
-//        newListUser.add(newListUser.size(), user.get());
-//        newReceiver.setList_user(newListUser);
-//        receiverRepository.save(newReceiver);
-//
-//        return new ResponseEntity<>("success", HttpStatus.CREATED);
-//    }
+    public FileDto uploadImage(byte[] bytes) {
+        String base64Image = Base64.getEncoder().encodeToString(bytes);
+        log.info("Base64 image: {}", base64Image);
+        return FileDto.builder()
+                .base64(base64Image)
+                .sizeKB(FileUtils.getFileSizeKB(base64Image)) // get file size in kb
+                .build();
+    }
 
 
-    // get all address
-    // add address
-    // update address
-    // remove address
+    private EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
+
 }

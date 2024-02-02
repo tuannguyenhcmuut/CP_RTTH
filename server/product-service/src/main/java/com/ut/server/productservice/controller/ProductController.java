@@ -160,7 +160,7 @@ public class ProductController {
             return ResponseEntity.ok(photo);
         }
         catch (Exception e) {
-            log.error("Delete product error: ",e.getMessage());
+            log.error("Image upload error: ",e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
