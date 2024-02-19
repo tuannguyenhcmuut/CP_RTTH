@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.ut.server.common.dtos.user.UserRequestDTO;
-import org.ut.server.common.dtos.user.UserResponseDTO;
 import org.ut.server.userservice.common.MessageConstants;
 import org.ut.server.userservice.dto.FileDto;
+import org.ut.server.userservice.dto.request.UserRequestDTO;
+import org.ut.server.userservice.dto.response.UserResponseDTO;
 import org.ut.server.userservice.exception.*;
 import org.ut.server.userservice.mapper.AddressMapper;
 import org.ut.server.userservice.mapper.UserMapper;
@@ -17,7 +17,7 @@ import org.ut.server.userservice.model.Address;
 import org.ut.server.userservice.model.User;
 import org.ut.server.userservice.repo.AddressRepository;
 import org.ut.server.userservice.repo.UserRepository;
-import utils.FileUtils;
+import org.ut.server.userservice.utils.FileUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -60,7 +60,7 @@ public class UserService {
     public UserResponseDTO createNewUser(UserRequestDTO userRequestDTO) {
         // catch exception if email or username is already exist
         Optional<User> emailEntry = userRepository.findUserByEmail(userRequestDTO.getEmail());
-        Optional<User> usernameEntry = userRepository.findByUsername(userRequestDTO.getUsername());
+        Optional<User> usernameEntry = userRepository.findByAccount_Username(userRequestDTO.getUsername());
         Optional<User> phoneNumberEntry = userRepository.findUserByPhoneNumber(userRequestDTO.getPhoneNumber());
 
         if (emailEntry.isPresent()) {
@@ -186,7 +186,7 @@ public class UserService {
     }
 
     public UUID getUserIdByUsername(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByAccount_Username(username);
         if(user.isEmpty()) throw new UserNotFoundException("User Not found!");
 
         return user.get().getId();

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
-import org.ut.server.common.dtos.user.Gender;
+import org.ut.server.userservice.model.enums.Gender;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -30,9 +30,12 @@ public class User {
     private UUID id;
     @Column(nullable = false, length = 50, unique = true)
     private String email;
-    @Column(nullable = false, length = 20, unique = true)
-    private String username;
-    @Column(nullable = false, length = 50)
+//    @Column(nullable = false, length = 20, unique = true)
+//    private String username;
+//    @Column(nullable = false, length = 50)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
+    private Account account;
     private String firstName;
     @Column(nullable = false, length = 50)
     private String lastName;

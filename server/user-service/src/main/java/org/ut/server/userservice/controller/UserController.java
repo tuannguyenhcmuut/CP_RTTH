@@ -1,15 +1,16 @@
 package org.ut.server.userservice.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.ut.server.common.dtos.GenericResponseDTO;
-import org.ut.server.common.exception.MessageCode;
-import org.ut.server.common.dtos.user.UserRequestDTO;
-import org.ut.server.common.dtos.user.UserResponseDTO;
+import org.ut.server.userservice.common.MessageCode;
 import org.ut.server.userservice.common.MessageConstants;
 import org.ut.server.userservice.dto.FileDto;
+import org.ut.server.userservice.dto.request.UserRequestDTO;
+import org.ut.server.userservice.dto.response.GenericResponseDTO;
+import org.ut.server.userservice.dto.response.UserResponseDTO;
 import org.ut.server.userservice.model.Address;
 import org.ut.server.userservice.service.UserService;
 
@@ -21,12 +22,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/user")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
 //    @GetMapping("")
 //    public ResponseEntity<List<User>> getUsers() {

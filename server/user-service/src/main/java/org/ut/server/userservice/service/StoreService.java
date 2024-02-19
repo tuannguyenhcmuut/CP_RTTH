@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ut.server.userservice.common.MessageConstants;
 import org.ut.server.userservice.dto.StoreDto;
+import org.ut.server.userservice.exception.StoreNotFoundException;
+import org.ut.server.userservice.exception.UserNotFoundException;
 import org.ut.server.userservice.mapper.StoreMapper;
 import org.ut.server.userservice.model.Store;
 import org.ut.server.userservice.model.User;
@@ -24,7 +26,7 @@ public class StoreService {
     public List<StoreDto> getAllStores(UUID userId) {
         Optional<User> owner = userRepository.findById(userId);
         if (owner.isEmpty()) {
-            throw new RuntimeException(MessageConstants.USER_NOT_FOUND);
+            throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
 
         List<Store> stores = storeRepository.findStoresByUser(owner.get());
@@ -34,15 +36,16 @@ public class StoreService {
     public StoreDto addNewStore(StoreDto newStore, UUID userId) {
         Optional<User> owner = userRepository.findById(userId);
         if (owner.isEmpty()) {
-            throw new RuntimeException(MessageConstants.USER_NOT_FOUND);
+            throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
-        Store store = storeMapper.mapToEntity(newStore, owner.get());
+        Store store = storeMapper.mapToEntity(newStore, owner.get().getId());
         storeRepository.save(store);
         return storeMapper.mapToDto(store);
     }
 
     public void deleteStoreById(Long storeId, UUID userId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("Store not found"));
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException("Store not found"));
         if (store.getUser().getId().equals(userId)) {
             storeRepository.deleteById(storeId);
         }
@@ -52,7 +55,7 @@ public class StoreService {
     }
 
     public StoreDto getStoreById(UUID userId, Long storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("Store not found"));
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store not found"));
         if (store.getUser().getId().equals(userId)) {
             return storeMapper.mapToDto(store);
         }

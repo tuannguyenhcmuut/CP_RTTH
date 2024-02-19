@@ -3,8 +3,8 @@ package org.ut.server.userservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ut.server.userservice.enums.EmployeeRequestStatus;
-import org.ut.server.userservice.enums.PermissionLevel;
+import org.ut.server.userservice.model.enums.EmployeeRequestStatus;
+import org.ut.server.userservice.model.enums.PermissionLevel;
 
 import javax.persistence.*;
 

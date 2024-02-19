@@ -1,7 +1,7 @@
 package org.ut.server.userservice.mapper;
 
 import org.springframework.stereotype.Component;
-import org.ut.server.common.dtos.user.AddressDto;
+import org.ut.server.userservice.dto.AddressDto;
 import org.ut.server.userservice.model.Address;
 
 import java.util.List;

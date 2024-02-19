@@ -2,7 +2,7 @@ package org.ut.server.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.ut.server.userservice.enums.StorePickUpTime;
+import org.ut.server.userservice.model.enums.StorePickUpTime;
 
 import javax.persistence.*;
 
@@ -31,6 +31,10 @@ public class Store extends Person {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "store")
+//    private Order order;
+
     @Builder
     public Store(Long id, String name, String phoneNumber, String address, String detailedAddress,
                  User user, String description, StorePickUpTime storePickUpTime , Boolean isDefault, Boolean sendAtPost) {

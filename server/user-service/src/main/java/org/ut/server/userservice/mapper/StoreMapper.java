@@ -1,19 +1,30 @@
 package org.ut.server.userservice.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ut.server.userservice.dto.StoreDto;
+import org.ut.server.userservice.exception.UserNotFoundException;
 import org.ut.server.userservice.model.Store;
 import org.ut.server.userservice.model.User;
+import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class StoreMapper {
 
+
+    @Autowired
+    private UserRepository userRepository;
+
     public StoreDto mapToDto(Store store) {
+        if (store == null) {
+            return null;
+        }
         return StoreDto.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -27,7 +38,10 @@ public class StoreMapper {
                 .build();
     }
 
-    public Store mapToEntity(StoreDto storeDto, User user) {
+    public Store mapToEntity(StoreDto storeDto, UUID userId) {
+        // find user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return Store.builder()
                 .id(storeDto.getId())
@@ -54,10 +68,10 @@ public class StoreMapper {
         }
     }
 
-    public List<Store> mapToEntities(List<StoreDto> storeDtos, User user) {
+    public List<Store> mapToEntities(List<StoreDto> storeDtos, UUID userId) {
         if (storeDtos != null) {
             return storeDtos.stream().map(
-                    storeDto -> mapToEntity(storeDto, user)
+                    storeDto -> mapToEntity(storeDto, userId)
             ).collect(Collectors.toList());
         }
         else {

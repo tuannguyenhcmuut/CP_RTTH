@@ -2,8 +2,8 @@ package org.ut.server.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.ut.server.userservice.enums.DeliveryTime;
-import org.ut.server.userservice.enums.ReceivedPlace;
+import org.ut.server.userservice.model.enums.DeliveryTime;
+import org.ut.server.userservice.model.enums.ReceivedPlace;
 
 import javax.persistence.*;
 
@@ -35,6 +35,9 @@ public class  Receiver extends Person {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+//
+//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "receiver")
+//    private Order order;
 //    private ShopOwner shopOwner;
 
     @Builder

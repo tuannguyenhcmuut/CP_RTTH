@@ -2,7 +2,7 @@ package org.ut.server.userservice.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.ut.server.userservice.enums.StorePickUpTime;
+import org.ut.server.userservice.model.enums.StorePickUpTime;
 
 @Builder
 @Data
