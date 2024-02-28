@@ -11,16 +11,16 @@ public class FileUtils {
         return (long) (base64.length() / 1024);
     }
 
-    // convert base64 to Blob
+    // convert base64 to bytes
     public static byte[] base64ToBlob(String base64) throws SQLException {
         if (base64 == null) {
             return null;
         }
         // convert to byte
-        return base64.getBytes();
+        return Base64.getDecoder().decode(base64);
     }
 
-    // convert Blob to base64
+    // convert bytes to base64
     public static String blobToBase64(byte[] bytes) throws SQLException {
         if (bytes != null && bytes.length > 0) {
             // to bytes

@@ -18,7 +18,7 @@ public class OrderDto {
     private String code;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private List<OrderItemDto> orderItemDtos;
     private UUID userId;
     private StoreDto storeDto;

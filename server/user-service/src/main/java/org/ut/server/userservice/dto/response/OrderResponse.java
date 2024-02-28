@@ -12,7 +12,7 @@ public class OrderResponse {
     private String code;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private Long storeId;
     private Long receiverId;
     private OrderStatus orderStatus;
