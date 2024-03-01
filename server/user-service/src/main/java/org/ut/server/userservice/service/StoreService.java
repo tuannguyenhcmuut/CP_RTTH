@@ -29,7 +29,7 @@ public class StoreService {
             throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
 
-        List<Store> stores = storeRepository.findStoresByUser(owner.get());
+        List<Store> stores = storeRepository.findStoresByShopOwner(owner.get());
         return storeMapper.mapToDtos(stores);
     }
 
@@ -46,7 +46,7 @@ public class StoreService {
     public void deleteStoreById(Long storeId, UUID userId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("Store not found"));
-        if (store.getUser().getId().equals(userId)) {
+        if (store.getShopOwner().getId().equals(userId)) {
             storeRepository.deleteById(storeId);
         }
         else {
@@ -56,7 +56,7 @@ public class StoreService {
 
     public StoreDto getStoreById(UUID userId, Long storeId) {
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store not found"));
-        if (store.getUser().getId().equals(userId)) {
+        if (store.getShopOwner().getId().equals(userId)) {
             return storeMapper.mapToDto(store);
         }
         else {

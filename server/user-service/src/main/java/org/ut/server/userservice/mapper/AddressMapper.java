@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.ut.server.userservice.dto.AddressDto;
 import org.ut.server.userservice.model.Address;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class AddressMapper {
     }
 
     public List<Address> mapDtosToEntities(List<AddressDto> addressDtos) {
-        return addressDtos != null ? addressDtos.stream().map(this::mapDtoToEntity).collect(Collectors.toList()) : null;
+        return addressDtos != null ? addressDtos.stream().map(this::mapDtoToEntity).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     public List<AddressDto> mapEntitiesToDtos(List<Address> addresses) {

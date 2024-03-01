@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.ut.server.userservice.dto.ReceiverDto;
 import org.ut.server.userservice.model.Receiver;
-import org.ut.server.userservice.model.User;
-import org.ut.server.userservice.repo.UserRepository;
+import org.ut.server.userservice.model.ShopOwner;
+import org.ut.server.userservice.repo.ShopOwnerRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ReceiverMapper {
-    private final UserRepository userRepository;
+    private final ShopOwnerRepository shopOwnerRepository;
     public ReceiverDto mapToDto(Receiver receiver) {
         return ReceiverDto.builder()
                 .id(receiver.getId())
@@ -45,13 +45,13 @@ public class ReceiverMapper {
     }
 
     public Receiver mapDtoToEntity(ReceiverDto receiverDto, UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        ShopOwner user = shopOwnerRepository.findById(userId).orElseThrow(() -> new RuntimeException("ShopOwner not found"));
         return Receiver.builder()
                 .name(receiverDto.getName())
                 .phoneNumber(receiverDto.getPhoneNumber())
                 .address(receiverDto.getAddress())
                 .detailedAddress(receiverDto.getDetailedAddress())
-                .user(user)
+                .shopOwner(user)
                 .note(receiverDto.getNote())
                 .receivedPlace(receiverDto.getReceivedPlace())
                 .deliveryTimeFrame(receiverDto.getDeliveryTimeFrame())

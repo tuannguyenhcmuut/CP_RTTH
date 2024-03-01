@@ -20,7 +20,7 @@ public class DataLoader implements CommandLineRunner {
 
     private void createDefaultRoles() {
         createRoleIfNotExists(ERole.ROLE_ADMIN);
-        createRoleIfNotExists(ERole.ROLE_SHOPOWNER);
+        createRoleIfNotExists(ERole.ROLE_USER);
         createRoleIfNotExists(ERole.ROLE_SHIPPER);
         createRoleIfNotExists(ERole.ROLE_EMPLOYEE);
 

@@ -3,20 +3,18 @@ package org.ut.server.userservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.userservice.dto.FileDto;
 import org.ut.server.userservice.dto.ProductDto;
-import org.ut.server.userservice.exception.FileUploadException;
 import org.ut.server.userservice.exception.ProductInUsedException;
 import org.ut.server.userservice.exception.ProductNotFoundException;
 import org.ut.server.userservice.mapper.ProductMapper;
 import org.ut.server.userservice.model.Product;
 import org.ut.server.userservice.repo.OrderItemRepository;
 import org.ut.server.userservice.repo.ProductRepository;
-import org.ut.server.userservice.utils.FileUtils;
 
 import javax.transaction.Transactional;
-import java.sql.SQLException;
-import java.util.Base64;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +27,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final OrderItemRepository orderItemRepository;
+    private final IImageService imageService;
 
     public ProductDto createProduct(ProductDto productDto) {
         Product product = productMapper.mapDtoToEntity(productDto);
@@ -39,26 +38,26 @@ public class ProductService {
 
     //    getAllProducts
     public List<ProductDto> getAllProducts(UUID userId) {
-        List<Product> products = productRepository.findProductsByUserId(userId);
+        List<Product> products = productRepository.findProductsByShopOwner_Id(userId);
         log.info("Products: {}", products);
         return productMapper.mapEntitiesToDtos(products);
     }
 
 
     public ProductDto getProductById(Long productId, UUID userId) {
-        Product product = productRepository.findProductByIdAndUserId(productId, userId)
+        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
                         () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
                 );
 
-        if (product.getUser().getId().equals(userId)) {
+        if (product.getShopOwner().getId().equals(userId)) {
             return productMapper.mapToDto(product);
         }
         throw new ProductNotFoundException("Product not found by id: " + productId.toString());
     }
 
     public ProductDto updateProduct(UUID userId, Long productId, Product product) {
-        Product productToUpdate = productRepository.findProductByIdAndUserId(productId, userId)
+        Product productToUpdate = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
                         () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
                 );
@@ -78,7 +77,7 @@ public class ProductService {
 
     public void deleteProduct(Long productId, UUID userId) {
         // check if product belongs to user
-        Product product = productRepository.findProductByIdAndUserId(productId, userId)
+        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
                         () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
                 );
@@ -90,34 +89,30 @@ public class ProductService {
 
     }
 
-    public FileDto uploadImage(byte[] imageBytes) {
+    public FileDto uploadImage(MultipartFile file) throws IOException {
         // convert image to base64
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-        log.info("Base64 image: {}", base64Image);
+        String fileName = imageService.save(file);
+
+        String imageUrl = imageService.getImageUrl(fileName);
         return FileDto.builder()
-                .base64(base64Image)
-                .sizeKB(FileUtils.getFileSizeKB(base64Image)) // get file size in kb
+                .base64(imageUrl)
+                .sizeKB(null) // get file size in kb
                 .build();
     }
 
     @Transactional
-    public ProductDto uploadImageToProduct(Long productId, byte[] imageBytes, UUID userId) {
+    public ProductDto uploadImageToProduct(Long productId, MultipartFile imageFile, UUID userId) throws IOException {
         // find product by id
-       Product product = productRepository.findProductByIdAndUserId(productId, userId)
+        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
                         () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
                 );
+        String fileName = imageService.save(imageFile);
+        String imageUrl = imageService.getImageUrl(fileName);
 
-        // convert image to base64
-        String base64Image = uploadImage(imageBytes).getBase64();
-
-        try {
-            product.setPhoto(FileUtils.base64ToBlob(base64Image));
-        } catch (SQLException e) {
-            throw new FileUploadException("Error converting photo to Blob. " + e.getMessage());
-        }
+        product.setPhotoUrl(imageUrl);
         // save image to product
-        productRepository.save(product);
+        product = productRepository.save(product);
         return productMapper.mapToDto(product);
     }
 }

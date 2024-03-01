@@ -29,7 +29,11 @@ public class Account {
     private String password;
 
     @OneToOne(mappedBy = "account")
-    private User user;
+    private ShopOwner user;
+
+    // shipper
+    @OneToOne(mappedBy = "account")
+    private Shipper shipper;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
@@ -41,4 +45,25 @@ public class Account {
     @Column(updatable = false)
     private Timestamp createdDate;
 
+    public void setShipper(Shipper shipper) {
+        if (shipper == null) {
+            if (this.shipper != null) {
+                this.shipper.setAccount(null);
+            }
+        } else {
+            shipper.setAccount(this);
+        }
+        this.shipper = shipper;
+    }
+
+    public void setShopOwner(ShopOwner shopOwner) {
+        if (shopOwner == null) {
+            if (this.user != null) {
+                this.user.setAccount(null);
+            }
+        } else {
+            shopOwner.setAccount(this);
+        }
+        this.user = shopOwner;
+    }
 }

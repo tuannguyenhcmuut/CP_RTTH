@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ut.server.userservice.dto.StoreDto;
 import org.ut.server.userservice.exception.UserNotFoundException;
+import org.ut.server.userservice.model.ShopOwner;
 import org.ut.server.userservice.model.Store;
-import org.ut.server.userservice.model.User;
-import org.ut.server.userservice.repo.UserRepository;
+import org.ut.server.userservice.repo.ShopOwnerRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class StoreMapper {
 
 
     @Autowired
-    private UserRepository userRepository;
+    private ShopOwnerRepository shopOwnerRepository;
 
     public StoreDto mapToDto(Store store) {
         if (store == null) {
@@ -40,12 +40,12 @@ public class StoreMapper {
 
     public Store mapToEntity(StoreDto storeDto, UUID userId) {
         // find user
-        User user = userRepository.findById(userId)
+        ShopOwner user = shopOwnerRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return Store.builder()
                 .id(storeDto.getId())
-                .user(user)
+                .shopOwner(user)
                 .name(storeDto.getName())
                 .phoneNumber(storeDto.getPhoneNumber())
                 .address(storeDto.getAddress())

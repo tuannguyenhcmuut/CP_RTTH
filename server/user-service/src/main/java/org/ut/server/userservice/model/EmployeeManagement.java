@@ -20,11 +20,11 @@ public class EmployeeManagement {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private User employeeId;
+    private ShopOwner employeeId;
 //    private ShopOwner employeeId;
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
-    private User managerId;
+    private ShopOwner managerId;
 //    private ShopOwner managerId;
 
     @Enumerated(EnumType.STRING)

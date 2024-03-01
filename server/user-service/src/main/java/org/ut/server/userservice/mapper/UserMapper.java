@@ -25,22 +25,18 @@ public class UserMapper {
         if (user == null) {
             return null;
         }
-        try {
-            return UserResponseDTO.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
-                    .username(user.getAccount().getUsername())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .gender(user.getGender())
-                    .avatar(FileUtils.blobToBase64(user.getAvatar()))
-                    .dateOfBirth(user.getDateOfBirth())
-                    .addresses(addressMapper.mapEntitiesToDtos(user.getAddresses()))  // todo: fix addresses
-                    .phoneNumber(user.getPhoneNumber())
-                    .build();
-        } catch (SQLException e) {
-            throw new FileUploadException(e.getMessage());
-        }
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+//                    .username(user.getAccount().getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .gender(user.getGender())
+                .avatar(user.getAvatarUrl())
+                .dateOfBirth(user.getDateOfBirth())
+//                    .addresses(addressMapper.mapEntitiesToDtos(user.getAddresses()))  // todo: fix addresses
+                .phoneNumber(user.getPhoneNumber())
+                .build();
     }
 
     public User mapRequestToUser(UserRequestDTO userRequestDTO) {
@@ -49,15 +45,15 @@ public class UserMapper {
         }
 
         Account account = accountRepository.findAccountByUsername(userRequestDTO.getUsername()).get();
-        return User.builder()
-                .email(userRequestDTO.getEmail())
-                .account(account)
-                .firstName(userRequestDTO.getFirstName())
-                .lastName(userRequestDTO.getLastName())
-                .dateOfBirth(userRequestDTO.getDateOfBirth())
-                .phoneNumber(userRequestDTO.getPhoneNumber())
-                .addresses(addressMapper.mapDtosToEntities(userRequestDTO.getAddresses()))
-                .gender(userRequestDTO.getGender())
-                .build();
+        User user = new User();
+        user.setEmail(userRequestDTO.getEmail());
+//        user.setAccount(account);
+        user.setFirstName(userRequestDTO.getFirstName());
+        user.setLastName(userRequestDTO.getLastName());
+        user.setPhoneNumber(userRequestDTO.getPhoneNumber());
+        user.setGender(userRequestDTO.getGender());
+        user.setDateOfBirth(userRequestDTO.getDateOfBirth());
+
+        return user;
     }
 }

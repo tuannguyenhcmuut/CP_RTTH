@@ -24,7 +24,7 @@ public class ProductDto {
     private Float height;
     private Float width;
     private Float length;
-    private String photo;
+    private String photoUrl;
     private ProductStatus status;
     private List<CategoryDto> categories;
     private UUID userId;

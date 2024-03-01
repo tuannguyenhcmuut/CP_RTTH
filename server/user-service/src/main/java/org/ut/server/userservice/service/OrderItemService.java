@@ -6,12 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.ut.server.userservice.dto.OrderItemDto;
 import org.ut.server.userservice.exception.ProductNotFoundException;
-import org.ut.server.userservice.mapper.OrderItemMapper;
 import org.ut.server.userservice.mapper.ProductMapper;
 import org.ut.server.userservice.model.OrderItem;
 import org.ut.server.userservice.model.Product;
 import org.ut.server.userservice.repo.OrderItemRepository;
-import org.ut.server.userservice.repo.OrderRepository;
 import org.ut.server.userservice.repo.ProductRepository;
 
 import javax.transaction.Transactional;
@@ -25,8 +23,6 @@ import java.util.UUID;
 public class OrderItemService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
-    private final OrderItemMapper orderItemMapper;
-    private final OrderRepository orderRepository;
     private final ProductMapper productMapper;
 
     public OrderItemDto getOrderItem(Long orderItemId, UUID userId) {
@@ -34,7 +30,7 @@ public class OrderItemService {
 
          if (orderItem.isPresent()) {
              try {
-                 Product product = productRepository.findProductByIdAndUserId(orderItem.get().getProduct().getId(), userId)
+                 Product product = productRepository.findProductByIdAndShopOwner_Id(orderItem.get().getProduct().getId(), userId)
                          .orElseThrow(
                                  () -> new ProductNotFoundException("Product not found at Order item at item id: " + orderItem.get().getId())
                          );

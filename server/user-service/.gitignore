@@ -1,6 +1,8 @@
 target/
 
-
+**/*.log
+#Resource
+src/main/resources/*.json
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

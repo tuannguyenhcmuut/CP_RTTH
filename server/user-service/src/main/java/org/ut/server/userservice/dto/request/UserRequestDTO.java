@@ -17,7 +17,7 @@ public class UserRequestDTO {
     private String lastName;
     private String phoneNumber;
     private Gender gender;
-    private String avatar;
+    private  String avatar;
     private LocalDate dateOfBirth;
     private List<AddressDto> addresses;
 }

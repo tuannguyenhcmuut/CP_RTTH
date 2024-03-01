@@ -1,7 +1,6 @@
 package org.ut.server.userservice.model;
 
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.ut.server.userservice.model.enums.ProductStatus;
 
 import javax.persistence.*;
@@ -31,9 +30,9 @@ public class Product implements Serializable {
 
     private BigDecimal price;
 
-    @Lob
-    @Type(type="org.hibernate.type.BinaryType")
-    private byte[] photo;
+//    @Lob
+//    @Type(type="org.hibernate.type.BinaryType")
+    private String photoUrl;
 
 
 //    @Column(name = "user_id")
@@ -41,7 +40,7 @@ public class Product implements Serializable {
 //    private UUID userId;  // mapping to inventory-service
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private ShopOwner shopOwner;
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
