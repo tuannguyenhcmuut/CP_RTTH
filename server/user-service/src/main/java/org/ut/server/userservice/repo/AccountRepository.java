@@ -6,7 +6,7 @@ import org.ut.server.userservice.model.Account;
 
 import java.util.Optional;
 
-//@Repository
+@Repository
 public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findAccountByUsername(String username);
 }

@@ -11,8 +11,9 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
-
+src/main/java/resources/datn-oms-firebase-adminsdk-vdpv8-5bbedf5029.json
+src/main/java/resources/*.properties
+src/main/java/resources/*.json
 # Created by https://www.gitignore.io/api/git,java,maven,eclipse,windows
 
 ### Eclipse ###
