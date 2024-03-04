@@ -34,7 +34,7 @@ public class  Receiver extends Person {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private ShopOwner shopOwner;
 //
 //    @OneToOne(fetch = FetchType.LAZY, mappedBy = "receiver")
 //    private Order order;
@@ -42,11 +42,11 @@ public class  Receiver extends Person {
 
     @Builder
     public Receiver(Long id, String name, String phoneNumber, String address,
-                    User user, String detailedAddress, String note, ReceivedPlace receivedPlace,
+                    ShopOwner shopOwner, String detailedAddress, String note, ReceivedPlace receivedPlace,
                     DeliveryTime deliveryTimeFrame, Boolean callBeforeSend, Boolean receiveAtPost) {
         super(name, phoneNumber, address, detailedAddress);
         this.id = id;
-        this.user = user;
+        this.shopOwner = shopOwner;
         this.note = note;
         this.receivedPlace = receivedPlace;
         this.deliveryTimeFrame = deliveryTimeFrame;

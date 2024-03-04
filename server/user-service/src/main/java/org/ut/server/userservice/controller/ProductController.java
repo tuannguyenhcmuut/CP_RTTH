@@ -17,6 +17,7 @@ import org.ut.server.userservice.model.Product;
 import org.ut.server.userservice.service.ProductService;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -164,14 +165,14 @@ public class ProductController {
     @PostMapping("/image")
     public ResponseEntity<FileDto> uploadProductImage(
             @RequestParam("file") MultipartFile imageFile
-    ) {
-        try {
-            FileDto photo = productService.uploadImage(imageFile.getBytes());
+    ) throws IOException {
+//        try {
+            FileDto photo = productService.uploadImage(imageFile);
             return ResponseEntity.ok(photo);
-        } catch (Exception e) {
-            log.error("Image upload error: ", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+//        } catch (Exception e) {
+//            log.error("Image upload error: ", e.getMessage());
+//            return ResponseEntity.badRequest().build();
+//        }
     }
 
     @PostMapping("{productId}/image")
@@ -182,7 +183,7 @@ public class ProductController {
     ) {
         try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-            ProductDto productDto = productService.uploadImageToProduct(productId, imageFile.getBytes(), userId);
+            ProductDto productDto = productService.uploadImageToProduct(productId, imageFile, userId);
             return GenericResponseDTO.<ProductDto>builder()
                     .data(productDto)
                     .code(MessageCode.SUCCESS.toString())

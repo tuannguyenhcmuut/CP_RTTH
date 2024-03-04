@@ -57,7 +57,7 @@ public class OrderItemMapper {
         // find product
         try {
             if (orderItem != null) {
-            Optional<Product> product = productRepository.findProductByIdAndUserId(orderItem.getProduct().getId(), userId);
+            Optional<Product> product = productRepository.findProductByIdAndShopOwner_Id(orderItem.getProduct().getId(), userId);
 
             return OrderItemDto.builder()
                     .id(orderItem.getId())

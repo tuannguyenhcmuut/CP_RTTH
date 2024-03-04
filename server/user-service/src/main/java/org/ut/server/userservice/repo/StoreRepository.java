@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    List<Store> findStoresByUser(User user);
-    Optional<Store> findStoreByIdAndUser_Id(Long storeId, UUID userId);
+    List<Store> findStoresByShopOwner(User user);
+    Optional<Store> findStoreByIdAndShopOwner_Id(Long storeId, UUID userId);
 }

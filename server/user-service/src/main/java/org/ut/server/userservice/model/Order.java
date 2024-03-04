@@ -31,7 +31,7 @@ public class Order {
 
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
 
     @OneToMany(mappedBy = "orderId",cascade=CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
@@ -42,7 +42,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private ShopOwner shopOwner;
     @OneToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;

@@ -20,6 +20,6 @@ public class ProductResponse {
     private BigDecimal price;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private List<CategoryResponse> categories;
 }

@@ -1,5 +1,6 @@
 package org.ut.server.userservice.exception.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -15,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.ut.server.userservice.exception.*;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.AccessDeniedException;
@@ -54,15 +56,51 @@ public class RestExceptionHandler {
     }
 
     // SQLException
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<Object> handleSQLException(SQLException ex) {
+//    @ExceptionHandler(SQLException.class)
+//    public ResponseEntity<Object> handleSQLException(SQLException ex) {
+//        // 1. create payload containing exception details
+//        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+//        ErrorResponse apiException = new ErrorResponse(
+//                status,
+//                ex.getMessage()
+//        );
+//        log.error("SQL Exception Error: " + ex.getSQLState());
+//        // 2. return response entity
+//        return new ResponseEntity<>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+//    IOException
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<Object> handleIOException(IOException ex) {
         // 1. create payload containing exception details
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorResponse apiException = new ErrorResponse(
                 status,
                 ex.getMessage()
         );
-        log.error("SQL Exception Error: " + ex.getSQLState());
+        // 2. return response entity
+        return new ResponseEntity<>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+//    java.lang.IllegalArgumentException:
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        // 1. create payload containing exception details
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResponse apiException = new ErrorResponse(
+                status,
+                ex.getMessage()
+        );
+        // 2. return response entity
+        return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
+    }
+//JsonProcessingException
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException ex) {
+        // 1. create payload containing exception details
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorResponse apiException = new ErrorResponse(
+                status,
+                ex.getMessage()
+        );
         // 2. return response entity
         return new ResponseEntity<>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -80,6 +118,21 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
     }
 
+//    SQLException
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<Object> handleSQLExceptions(
+            SQLException e
+    ) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        status,
+                        e.getMessage()
+                ),
+                status
+        );
+    }
 
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<ErrorResponse> handleTransactionSystemException(TransactionSystemException ex) {

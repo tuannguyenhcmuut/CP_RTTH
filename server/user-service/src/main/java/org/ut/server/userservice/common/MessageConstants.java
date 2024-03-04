@@ -99,4 +99,15 @@ public class MessageConstants {
     public static final String SUCCESS_UPLOAD_IMAGE = "Uploaded image successfully!";
     public static final String UNSUCCESSFUL_UPLOAD_IMAGE = "Uploaded image unsuccessfully!";
 
+    public static final String SUCCESS_GET_PERMISSIONS = "SUCCESS.";
+    public static final String SUCCESS_APPROVE_EMPLOYEE_REQUEST = "The request has been approved successfully!";
+    public static final String SUCCESS_REJECT_EMPLOYEE_REQUEST = "The request has been rejected successfully!";
+    public static final String SUCCESS_GET_EMPLOYEES = "Get employees successfully!";
+    public static final String SUCCESS_CREATE_EMPLOYEE_REQUEST = "Create employee request successfully!";
+    public static final String SUCCESS_GET_PENDING_REQUESTS = "Get pending requests successfully!";
+    public static final String SUCCESS_GET_REQUESTS_OF_MANAGER = "Get requests of manager successfully!";
+    public static final String SUCCESS_GET_MANAGER_REQUEST = "Get manager request successfully!";
+    public static final String SUCCESS_GET_REQUESTS_OF_EMPLOYEE = "Get requests of employee successfully!";
+    public static final String SUCCESS_GET_EMPLOYEE_REQUEST = "Get employee request successfully!"; ;
+    public static final String SUCCESS_GET_EMPLOYEE_PERMISSIONS = "Get employee permissions successfully!";
 }

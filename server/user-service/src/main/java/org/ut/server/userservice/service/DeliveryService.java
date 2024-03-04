@@ -40,7 +40,7 @@ public class DeliveryService {
 
         log.debug("Delivery found: {}", delivery);
         // find order
-        Order order = orderRepository.findOrderByIdAndUser_Id(delivery.getOrder().getId(), userId)
+        Order order = orderRepository.findOrderByIdAndShopOwner_Id(delivery.getOrder().getId(), userId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
         log.debug("Order found: {}", order);

@@ -28,10 +28,14 @@ public class Account {
     @Size(max = 120)
     private String password;
 
-    @OneToOne(mappedBy = "account")
-    private User user;
+//    @OneToOne(mappedBy = "account", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private ShopOwner user;
+//
+//    // shipper
+//    @OneToOne(mappedBy = "account")
+//    private Shipper shipper;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "username"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -40,5 +44,27 @@ public class Account {
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createdDate;
+
+//    public void setShipper(Shipper shipper) {
+//        if (shipper == null) {
+//            if (this.shipper != null) {
+//                this.shipper.setAccount(null);
+//            }
+//        } else {
+//            shipper.setAccount(this);
+//        }
+//        this.shipper = shipper;
+//    }
+//
+//    public void setShopOwner(ShopOwner shopOwner) {
+//        if (shopOwner == null) {
+//            if (this.user != null) {
+//                this.user.setAccount(null);
+//            }
+//        } else {
+//            shopOwner.setAccount(this);
+//        }
+//        this.user = shopOwner;
+//    }
 
 }

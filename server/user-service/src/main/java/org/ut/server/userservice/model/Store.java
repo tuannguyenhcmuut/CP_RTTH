@@ -30,17 +30,17 @@ public class Store extends Person {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private ShopOwner shopOwner;
 
 //    @OneToOne(fetch = FetchType.LAZY, mappedBy = "store")
 //    private Order order;
 
     @Builder
     public Store(Long id, String name, String phoneNumber, String address, String detailedAddress,
-                 User user, String description, StorePickUpTime storePickUpTime , Boolean isDefault, Boolean sendAtPost) {
+                 ShopOwner shopOwner, String description, StorePickUpTime storePickUpTime , Boolean isDefault, Boolean sendAtPost) {
         super(name, phoneNumber, address, detailedAddress);
         this.id = id;
-        this.user = user;
+        this.shopOwner = shopOwner;
         this.isDefault = isDefault;
         this.description = description;
         this.storePickUpTime = storePickUpTime;

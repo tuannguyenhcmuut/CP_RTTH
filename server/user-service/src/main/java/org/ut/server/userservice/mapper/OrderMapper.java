@@ -11,10 +11,7 @@ import org.ut.server.userservice.exception.StoreNotFoundException;
 import org.ut.server.userservice.exception.UserNotFoundException;
 import org.ut.server.userservice.model.*;
 import org.ut.server.userservice.model.enums.OrderStatus;
-import org.ut.server.userservice.repo.DeliveryRepository;
-import org.ut.server.userservice.repo.ReceiverRepository;
-import org.ut.server.userservice.repo.StoreRepository;
-import org.ut.server.userservice.repo.UserRepository;
+import org.ut.server.userservice.repo.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +35,7 @@ public class OrderMapper {
 
 
     @Autowired
-    private UserRepository userRepository;
+    private ShopOwnerRepository shopOwnerRepository;
 
     @Autowired
     private DeliveryRepository deliveryRepository;
@@ -49,15 +46,15 @@ public class OrderMapper {
     public Order mapRequestToEntity(OrderRequest orderRequest) {
         // find user
         if (orderRequest == null) return null;
-        User user = userRepository.findById(orderRequest.getUserId())
+        ShopOwner user = shopOwnerRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return Order.builder()
                 .code(orderRequest.getCode())
                 .height(orderRequest.getHeight())
                 .width(orderRequest.getWidth())
-                .depth(orderRequest.getDepth())
+                .length(orderRequest.getLength())
                 .items(orderItemMapper.mapDtosToEntities(orderRequest.getItems()))
-                .user(user)
+                .shopOwner(user)
                 .store(storeMapper.mapToEntity(orderRequest.getStore(), orderRequest.getUserId()))
                 .receiver(receiverMapper.mapDtoToEntity(orderRequest.getReceiver(), orderRequest.getUserId()))
                 .orderStatus(orderRequest.getOrderStatus())
@@ -82,15 +79,15 @@ public class OrderMapper {
             delivery = deliveryRepository.findById(orderDto.getDeliveryId())
                     .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
         }
-        User user = userRepository.findById(orderDto.getUserId())
+        ShopOwner user = shopOwnerRepository.findById(orderDto.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return Order.builder()
                 .code(orderDto.getCode())
                 .height(orderDto.getHeight())
                 .width(orderDto.getWidth())
-                .depth(orderDto.getDepth())
+                .length(orderDto.getLength())
                 .items(orderItemMapper.mapDtosToEntities(orderDto.getOrderItemDtos()))
-                .user(user)
+                .shopOwner(user)
                 .store(storeMapper.mapToEntity(orderDto.getStoreDto(), orderDto.getUserId()))
                 .receiver(receiverMapper.mapDtoToEntity(orderDto.getReceiverDto(), orderDto.getUserId()))
                 .orderStatus(orderDto.getOrderStatus())
@@ -111,12 +108,12 @@ public class OrderMapper {
     }
 
     public OrderDto mapToDto(Order order) {
-        Receiver receiver = receiverRepository.findReceiverByIdAndUser_Id(order.getReceiver().getId(), order.getUser().getId())
+        Receiver receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
                 .orElseThrow(
                         () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
                 );
 
-        Store store = storeRepository.findStoreByIdAndUser_Id(order.getStore().getId(), order.getUser().getId())
+        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
                 .orElseThrow(
                         () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
                 );
@@ -127,11 +124,11 @@ public class OrderMapper {
                     .code(order.getCode())
                     .height(order.getHeight())
                     .width(order.getWidth())
-                    .depth(order.getDepth())
+                    .length(order.getLength())
                     .orderItemDtos(
-                            order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getUser().getId()) : null
+                            order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getShopOwner().getId()) : null
                     )
-                    .userId(order.getUser().getId())
+                    .userId(order.getShopOwner().getId())
                     .storeDto(storeMapper.mapToDto(store))
                     .receiverDto(receiverMapper.mapToDto(receiver))
                     .orderStatus(order.getOrderStatus() != null ? order.getOrderStatus() : OrderStatus.CREATED)

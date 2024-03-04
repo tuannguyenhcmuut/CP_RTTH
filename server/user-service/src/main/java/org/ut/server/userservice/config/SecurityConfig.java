@@ -20,12 +20,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.ut.server.userservice.model.Account;
-import org.ut.server.userservice.model.CustomUserDetails;
+import org.ut.server.userservice.model.*;
+import org.ut.server.userservice.model.enums.ERole;
 import org.ut.server.userservice.repo.AccountRepository;
+import org.ut.server.userservice.repo.ShipperRepository;
+import org.ut.server.userservice.repo.ShopOwnerRepository;
 import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @EnableWebSecurity
@@ -35,7 +38,8 @@ public class SecurityConfig {
 
 //    @Autowired
     private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
+    private final ShopOwnerRepository shopOwnerRepository;
+    private final ShipperRepository shipperRepository;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
@@ -94,25 +98,57 @@ public class SecurityConfig {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                Optional<Account> user = accountRepository.findAccountByUsername(username);
-                // find user service
-                try {
-                    UUID userId = userRepository.findByAccount_Username(username).get().getId();
-                    if(user.isEmpty())
-                        throw new UsernameNotFoundException("Username not found: " + username);
-                    if (userId == null)
-                        throw new UsernameNotFoundException("Username not found via userFeign: " + username);
+               Account user = accountRepository.findAccountByUsername(username).orElseThrow(
+                          () -> new UsernameNotFoundException("Username not found: " + username)
+               );
 
-                    log.debug("UserId found: " + userId);
-                    return CustomUserDetails.build(user.get(), userId);
+                Set<Role> roles = user.getRoles();
+                if (checkRoleSet(user.getRoles(),ERole.ROLE_USER)) {
+//                    log.debug("Shop owner found: " + user.getUser().getId());
+
+                    // find user service
+                    try {
+                        ShopOwner shopOwner = shopOwnerRepository.findByAccount_Username(username).orElseThrow(
+                                () -> new UsernameNotFoundException("Username not found" + username)
+                        );
+                        UUID userId = shopOwner.getId();
+
+                        log.debug("UserId found: " + userId);
+                        return CustomUserDetails.build(user, userId);
+                    } catch (Exception e) {
+                        throw new UsernameNotFoundException("Username not found" + username);
+                    }
                 }
-                catch (Exception e) {
+                else if (user.getRoles().contains(ERole.ROLE_SHIPPER)){
+                    // shipper
+                    try {
+                        Shipper shipper = shipperRepository.findByAccount_Username(username).orElseThrow(
+                                () -> new UsernameNotFoundException("Username not found" + username)
+                        );
+                        UUID userId = shipper.getId();
+                        log.debug("UserId found: " + userId);
+                        return CustomUserDetails.build(user, userId);
+                    } catch (Exception e) {
+                        throw new UsernameNotFoundException("Username not found" + username);
+                    }
+                }
+                else {
                     throw new UsernameNotFoundException("Username not found" + username);
                 }
 
             }
 
         };
+    }
+
+    private boolean checkRoleSet(Set<Role> roles, ERole eRole) {
+        // loop through roles and check if it contains the erole
+        for (Role role : roles) {
+            if (role.getName().equals(eRole)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

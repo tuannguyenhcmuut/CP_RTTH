@@ -20,7 +20,7 @@ public class OrderRequest {
     private String code;
     private Float height;
     private Float width;
-    private Float depth;
+    private Float length;
     private List<OrderItemDto> items;
     private UUID userId;
     @NotNull

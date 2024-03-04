@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/user")
+//@RequestMapping("/api/v1/user")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
@@ -31,60 +31,60 @@ public class UserController {
 //        return userService.getAllUser();
 //    }
 
-    @GetMapping("/{userId}")
-    public GenericResponseDTO<UserResponseDTO> getUserInfo(@PathVariable UUID userId) {
-        UserResponseDTO user =  userService.getUserInfo(userId);
-        return GenericResponseDTO.<UserResponseDTO>builder()
-                .data(user)
-                .code(MessageCode.SUCCESS.toString())
-                .message(MessageConstants.SUCCESS_GET_USER)
-                .timestamps(new Date())
-                .build();
-    }
-
-    @GetMapping("/username/{username}/id")
-    public GenericResponseDTO<UUID> getUserIdByUsername(@PathVariable String username) {
-        UUID userId = userService.getUserIdByUsername(username);
-        return GenericResponseDTO.<UUID>builder()
-                .data(userId)
-                .code(MessageCode.SUCCESS.toString())
-                .message(MessageConstants.SUCCESS_GET_USER)
-                .timestamps(new Date())
-                .build();
-    }
-
-//    @GetMapping("/address")
-//    public GenericResponseDTO<List<Address>> getAddress() {
-//        List<Address> addresses = userService.getAllAddress();
-//        return GenericResponseDTO.<List<Address>>builder()
-//                .data(addresses)
+//    @GetMapping("/{userId}")
+//    public GenericResponseDTO<UserResponseDTO> getUserInfo(@PathVariable UUID userId) {
+//        UserResponseDTO user =  userService.getUserInfo(userId);
+//        return GenericResponseDTO.<UserResponseDTO>builder()
+//                .data(user)
 //                .code(MessageCode.SUCCESS.toString())
-//                .message(MessageConstants.SUCCESS_GET_ADDRESS)
+//                .message(MessageConstants.SUCCESS_GET_USER)
 //                .timestamps(new Date())
 //                .build();
 //    }
+//
+//    @GetMapping("/username/{username}/id")
+//    public GenericResponseDTO<UUID> getUserIdByUsername(@PathVariable String username) {
+//        UUID userId = userService.getUserIdByUsername(username);
+//        return GenericResponseDTO.<UUID>builder()
+//                .data(userId)
+//                .code(MessageCode.SUCCESS.toString())
+//                .message(MessageConstants.SUCCESS_GET_USER)
+//                .timestamps(new Date())
+//                .build();
+//    }
+//
+////    @GetMapping("/address")
+////    public GenericResponseDTO<List<Address>> getAddress() {
+////        List<Address> addresses = userService.getAllAddress();
+////        return GenericResponseDTO.<List<Address>>builder()
+////                .data(addresses)
+////                .code(MessageCode.SUCCESS.toString())
+////                .message(MessageConstants.SUCCESS_GET_ADDRESS)
+////                .timestamps(new Date())
+////                .build();
+////    }
+//
+//    @PostMapping("/create")
+//    public GenericResponseDTO<UserResponseDTO> createUser(@RequestBody UserRequestDTO newUser) {
+//         UserResponseDTO newUserRes =  userService.createNewUser(newUser);
+//         return GenericResponseDTO.<UserResponseDTO>builder()
+//                 .data(newUserRes)
+//                 .code(MessageCode.CREATED_SUCCESS.toString())
+//                 .message(MessageConstants.SUCCESS_USER_CREATED)
+//                 .timestamps(new Date())
+//                 .build();
+//    }
 
-    @PostMapping("/create")
-    public GenericResponseDTO<UserResponseDTO> createUser(@RequestBody UserRequestDTO newUser) {
-         UserResponseDTO newUserRes =  userService.createNewUser(newUser);
-         return GenericResponseDTO.<UserResponseDTO>builder()
-                 .data(newUserRes)
-                 .code(MessageCode.CREATED_SUCCESS.toString())
-                 .message(MessageConstants.SUCCESS_USER_CREATED)
-                 .timestamps(new Date())
-                 .build();
-    }
-
-    @PatchMapping("/{userId}/update")
-    public GenericResponseDTO<UserResponseDTO> updateUser(@PathVariable UUID userId, @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
-        return GenericResponseDTO.<UserResponseDTO>builder()
-                .data(userResponseDTO)
-                .code(MessageCode.SUCCESS.toString())
-                .message(MessageConstants.SUCCESS_USER_UPDATED)
-                .timestamps(new Date())
-                .build();
-    }
+//    @PatchMapping("/{userId}/update")
+//    public GenericResponseDTO<UserResponseDTO> updateUser(@PathVariable UUID userId, @RequestBody UserRequestDTO userRequestDTO) {
+//        UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
+//        return GenericResponseDTO.<UserResponseDTO>builder()
+//                .data(userResponseDTO)
+//                .code(MessageCode.SUCCESS.toString())
+//                .message(MessageConstants.SUCCESS_USER_UPDATED)
+//                .timestamps(new Date())
+//                .build();
+//    }
 
 
     @DeleteMapping("/{userId}")
@@ -100,7 +100,7 @@ public class UserController {
     @PostMapping("/image")
     public ResponseEntity<FileDto> uploadProductImage(@RequestParam("file") MultipartFile imageFile) {
         try {
-            FileDto photo = userService.uploadImage(imageFile.getBytes());
+            FileDto photo = userService.uploadImage(imageFile);
             return ResponseEntity.ok(photo);
         }
         catch (Exception e) {
@@ -114,7 +114,7 @@ public class UserController {
             @RequestParam("file") MultipartFile file,
             @PathVariable UUID userId
     ) throws IOException {
-        UserResponseDTO userResponseDTO = userService.uploadAvatar(file.getBytes(), userId);
+        UserResponseDTO userResponseDTO = userService.uploadAvatar(file, userId);
         return GenericResponseDTO.<UserResponseDTO>builder()
                 .data(userResponseDTO)
                 .code(MessageCode.SUCCESS.toString())
@@ -124,16 +124,16 @@ public class UserController {
     }
 
     //Get list of addresses for user base on user_id
-    @GetMapping("{userId}/address")
-    public GenericResponseDTO<List<Address>> getAddressForUserById(@PathVariable UUID userId) {
-        List<Address> addresses = userService.getAddressForUserById(userId);
-        return GenericResponseDTO.<List<Address>>builder()
-                .data(addresses)
-                .code(MessageCode.SUCCESS.toString())
-                .message(MessageConstants.SUCCESS_GET_ADDRESS)
-                .timestamps(new Date())
-                .build();
-    }
+//    @GetMapping("{userId}/address")
+//    public GenericResponseDTO<List<Address>> getAddressForUserById(@PathVariable UUID userId) {
+//        List<Address> addresses = userService.getAddressForUserById(userId);
+//        return GenericResponseDTO.<List<Address>>builder()
+//                .data(addresses)
+//                .code(MessageCode.SUCCESS.toString())
+//                .message(MessageConstants.SUCCESS_GET_ADDRESS)
+//                .timestamps(new Date())
+//                .build();
+//    }
 
     //Add new address for user base on user_id
     @PostMapping("{userId}/address")
