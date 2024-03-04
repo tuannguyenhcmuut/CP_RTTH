@@ -34,7 +34,7 @@ public class EmployeeManagement {
     @Enumerated(EnumType.STRING)
     @Column(name = "permission_level", nullable = false)
     @ElementCollection(targetClass = PermissionLevel.class)
-    @JoinTable(name = "tblInterests", joinColumns = @JoinColumn(name = "id"))
+    @JoinTable(name = "permission_level", joinColumns = @JoinColumn(name = "id"))
      private Set<PermissionLevel> permissionLevel;
 
 

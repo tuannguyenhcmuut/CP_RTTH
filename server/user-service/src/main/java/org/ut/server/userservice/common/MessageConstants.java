@@ -110,4 +110,6 @@ public class MessageConstants {
     public static final String SUCCESS_GET_REQUESTS_OF_EMPLOYEE = "Get requests of employee successfully!";
     public static final String SUCCESS_GET_EMPLOYEE_REQUEST = "Get employee request successfully!"; ;
     public static final String SUCCESS_GET_EMPLOYEE_PERMISSIONS = "Get employee permissions successfully!";
+    public static final String SUCCESS_GET_NOTIFICATIONS = "Get notifications successfully!";
+    public static final String SUCCESS_MARK_AS_READ = "Mark as read successfully!";
 }

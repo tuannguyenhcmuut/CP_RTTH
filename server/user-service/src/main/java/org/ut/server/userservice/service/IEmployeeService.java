@@ -15,7 +15,7 @@ public interface IEmployeeService {
     // get all permissions level
     List<PermissionLevel> getPermissions();
 
-    List<EmployeeManagementDto> getPendingRequests(UUID employeeId);
+    List<EmployeeManagementDto> getEmployeeRequests(UUID employeeId, UUID ownerId, String status);
 
     List<EmployeeManagementDto> getOwnerRequests(UUID managerId, String status);
 
@@ -28,6 +28,8 @@ public interface IEmployeeService {
     List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId);
 
     List<EmployeeInfoDto> getAllEmployees(UUID managerId);
+
+    List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId);
 
     // approve employee
 

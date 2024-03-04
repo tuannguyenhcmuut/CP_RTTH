@@ -1,5 +1,6 @@
 package org.ut.server.userservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,13 +88,13 @@ public class AuthController {
 
     // register
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto registerDTO) {
-        try {
+    public ResponseEntity<?> register(@RequestBody RegisterDto registerDTO) throws JsonProcessingException {
+//        try {
             return authService.register(registerDTO);
-        }
-        catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+//        }
+//        catch (Exception ex) {
+//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
     }
 

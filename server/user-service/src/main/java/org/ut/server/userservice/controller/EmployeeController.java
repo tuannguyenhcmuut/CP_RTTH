@@ -136,7 +136,7 @@ public class EmployeeController {
                 .build();
     }
 
-    // get all request of employee
+    // get all request of employee by manager
     @GetMapping("employee/{ownerId}")
     public GenericResponseDTO<List<EmployeeManagementDto>> getEmployeeRequests(
             @RequestHeader("Authorization") String token,
@@ -145,7 +145,7 @@ public class EmployeeController {
     ) {
         // get all request of an employee
         UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<EmployeeManagementDto> employeeRequests =  employeeService.getRequests(ownerId, employeeId, status);
+        List<EmployeeManagementDto> employeeRequests =  employeeService.getEmployeeRequests(employeeId, ownerId, status);
 
         return GenericResponseDTO.<List<EmployeeManagementDto>>builder()
                 .data(employeeRequests)
@@ -159,8 +159,23 @@ public class EmployeeController {
 
 
     // get permission of an employee with the managerId
-    @GetMapping("{empl_mgnt_id}/permissions")
+    @GetMapping("employee/{ownerId}/permissions")
     public GenericResponseDTO<List<PermissionLevel>> getEmployeePermissions(
+            @RequestHeader("Authorization") String token,
+            @PathVariable UUID ownerId
+    ) {
+        UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<PermissionLevel> permissions =  employeeService.getEmployeePermissionsByManager(employeeId, ownerId);
+        return GenericResponseDTO.<List<PermissionLevel>>builder()
+                .data(permissions)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_EMPLOYEE_PERMISSIONS)
+                .timestamps(new Date())
+                .build();
+    }
+
+    @GetMapping("{empl_mgnt_id}/permissions")
+    public GenericResponseDTO<List<PermissionLevel>> getEmployeePermissionsFromEMPL_MNGNT(
             @RequestHeader("Authorization") String token,
             @PathVariable Long empl_mgnt_id
     ) {
@@ -176,14 +191,14 @@ public class EmployeeController {
 
 
     // get pending requests
-    @GetMapping("/requests/pending")
+    @GetMapping("/employee/pending")
     public GenericResponseDTO<List<EmployeeManagementDto>> getPendingRequests(
             @RequestHeader("Authorization") String token
     ) {
         // get pending requests
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
         return GenericResponseDTO.<List<EmployeeManagementDto>>builder()
-                .data(employeeService.getPendingRequests(userId))
+                .data(employeeService.getEmployeeRequests(userId,null,"PENDING"))
                 .code(MessageCode.SUCCESS.toString())
                 .message(MessageConstants.SUCCESS_GET_PENDING_REQUESTS)
                 .timestamps(new Date())
@@ -192,7 +207,6 @@ public class EmployeeController {
 
 
 
-    // TODO: get all employees
     @GetMapping("")
     public GenericResponseDTO<List<EmployeeInfoDto>> getAllEmployees(
             @RequestHeader("Authorization") String token

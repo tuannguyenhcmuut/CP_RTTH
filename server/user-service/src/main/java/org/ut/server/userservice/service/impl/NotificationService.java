@@ -3,14 +3,20 @@ package org.ut.server.userservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.ut.server.userservice.dto.NotificationDTO;
 import org.ut.server.userservice.model.EmployeeManagement;
 import org.ut.server.userservice.model.Notification;
+import org.ut.server.userservice.model.ShopOwner;
 import org.ut.server.userservice.repo.EmployeeManagementRepository;
 import org.ut.server.userservice.repo.NotificationRepository;
+import org.ut.server.userservice.repo.ShopOwnerRepository;
 import org.ut.server.userservice.service.INotificationService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -18,9 +24,10 @@ import java.util.UUID;
 public class NotificationService implements INotificationService {
     private final EmployeeManagementRepository employeeManagementRepository;
     private final NotificationRepository notificationRepository;
+    private final ShopOwnerRepository shopOwnerRepository;
 
     @Override
-    public void approveEmployeeRequest(UUID employeeId, Long requestId) {
+    public void approveEmployeeRequest(UUID managerId, Long requestId) {
         // existing code...
         // find request
         EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
@@ -37,7 +44,7 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void rejectEmployeeRequest(UUID employeeId, Long requestId) {
+    public void rejectEmployeeRequest(UUID managerId, Long requestId) {
         // existing code...
         EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Employee request not found with id " + requestId));
@@ -52,5 +59,48 @@ public class NotificationService implements INotificationService {
         notificationRepository.save(notification);
     }
 
+    // store notification for employee via request creation
+    @Override
+    public void requestEmployee(UUID employeeId, UUID managerId) {
+        // existing code...
+        // find employee by id
+        ShopOwner employee = shopOwnerRepository.findShopOwnerById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
 
+        // ,amager
+        ShopOwner manager = shopOwnerRepository.findShopOwnerById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id " + managerId));
+        Notification notification = new Notification();
+        notification.setMessage("You have received a new employee request to become employee of " + manager.getAccount().getUsername());
+        notification.setReceiver(employee);
+        notification.setRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public List<NotificationDTO> getNotifications(
+            UUID userId
+    ) {
+       // get all notification for a user
+        List<Notification> notis = notificationRepository.findByReceiverId(userId).orElse(Collections.emptyList());
+        return notis.stream().map(notification -> {
+            NotificationDTO notificationDTO = new NotificationDTO();
+            notificationDTO.setId(notification.getId());
+            notificationDTO.setMessage(notification.getMessage());
+            notificationDTO.setRead(notification.isRead());
+            notificationDTO.setCreatedAt(notification.getCreatedAt());
+            return notificationDTO;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void markAsRead(UUID userId, Long notificationId) {
+        // existing code...
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found with id " + notificationId));
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
 }
