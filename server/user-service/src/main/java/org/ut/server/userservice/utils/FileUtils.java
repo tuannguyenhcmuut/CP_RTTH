@@ -7,6 +7,8 @@ import java.util.Base64;
 
 @Component
 public class FileUtils {
+    private FileUtils() {
+    }
     public static Long getFileSizeKB(String base64) {
         return (long) (base64.length() / 1024);
     }

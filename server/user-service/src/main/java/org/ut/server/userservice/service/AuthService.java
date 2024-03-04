@@ -112,7 +112,7 @@ public class AuthService {
         }
         else {
             ShopOwner shopOwner = shopOwnerMapper.newShopOwner(newAccount, registerDTO);
-            ShopOwner savedUser = shopOwnerRepository.save(newAccount.getUser());
+            ShopOwner savedUser = shopOwnerRepository.save(shopOwner);
             return ResponseEntity.ok(MessageFormat.format("User {0} registered successfully!", savedUser.getAccount().getUsername()));
         }
     }

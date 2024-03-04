@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.userservice.common.MessageCode;
 import org.ut.server.userservice.common.MessageConstants;
+import org.ut.server.userservice.config.JwtUtils;
 import org.ut.server.userservice.dto.FileDto;
 import org.ut.server.userservice.dto.request.UserRequestDTO;
 import org.ut.server.userservice.dto.response.GenericResponseDTO;
@@ -30,6 +31,8 @@ public class ShopOwnerController {
 //    private final ShopOwnerService shopOwnerService;
 
     private final ShopOwnerService shopOwnerService;
+
+    private final JwtUtils jwtUtils;
 
 //    @GetMapping("")
 //    public ResponseEntity<List<User>> getUsers() {
@@ -92,7 +95,7 @@ public class ShopOwnerController {
     }
 
 
-    @DeleteMapping("/{userId}")
+//    @DeleteMapping("/{userId}")
     public GenericResponseDTO<String> deleteUserById(@PathVariable UUID userId) {
         shopOwnerService.deleteUserById(userId);
         return GenericResponseDTO.<String>builder()
@@ -129,8 +132,9 @@ public class ShopOwnerController {
     @PostMapping("/{userId}/avatar")
     public GenericResponseDTO<UserResponseDTO> uploadAvatar(
             @RequestParam("file") MultipartFile file,
-            @PathVariable UUID userId
+            @RequestHeader("Authorization") String token
     ) throws IOException {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
         UserResponseDTO userResponseDTO = shopOwnerService.uploadAvatar(file, userId);
         return GenericResponseDTO.<UserResponseDTO>builder()
                 .data(userResponseDTO)

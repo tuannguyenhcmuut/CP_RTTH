@@ -19,14 +19,14 @@ public class Shipper extends User {
     @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
     private Account account;
     private Float rating;
-    public void setAccount(Account account) {
-        if (account == null) {
-            if (this.account != null) {
-                this.account.setShipper(null);
-            }
-        } else {
-            account.setShipper(this);
-        }
-        this.account = account;
-    }
+//    public void setAccount(Account account) {
+//        if (account == null) {
+//            if (this.account != null) {
+//                this.account.setShipper(null);
+//            }
+//        } else {
+//            account.setShipper(this);
+//        }
+//        this.account = account;
+//    }
 }

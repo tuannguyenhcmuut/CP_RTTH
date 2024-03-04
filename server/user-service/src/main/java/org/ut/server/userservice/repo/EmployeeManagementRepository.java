@@ -13,6 +13,8 @@ public interface EmployeeManagementRepository extends JpaRepository<EmployeeMana
 
     Optional<List<EmployeeManagement>> findEmployeeManagementsByManagerId(ShopOwner managerId);
     Optional<EmployeeManagement> findEmployeeManagementByIdAndEmployeeId(Long id, ShopOwner employeeId);
+//    findEmployeeManagementByManager_IdAndEmployee_Id
+    Optional<EmployeeManagement> findEmployeeManagementByManagerIdAndEmployeeId(ShopOwner managerId, ShopOwner employeeId);
     // save employee request
     // update employee request
     // delete employee request

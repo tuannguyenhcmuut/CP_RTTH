@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface ShopOwnerRepository extends JpaRepository<ShopOwner, UUID> {
     Optional<ShopOwner> findShopOwnerById(UUID id);
+    Optional<ShopOwner> findShopOwnerByPhoneNumber(String phoneNumber);
+    Optional<ShopOwner> findShopOwnerByEmail(String email);
     //    Optional<User> findByAccount(String username);
     Optional<ShopOwner> findUserByEmail(String email);
     // find by phone

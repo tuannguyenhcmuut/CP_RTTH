@@ -20,16 +20,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.ut.server.userservice.model.Account;
-import org.ut.server.userservice.model.CustomUserDetails;
-import org.ut.server.userservice.model.Shipper;
-import org.ut.server.userservice.model.ShopOwner;
+import org.ut.server.userservice.model.*;
+import org.ut.server.userservice.model.enums.ERole;
 import org.ut.server.userservice.repo.AccountRepository;
 import org.ut.server.userservice.repo.ShipperRepository;
 import org.ut.server.userservice.repo.ShopOwnerRepository;
 import org.ut.server.userservice.repo.UserRepository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @EnableWebSecurity
@@ -102,8 +101,10 @@ public class SecurityConfig {
                Account user = accountRepository.findAccountByUsername(username).orElseThrow(
                           () -> new UsernameNotFoundException("Username not found: " + username)
                );
-                if (user.getUser() != null) {
-                    log.debug("Shop owner found: " + user.getUser().getId());
+
+                Set<Role> roles = user.getRoles();
+                if (checkRoleSet(user.getRoles(),ERole.ROLE_USER)) {
+//                    log.debug("Shop owner found: " + user.getUser().getId());
 
                     // find user service
                     try {
@@ -118,9 +119,8 @@ public class SecurityConfig {
                         throw new UsernameNotFoundException("Username not found" + username);
                     }
                 }
-                else if (user.getShipper() != null){
+                else if (user.getRoles().contains(ERole.ROLE_SHIPPER)){
                     // shipper
-                    log.debug("Shipper found: " + user.getShipper().getId());
                     try {
                         Shipper shipper = shipperRepository.findByAccount_Username(username).orElseThrow(
                                 () -> new UsernameNotFoundException("Username not found" + username)
@@ -139,6 +139,16 @@ public class SecurityConfig {
             }
 
         };
+    }
+
+    private boolean checkRoleSet(Set<Role> roles, ERole eRole) {
+        // loop through roles and check if it contains the erole
+        for (Role role : roles) {
+            if (role.getName().equals(eRole)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

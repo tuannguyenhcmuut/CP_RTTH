@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.ut.server.userservice.model.Account;
 import org.ut.server.userservice.repo.AccountRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,14 +18,22 @@ public class UserDao {
     private final AccountRepository accountRepository;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> user = accountRepository.findAccountByUsername(username);
-        if (user.isPresent() == false) {
+        Optional<Account> userAccount = accountRepository.findAccountByUsername(username);
+        if (userAccount.isPresent() == false) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
+        // build GrantedAuthority for roles
+
+        List<String> rolesList = userAccount.get().getRoles().stream()
+                .map(role -> role.toString())
+                .collect(Collectors.toList());
+
+        String[] rolesArray = rolesList.toArray(new String[0]);
+
         return User
-                .withUsername(user.get().getUsername())
-                .password(user.get().getPassword())
-                .roles("USER") // Set roles if you have a role-based system
+                .withUsername(userAccount.get().getUsername())
+                .password(userAccount.get().getPassword())
+                .roles(rolesArray) // Set roles if you have a role-based system
                 .build();
     }
 
