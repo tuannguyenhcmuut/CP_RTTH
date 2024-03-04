@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.ut.server.userservice.dto.EmployeeInfoDto;
 import org.ut.server.userservice.dto.EmployeeManagementDto;
 import org.ut.server.userservice.dto.request.EmployeeRequestDto;
-import org.ut.server.userservice.dto.response.GenericResponseDTO;
 import org.ut.server.userservice.mapper.EmployeeManagementMapper;
 import org.ut.server.userservice.model.EmployeeManagement;
 import org.ut.server.userservice.model.ShopOwner;
@@ -87,38 +86,101 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public List<EmployeeManagementDto> getOwnerRequests(UUID userId, String status) {
-        return null;
+    public List<EmployeeManagementDto> getOwnerRequests(UUID managerId, String status) {
+//        check null of status
+        // Convert the status string to an EmployeeRequestStatus enum
+        EmployeeRequestStatus requestStatus = EmployeeRequestStatus.valueOf(status.toUpperCase());
+        // find all employee requests by manager id and status
+        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_IdAndApprovalStatus(managerId, requestStatus);
+
+
+
+        // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
+        return employeeManagements.stream()
+                .map(employeeManagementMapper::mapToDto)
+                .collect(Collectors.toList());
+
     }
 
     @Override
     public void approveEmployeeRequest(UUID employeeId, Long requestId) {
+        EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Employee request not found with id " + requestId));
 
+        if (!employeeManagementOptional.getEmployeeId().getId().equals(employeeId)) {
+            throw new RuntimeException("Employee ID mismatch");
+        }
+        // check if the current status is pending or not
+        if (employeeManagementOptional.getApprovalStatus() != EmployeeRequestStatus.PENDING) {
+            throw new RuntimeException("Employee request is not pending");
+        }
+        employeeManagementOptional.setApprovalStatus(EmployeeRequestStatus.ACCEPTED);
+        employeeManagementRepository.save(employeeManagementOptional);
+        // Assuming there's a method to send notifications
+//        sendNotificationToManager(employeeManagementOptional.getManagerId().getId(), "Your employee request has been approved.");
     }
 
     @Override
     public void rejectEmployeeRequest(UUID employeeId, Long requestId) {
+        EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Employee request not found with id " + requestId));
 
+        if (!employeeManagementOptional.getEmployeeId().getId().equals(employeeId)) {
+            throw new RuntimeException("Employee ID mismatch");
+        }
+        // check if the current status is pending or not
+        if (employeeManagementOptional.getApprovalStatus() != EmployeeRequestStatus.PENDING) {
+            throw new RuntimeException("Employee request is not pending");
+        }
+        employeeManagementOptional.setApprovalStatus(EmployeeRequestStatus.REJECTED);
+        employeeManagementRepository.save(employeeManagementOptional);
+        // Assuming there's a method to send notifications
+//        sendNotificationToManager(employeeManagementOptional.getManagerId().getId(), "Your employee request has been approved.");
     }
 
     @Override
     public List<EmployeeManagementDto> getRequests(UUID managerId, UUID employeeId, String status) {
-        return null;
+        // check if the managerId is null or not
+        if (managerId != null) {
+            // get all requests of a manager
+            return getOwnerRequests(managerId, status);
+        }
+        else {
+            // get all request of an employee
+            return getPendingRequests(employeeId);
+        }
     }
 
     @Override
     public List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId) {
-        return null;
+        // find employee management by id
+        EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByIdAndEmployeeId_Id(emplMgntId, employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+        // return the permission level of the employee
+        return List.copyOf(employeeManagement.getPermissionLevel());
     }
 
     @Override
     public List<EmployeeInfoDto> getAllEmployees(UUID managerId) {
-        return null;
+//        return null;
+        // find all employee managements by manager id with status is accepted
+        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_IdAndApprovalStatus(managerId, EmployeeRequestStatus.ACCEPTED);
+        // Convert the EmployeeManagement entities to EmployeeInfoDto objects and return the list
+        return employeeManagements.stream()
+                .map(employeeManagementMapper::mapToEmployeeInfoDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<EmployeeManagementDto> getPendingRequests(UUID employeeId) {
-        return null;
+//        return null;
+        // find all employee managements by employee id with status is pending
+        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_Id(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+        // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
+        return employeeManagements.stream()
+                .map(employeeManagementMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
 

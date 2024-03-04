@@ -17,7 +17,7 @@ public interface IEmployeeService {
 
     List<EmployeeManagementDto> getPendingRequests(UUID employeeId);
 
-    List<EmployeeManagementDto> getOwnerRequests(UUID userId, String status);
+    List<EmployeeManagementDto> getOwnerRequests(UUID managerId, String status);
 
     void approveEmployeeRequest(UUID employeeId, Long requestId);
 

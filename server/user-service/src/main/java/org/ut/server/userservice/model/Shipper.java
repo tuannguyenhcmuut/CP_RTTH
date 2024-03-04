@@ -15,9 +15,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "user_id")
 public class Shipper extends User {
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
-    private Account account;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
+//    private Account account;
     private Float rating;
 //    public void setAccount(Account account) {
 //        if (account == null) {

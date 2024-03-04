@@ -52,6 +52,10 @@ public class User {
 
     private String avatarUrl;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
+    private Account account;
+
 //    @JsonManagedReference
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private List<Address> addresses;

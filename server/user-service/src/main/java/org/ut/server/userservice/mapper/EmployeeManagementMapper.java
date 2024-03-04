@@ -3,6 +3,7 @@ package org.ut.server.userservice.mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.ut.server.userservice.dto.EmployeeInfoDto;
 import org.ut.server.userservice.dto.EmployeeManagementDto;
 import org.ut.server.userservice.model.EmployeeManagement;
 import org.ut.server.userservice.model.ShopOwner;
@@ -31,6 +32,7 @@ public class EmployeeManagementMapper {
                 );
 
         return EmployeeManagement.builder()
+                .id(employeeManagementDto.getId())
                 .employeeId(employee)
                 .managerId(manager)
                 .permissionLevel(
@@ -45,10 +47,24 @@ public class EmployeeManagementMapper {
     public EmployeeManagementDto mapToDto(EmployeeManagement employeeManagement) {
 
         return EmployeeManagementDto.builder()
+                .id(employeeManagement.getId())
                 .employeeId(employeeManagement.getEmployeeId().getId())
                 .managerId(
                         employeeManagement.getManagerId() != null ? employeeManagement.getManagerId().getId() : null)
                 .status(employeeManagement.getApprovalStatus())
+                .permissions(
+                        employeeManagement.getPermissionLevel().stream().map(
+                                Enum::name
+                        ).collect(Collectors.toSet())
+                )
+                .build();
+    }
+
+    public EmployeeInfoDto mapToEmployeeInfoDto(EmployeeManagement employeeManagement) {
+        return EmployeeInfoDto.builder()
+                .id(employeeManagement.getEmployeeId().getId())
+                .managerId(
+                        employeeManagement.getManagerId() != null ? employeeManagement.getManagerId().getId() : null)
                 .permissions(
                         employeeManagement.getPermissionLevel().stream().map(
                                 Enum::name

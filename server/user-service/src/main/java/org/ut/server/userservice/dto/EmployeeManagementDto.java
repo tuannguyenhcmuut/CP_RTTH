@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class EmployeeManagementDto {
-    @JsonIgnore
+//    @JsonIgnore
     private Long id;
     private UUID employeeId;
     @JsonIgnore

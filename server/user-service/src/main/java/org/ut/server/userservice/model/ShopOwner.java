@@ -18,9 +18,9 @@ import java.util.Set;
 @AllArgsConstructor
 //@MappedSuperclass
 public class ShopOwner extends User {
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
-    private Account account;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
+//    private Account account;
     @JsonManagedReference
     @OneToMany(mappedBy = "shopOwner", cascade = CascadeType.ALL)
     private List<Address> addresses;
