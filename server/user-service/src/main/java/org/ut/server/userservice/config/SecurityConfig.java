@@ -9,9 +9,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,23 +26,28 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.ut.server.userservice.model.*;
 import org.ut.server.userservice.model.enums.ERole;
 import org.ut.server.userservice.repo.AccountRepository;
+import org.ut.server.userservice.repo.EmployeeManagementRepository;
 import org.ut.server.userservice.repo.ShipperRepository;
 import org.ut.server.userservice.repo.ShopOwnerRepository;
 import org.ut.server.userservice.repo.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
 
-//    @Autowired
+    // @Autowired
     private final AccountRepository accountRepository;
     private final ShopOwnerRepository shopOwnerRepository;
     private final ShipperRepository shipperRepository;
+    private final EmployeeManagementRepository employeeManagementRepository;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
@@ -54,18 +62,17 @@ public class SecurityConfig {
                         "/auth/login",
                         "/auth/register",
                         "/auth/validate",
-                        "/auth/refreshToken"
-                ).permitAll()
+                        "/auth/refreshToken")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(this.authenticationProvider())
-                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-        ;
-//        http.formLogin()
-//            .and().httpBasic();
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+        // http.formLogin()
+        // .and().httpBasic();
         return http.build();
     }
 
@@ -98,41 +105,56 @@ public class SecurityConfig {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-               Account user = accountRepository.findAccountByUsername(username).orElseThrow(
-                          () -> new UsernameNotFoundException("Username not found: " + username)
-               );
+                Account user = accountRepository.findAccountByUsername(username).orElseThrow(
+                        () -> new UsernameNotFoundException("Username not found: " + username));
 
                 Set<Role> roles = user.getRoles();
-                if (checkRoleSet(user.getRoles(),ERole.ROLE_USER)) {
-//                    log.debug("Shop owner found: " + user.getUser().getId());
+                List<GrantedAuthority> authorities = new ArrayList<>();
+
+                UUID userId;
+
+                if (checkRoleSet(user.getRoles(), ERole.ROLE_USER)) {
+                    // log.debug("Shop owner found: " + user.getUser().getId());
 
                     // find user service
                     try {
                         ShopOwner shopOwner = shopOwnerRepository.findByAccount_Username(username).orElseThrow(
-                                () -> new UsernameNotFoundException("Username not found" + username)
-                        );
-                        UUID userId = shopOwner.getId();
+                                () -> new UsernameNotFoundException("Username not found" + username));
+                        userId = shopOwner.getId();
 
                         log.debug("UserId found: " + userId);
-                        return CustomUserDetails.build(user, userId);
+                        // add roles to authorities
+                        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName().name())));
+                        // check if user is employee
+                        if (user.getRoles().stream().anyMatch(role -> role.getName().name().equals("ROLE_EMPLOYEE"))) {
+                            // add permissions to authorities
+                            List<EmployeeManagement> empl_mangments = employeeManagementRepository
+                                    .findEmployeeManagementsByEmployeeId_Id(userId).orElse(null);
+                            empl_mangments.stream().map(
+                                    empl_mangment -> {
+                                        authorities.add(
+                                                new SimpleGrantedAuthority(
+                                                        empl_mangment.getPermissionLevel().toString()));
+                                        return empl_mangment;
+                                    });
+                        }
+                        return CustomUserDetails.build(user, userId, authorities);
                     } catch (Exception e) {
                         throw new UsernameNotFoundException("Username not found" + username);
                     }
-                }
-                else if (user.getRoles().contains(ERole.ROLE_SHIPPER)){
+                } else if (user.getRoles().contains(ERole.ROLE_SHIPPER)) {
                     // shipper
                     try {
                         Shipper shipper = shipperRepository.findByAccount_Username(username).orElseThrow(
-                                () -> new UsernameNotFoundException("Username not found" + username)
-                        );
-                        UUID userId = shipper.getId();
+                                () -> new UsernameNotFoundException("Username not found" + username));
+                        userId = shipper.getId();
+                        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName().name())));
                         log.debug("UserId found: " + userId);
-                        return CustomUserDetails.build(user, userId);
+                        return CustomUserDetails.build(user, userId, authorities);
                     } catch (Exception e) {
                         throw new UsernameNotFoundException("Username not found" + username);
                     }
-                }
-                else {
+                } else {
                     throw new UsernameNotFoundException("Username not found" + username);
                 }
 

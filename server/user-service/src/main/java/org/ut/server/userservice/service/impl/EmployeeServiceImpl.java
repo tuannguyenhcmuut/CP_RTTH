@@ -68,12 +68,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 );
 
 //        TODO: check if the employee and manager is already managed to each other
-//         employeeManagementRepository.findEmployeeManagementByManagerIdAndEmployeeId(manager, employee)
-//                .ifPresent(
-//                        employeeManagement -> {
-//                            throw new RuntimeException("Employee is already a manager");
-//                        }
-//                );
+         Optional<EmployeeManagement> employeeManagementDB = employeeManagementRepository.findEmployeeManagementByManagerIdAndEmployeeId(manager, employee);
+
+         if (employeeManagementDB.isPresent()) {
+             throw new RuntimeException("Employee and manager are already managed to each other");
+         }
+
         // build employee management entity with pending status
         EmployeeManagement employeeManagement = EmployeeManagement.builder()
                 .employeeId(employee)
@@ -84,7 +84,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         EmployeeManagement savedEmployeeManagement = employeeManagementRepository.save(employeeManagement);
         // save the  request to EmployeeManagement Entity
         log.debug("Employee request saved with id {}", savedEmployeeManagement.getId());
-        savedEmployeeManagement.setManagerId(null);
+//        savedEmployeeManagement.setManagerId(null);
         notificationService.requestEmployee(employee.getId(), manager.getId());
         return employeeManagementMapper.mapToDto(savedEmployeeManagement);
     }

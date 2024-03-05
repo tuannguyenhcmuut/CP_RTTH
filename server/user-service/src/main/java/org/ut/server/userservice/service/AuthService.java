@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.ut.server.userservice.dto.request.RegisterDto;
 import org.ut.server.userservice.mapper.ShipperMapper;
 import org.ut.server.userservice.mapper.ShopOwnerMapper;
 import org.ut.server.userservice.model.*;
@@ -37,10 +38,17 @@ public class AuthService {
     private final ShipperMapper shipperMapper;
 
     @Transactional
-    public ResponseEntity<?> register(org.ut.server.userservice.dto.request.RegisterDto registerDTO) throws JsonProcessingException {
+    public ResponseEntity<?> register(RegisterDto registerDTO) throws JsonProcessingException {
             Optional<Account> account = accountRepository.findById(registerDTO.getUsername());
         if(account.isPresent()) {
             return ResponseEntity.badRequest().body("Username is already taken");
+        }
+
+        if (checkEmail(registerDTO.getEmail())) {
+            return ResponseEntity.badRequest().body("Email is already in use!");
+        }
+        if (checkPhoneNumber(registerDTO.getPhoneNumber())) {
+            return ResponseEntity.badRequest().body("Phone number is already in use!");
         }
 
         Set<String> strRoles = registerDTO.getRoles();
@@ -63,7 +71,6 @@ public class AuthService {
                         Role modRole = roleRepository.findByName(ERole.ROLE_SHIPPER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-
                         break;
                     case "employee":
                         Role employeeRole = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
@@ -75,7 +82,6 @@ public class AuthService {
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(userRole);
-
                         break;
                     default:
                         throw new RuntimeException("Error: Role is not found.");
@@ -105,7 +111,7 @@ public class AuthService {
             Shipper savedUser = shipperRepository.save(shipper);
             return ResponseEntity.ok(MessageFormat.format("Shipper {0} registered successfully!", savedUser.getAccount().getUsername()));
         }
-        if (strRoles.contains("user")) {
+        else if (strRoles.contains("user")) {
             ShopOwner shopOwner = shopOwnerMapper.newShopOwner(newAccount, registerDTO);
             ShopOwner savedUser = shopOwnerRepository.save(shopOwner);
             return ResponseEntity.ok(MessageFormat.format("User {0} registered successfully!", savedUser.getAccount().getUsername()));
@@ -115,5 +121,14 @@ public class AuthService {
             ShopOwner savedUser = shopOwnerRepository.save(shopOwner);
             return ResponseEntity.ok(MessageFormat.format("User {0} registered successfully!", savedUser.getAccount().getUsername()));
         }
+    }
+
+    // checkEmail in both shopOwner and shipper
+    private boolean checkEmail(String email) {
+        return shopOwnerRepository.existsByEmail(email) || shipperRepository.existsByEmail(email);
+    }
+
+    private boolean checkPhoneNumber(String phoneNumber) {
+        return shopOwnerRepository.existsByPhoneNumber(phoneNumber) || shipperRepository.existsByPhoneNumber(phoneNumber);
     }
 }

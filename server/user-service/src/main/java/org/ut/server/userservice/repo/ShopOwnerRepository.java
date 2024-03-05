@@ -17,4 +17,8 @@ public interface ShopOwnerRepository extends JpaRepository<ShopOwner, UUID> {
     Optional<ShopOwner> findUserByPhoneNumber(String phoneNumber);
 
     Optional<ShopOwner> findByAccount_Username(String username);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByEmail(String email);
 }

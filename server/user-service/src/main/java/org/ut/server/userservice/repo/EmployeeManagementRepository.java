@@ -13,7 +13,7 @@ public interface EmployeeManagementRepository extends JpaRepository<EmployeeMana
     // get employee request by id
     Optional<EmployeeManagement> findByEmployeeIdAndManagerId(ShopOwner employeeId, ShopOwner managerId);
     Optional<List<EmployeeManagement>> findEmployeeManagementsByManagerId_Id(UUID managerId);
-    Optional<List<EmployeeManagement>> findEmployeeManagementsByEmployeeId_Id(UUID managerId);
+    Optional<List<EmployeeManagement>> findEmployeeManagementsByEmployeeId_Id(UUID employeeId);
     Optional<List<EmployeeManagement>> findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(UUID managerId, EmployeeRequestStatus requestStatus);
 //    findEmployeeManagementsByEmployeeId_IdAndManagerId_IdAndApprovalStatus
     Optional<List<EmployeeManagement>> findEmployeeManagementsByEmployeeId_IdAndManagerId_IdAndApprovalStatus(UUID employeeId, UUID managerId, EmployeeRequestStatus requestStatus);

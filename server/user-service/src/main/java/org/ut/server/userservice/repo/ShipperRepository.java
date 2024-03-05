@@ -9,4 +9,8 @@ import java.util.UUID;
 
 public interface ShipperRepository extends JpaRepository<Shipper, UUID> {
     Optional<Shipper> findByAccount_Username(String username);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }

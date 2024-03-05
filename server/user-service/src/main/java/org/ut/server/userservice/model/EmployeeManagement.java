@@ -33,7 +33,7 @@ public class EmployeeManagement {
     private EmployeeRequestStatus approvalStatus;
     @Enumerated(EnumType.STRING)
     @Column(name = "permission_level", nullable = false)
-    @ElementCollection(targetClass = PermissionLevel.class)
+    @ElementCollection(targetClass = PermissionLevel.class, fetch = FetchType.EAGER)
     @JoinTable(name = "permission_level", joinColumns = @JoinColumn(name = "id"))
      private Set<PermissionLevel> permissionLevel;
 

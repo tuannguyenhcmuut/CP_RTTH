@@ -48,23 +48,26 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDTO) {
         Authentication authentication;
 //        try {
-             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginDTO.getUsername(),
-                            loginDTO.getPassword()
-                    )
-            );
+
 //        }
 //        catch (Exception ex) {
 //            throw new BadCredentialsException("Invalid username/password");
 //        }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(loginDTO.getUsername());
-        String jwtToken = jwtUtils.generateToken(userDetails);
-
         if (userDetails != null) {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getUsername(),
+                            loginDTO.getPassword(),
+                            userDetails.getAuthorities()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwtToken = jwtUtils.generateToken(userDetails);
+
+
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                     .collect(Collectors.toList());
 
@@ -90,7 +93,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDTO) throws JsonProcessingException {
 //        try {
-            return authService.register(registerDTO);
+        return authService.register(registerDTO);
 //        }
 //        catch (Exception ex) {
 //            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -108,7 +111,6 @@ public class AuthController {
     // logout
 
 
-
     @GetMapping("/validate")
     public ResponseEntity<Object> validateToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
@@ -122,16 +124,14 @@ public class AuthController {
             if (jwtUtils.isTokenValid(authHeader)) {
                 return validTokenResponse(authHeader);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return invalidTokenResponse();
         }
         return invalidTokenResponse();
     }
 
 
-
-    private ResponseEntity<Object>  invalidTokenResponse() {
+    private ResponseEntity<Object> invalidTokenResponse() {
         Map<String, Object> response = new HashMap<>();
         response.put("code", "400");
         response.put("message", "Invalid token");
@@ -140,7 +140,7 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    private  ResponseEntity<Object>  validTokenResponse(String token) {
+    private ResponseEntity<Object> validTokenResponse(String token) {
         Map<String, Object> response = new HashMap<>();
         response.put("code", "200");
         response.put("message", "Valid token");
