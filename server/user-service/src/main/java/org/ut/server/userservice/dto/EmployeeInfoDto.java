@@ -13,7 +13,8 @@ public class EmployeeInfoDto {
     // email
     // managerId
     // permissions
-    private UUID id;
+    private UUID employeeId;
+    private String name;
     private String phone;
     private String email;
     private UUID managerId;

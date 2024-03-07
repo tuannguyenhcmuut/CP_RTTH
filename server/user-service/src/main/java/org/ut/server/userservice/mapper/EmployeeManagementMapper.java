@@ -62,7 +62,11 @@ public class EmployeeManagementMapper {
 
     public EmployeeInfoDto mapToEmployeeInfoDto(EmployeeManagement employeeManagement) {
         return EmployeeInfoDto.builder()
-                .id(employeeManagement.getEmployeeId().getId())
+                .employeeId(employeeManagement.getEmployeeId().getId())
+                .name( String.format("%s %s",
+                        employeeManagement.getEmployeeId().getFirstName(),
+                        employeeManagement.getEmployeeId().getLastName()
+                        ))
                 .phone(employeeManagement.getEmployeeId().getPhoneNumber())
                 .email(employeeManagement.getEmployeeId().getEmail())
                 .managerId(

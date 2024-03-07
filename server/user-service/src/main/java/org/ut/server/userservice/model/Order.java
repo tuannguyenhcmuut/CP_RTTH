@@ -26,7 +26,7 @@ public class Order {
     private Long id;
 
     // order code
-    @Column(name = "code",  insertable = false, updatable = false, nullable = true, unique = true)
+    @Column(name = "code",  insertable = true, updatable = true, nullable = true, unique = true)
     private String code;
 
     private Float height;

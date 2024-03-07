@@ -70,6 +70,8 @@ public class ProductService {
         productToUpdate.setWidth(product.getWidth());
         productToUpdate.setLength(product.getLength());
         productToUpdate.setCategories(product.getCategories());
+        productToUpdate.setPhotoUrl(product.getPhotoUrl());
+        productToUpdate.setStatus(product.getStatus());
         productRepository.save(productToUpdate);
         return productMapper.mapToDto(productToUpdate);
     }
