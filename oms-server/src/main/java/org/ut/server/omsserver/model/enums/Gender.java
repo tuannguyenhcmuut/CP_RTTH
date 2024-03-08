@@ -1,0 +1,5 @@
+package org.ut.server.omsserver.model.enums;
+
+public enum Gender {
+    MALE, FEMALE, OTHER
+}
