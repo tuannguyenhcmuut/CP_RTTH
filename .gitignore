@@ -1,11 +1,12 @@
 
 ### Eclipse Patch ###
+server/
 # Eclipse Core
 .project
 
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
-
+.idea/
 # Annotation Processing
 .apt_generated
 
