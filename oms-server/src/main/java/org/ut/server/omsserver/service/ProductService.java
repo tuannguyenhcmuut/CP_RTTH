@@ -40,7 +40,15 @@ public class ProductService {
     public List<ProductDto> getAllProducts(UUID userId) {
         List<Product> products = productRepository.findProductsByShopOwner_Id(userId);
         log.info("Products: {}", products);
+
+        // get product from their owner
+        
         return productMapper.mapEntitiesToDtos(products);
+    }
+
+    private List<ProductDto> getProductsFromOwner(UUID userId) {
+
+        return null;
     }
 
 
@@ -117,4 +125,5 @@ public class ProductService {
         product = productRepository.save(product);
         return productMapper.mapToDto(product);
     }
+
 }

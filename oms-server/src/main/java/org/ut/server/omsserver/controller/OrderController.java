@@ -8,14 +8,21 @@ import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.OrderDto;
+import org.ut.server.omsserver.dto.PriceDto;
+import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.OrderService;
 
 import javax.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/v1/order")
@@ -171,6 +178,38 @@ public class OrderController {
 //                    .build();
 //        }
     }
+
+    // calculate the total price and option's prices based on order options 
+    @PostMapping("/price/calculate")
+    public List<PriceDto> postMethodName(
+        @RequestBody List<OrderOptionRequest> options,
+        @RequestHeader("Authorization") String token
+    ) {
+        //TODO: process POST request
+        // build sample priceDto
+        List<PriceDto> priceDtos = new ArrayList<>();
+        priceDtos.add(PriceDto.builder()
+                .serviceCode("STD")
+                .serviceName("Standard Shipping")
+                .price(5000)
+                .build());
+        priceDtos.add(PriceDto.builder()
+                .serviceCode("EXP")
+                .serviceName("Express Shipping")
+                .price(10000)
+                .build());
+        priceDtos.add(PriceDto.builder()
+                .serviceCode("INT")
+                .serviceName("ALL")
+                .price(20000)
+                .exchangeWeight(1000)
+                .build());
+        return priceDtos;
+        
+        
+    }
+    
+
 
 
     // update receiver
