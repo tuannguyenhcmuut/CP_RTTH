@@ -42,7 +42,7 @@ public class DeliveryMapper {
 
         return DeliveryDto.builder()
                 .id(delivery.getId())
-                .orderDto(orderMapper.mapToDto(delivery.getOrder()))
+                .orderDto(orderMapper.mapToDto(delivery.getOrder(), null)) // TODO:
                 .shipperId(delivery.getShipperId())
                 .status(delivery.getStatus())
                 .shipperName(delivery.getShipperName())

@@ -212,4 +212,19 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/owner/getall")
+    public GenericResponseDTO<List<ProductDto>> getAllProductByOwner(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<ProductDto> products = productService.getAllProductsByOwner(userId);
+        return GenericResponseDTO.<List<ProductDto>>builder()
+                .data(products)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_ALL_OWNER_PRODUCTS)
+                .timestamps(new Date())
+                .build();
+    }
+
+
 }

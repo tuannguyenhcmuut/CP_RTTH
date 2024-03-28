@@ -112,4 +112,13 @@ public class MessageConstants {
     public static final String SUCCESS_GET_EMPLOYEE_PERMISSIONS = "Get employee permissions successfully!";
     public static final String SUCCESS_GET_NOTIFICATIONS = "Get notifications successfully!";
     public static final String SUCCESS_MARK_AS_READ = "Mark as read successfully!";
+
+    // User does not have any shop owner!
+    public static final String ERROR_USER_NOT_HAS_OWNER = "User does not have any shop owner!";
+    public static final String SUCCESS_GET_OWNER_STORES = "Get owner's stores successfully!";
+    public static final String SUCCESS_GET_OWNER_RECEIVERS = "Get owner's receiver successfully!" ;
+    public static final String SUCCESS_GET_ALL_OWNER_PRODUCTS = "Get all owner's products successfully!";
+    public static final String SUCCESS_OWNER_ORDER_CREATED = "Created owner's order successfully!";
+    public static final String SUCCESS_GET_OWNER_ORDER = "Get owner's orders successfully";
+    public static final String SUCCESS_OWNER_ORDER_UPDATED = "Update owner's order successfully";
 }

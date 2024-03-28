@@ -107,4 +107,24 @@ public class ReceiverController {
 //    public ResponseEntity<String> updatePersonById(@PathVariable Long id, @RequestBody Receiver updatedReceiver) {
 //        return receiverService.updateReceiverById(id, updatedReceiver);
 //    }
+
+    @GetMapping("/owner/getall")
+    public GenericResponseDTO<List<ReceiverDto>> getOwnerReceivers(
+            @RequestHeader("Authorization") String token
+    ) {
+        try {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            List<ReceiverDto> receiverDtos = receiverService.getOwnerReceivers(userId);
+            return GenericResponseDTO.<List<ReceiverDto>>builder()
+                    .data(receiverDtos)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_GET_OWNER_RECEIVERS)
+                    .timestamps(new Date())
+                    .build();
+        }
+        catch  (Exception e){
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package org.ut.server.omsserver.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Data;
@@ -32,4 +34,10 @@ public class OrderDto {
     private Boolean isFragile; // de vo
     private Boolean isValuable; // gia tri
     private Long deliveryId;
+    private String createdBy;
+    private String lastUpdatedBy;
+    @JsonInclude(Include.NON_NULL)
+    private UUID ownerId;
+    @JsonInclude(Include.NON_NULL)
+    private String ownerName;
 }

@@ -436,6 +436,28 @@ public class RestExceptionHandler {
 
         }
 
+        // EmployeeManagementException
+        if (e instanceof EmployeeManagementException) {
+                HttpStatus status = HttpStatus.BAD_REQUEST;
+    
+                // converting the stack trace to a String
+                StringWriter stringWriter = new StringWriter();
+                PrintWriter printWriter = new PrintWriter(stringWriter);
+                e.printStackTrace(printWriter);
+                String stackTrace = stringWriter.toString();
+    
+                return new ResponseEntity<>(
+                        new ErrorResponse(
+                                status,
+                                e.getMessage(),
+                                stackTrace
+                        ),
+                        status
+                );
+    
+    
+            }
+
         // store not found
         if (e instanceof StoreNotFoundException) {
             HttpStatus status = HttpStatus.BAD_REQUEST;

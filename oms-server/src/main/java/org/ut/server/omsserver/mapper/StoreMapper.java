@@ -21,7 +21,8 @@ public class StoreMapper {
     @Autowired
     private ShopOwnerRepository shopOwnerRepository;
 
-    public StoreDto mapToDto(Store store) {
+    public StoreDto mapToDto(Store store, ShopOwner owner) {
+        
         if (store == null) {
             return null;
         }
@@ -35,6 +36,8 @@ public class StoreMapper {
                 .storePickUpTime(store.getStorePickUpTime())
                 .isDefault(store.getIsDefault())
                 .sendAtPost(store.getSendAtPost())
+                .ownerId(owner == null ? null : owner.getId())
+                .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                 .build();
     }
 
@@ -57,10 +60,10 @@ public class StoreMapper {
                 .build();
     }
 
-    public List<StoreDto> mapToDtos(List<Store> stores) {
+    public List<StoreDto> mapToDtos(List<Store> stores, ShopOwner owner) {
         if (stores != null) {
             return stores.stream().map(
-                    store -> mapToDto(store)
+                    store -> mapToDto(store, owner)
             ).collect(Collectors.toList());
         }
         else {

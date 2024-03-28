@@ -63,7 +63,7 @@ public class UserDao {
                 if (userAccount.getRoles().stream().anyMatch(role -> role.getName().name().equals("ROLE_EMPLOYEE"))) {
                     // add permissions to authorities
                     List<EmployeeManagement> empl_mangments = employeeManagementRepository
-                            .findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED).orElse(null);
+                            .findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
                     empl_mangments.stream().map(
                             empl_mangment -> {
                                 authorities.add(

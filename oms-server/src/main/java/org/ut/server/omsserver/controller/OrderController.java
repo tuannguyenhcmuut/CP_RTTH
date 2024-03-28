@@ -3,6 +3,7 @@ package org.ut.server.omsserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -123,6 +124,24 @@ public class OrderController {
 //        return orderService.updateOrderStatus(userId, order_id, statusRequest);
 //    }
 
+//    update entire order by orderId
+    @PutMapping("/{orderId}")
+    public GenericResponseDTO<OrderDto> updateOrder(
+            @PathVariable Long orderId,
+            @RequestBody OrderDto orderDto,
+            @RequestHeader("Authorization") String token
+    ) {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            OrderDto updatedOrderDto = orderService.updateOrder(userId, orderId, orderDto);
+            return GenericResponseDTO.<OrderDto>builder()
+                    .data(updatedOrderDto)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                    .timestamps(new Date())
+                    .build();
+    }
+
+
 
     // delete an order
     @DeleteMapping("/{orderId}")
@@ -208,7 +227,65 @@ public class OrderController {
         
         
     }
-    
+
+//    create order for shop owner
+
+
+    // get list order of shop owner
+    @GetMapping("/owner")
+    @PreAuthorize("hasAnyAuthority('VIEW_ONLY', 'CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
+//    @PreAuthorize("hasPermission('VIEW_ONLY', 'CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<List<OrderDto>> getOwnerOrders(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<OrderDto> orders = orderService.getOwnerOrders(userId);
+        return GenericResponseDTO.<List<OrderDto>>builder()
+                .data(orders)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_OWNER_ORDER)
+                .timestamps(new Date())
+                .build();
+    }
+
+    // create order for owner
+    @PostMapping("/owner")
+//    @PreAuthorize("#hasPermission('CREATE_ORDER') or #hasPermission('UPDATE_ORDER') or #hasPermission('MANAGE_ORDER')")
+    @PreAuthorize("hasAnyAuthority('CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<OrderDto> createOwnerOrder(
+            @RequestBody OrderRequest orderRequest,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        orderRequest.setUserId(userId);
+        OrderDto newOrderDto = orderService.createOwnerOrder(orderRequest);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(newOrderDto)
+                .code(MessageCode.CREATED_SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_OWNER_ORDER_CREATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+//    update order for owner
+    @PutMapping("/owner/{orderId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
+     public GenericResponseDTO<OrderDto> updateOwnerOrder(
+            @PathVariable Long orderId,
+            @RequestBody OrderDto orderDto,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto updatedOrder = orderService.updateOwnerOrder(userId, orderId, orderDto);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(updatedOrder)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_OWNER_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+
 
 
 

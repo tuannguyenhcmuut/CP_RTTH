@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.FileDto;
 import org.ut.server.omsserver.dto.ProductDto;
+import org.ut.server.omsserver.exception.EmployeeManagementException;
 import org.ut.server.omsserver.exception.ProductInUsedException;
 import org.ut.server.omsserver.exception.ProductNotFoundException;
 import org.ut.server.omsserver.mapper.ProductMapper;
+import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Product;
+import org.ut.server.omsserver.model.ShopOwner;
+import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
+import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.OrderItemRepository;
 import org.ut.server.omsserver.repo.ProductRepository;
 
@@ -28,12 +34,14 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final OrderItemRepository orderItemRepository;
     private final IImageService imageService;
+    private final EmployeeManagementRepository employeeManagementRepository;
+
 
     public ProductDto createProduct(ProductDto productDto) {
         Product product = productMapper.mapDtoToEntity(productDto);
         Product newProduct = productRepository.save(product);
         log.info("Product {} is saved", newProduct.getId());
-        return productMapper.mapToDto(newProduct);
+        return productMapper.mapToDto(newProduct,null);
     }
 
     //    getAllProducts
@@ -42,8 +50,17 @@ public class ProductService {
         log.info("Products: {}", products);
 
         // get product from their owner
-        
-        return productMapper.mapEntitiesToDtos(products);
+        List<ProductDto> productDtos =  productMapper.mapEntitiesToDtos(products, null);
+
+        try {
+            List<ProductDto> ownerProductDtos = this.getAllProductsByOwner(userId);
+            productDtos.addAll(ownerProductDtos);
+        }
+        catch (Exception e) {
+        }
+
+        return productDtos;
+
     }
 
     private List<ProductDto> getProductsFromOwner(UUID userId) {
@@ -59,7 +76,7 @@ public class ProductService {
                 );
 
         if (product.getShopOwner().getId().equals(userId)) {
-            return productMapper.mapToDto(product);
+            return productMapper.mapToDto(product,null);
         }
         throw new ProductNotFoundException("Product not found by id: " + productId.toString());
     }
@@ -81,7 +98,7 @@ public class ProductService {
         productToUpdate.setPhotoUrl(product.getPhotoUrl());
         productToUpdate.setStatus(product.getStatus());
         productRepository.save(productToUpdate);
-        return productMapper.mapToDto(productToUpdate);
+        return productMapper.mapToDto(productToUpdate,null);
     }
 
 
@@ -123,7 +140,17 @@ public class ProductService {
         product.setPhotoUrl(imageUrl);
         // save image to product
         product = productRepository.save(product);
-        return productMapper.mapToDto(product);
+        return productMapper.mapToDto(product,null);
     }
 
+    public List<ProductDto> getAllProductsByOwner(UUID userId) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManagerId();
+        List<Product> products = productRepository.findProductsByShopOwner_Id(owner.getId());
+        return productMapper.mapEntitiesToDtos(products, owner);
+    }
 }

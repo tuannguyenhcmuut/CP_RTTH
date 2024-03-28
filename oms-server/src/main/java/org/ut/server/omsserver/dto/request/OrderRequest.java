@@ -36,4 +36,5 @@ public class OrderRequest {
     private Boolean isValuable; // gia tri
 
     private DeliveryRequest delivery;
+    private String createdBy;
 }

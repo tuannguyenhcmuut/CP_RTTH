@@ -67,12 +67,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         () -> new RuntimeException("Manager not found with id " + employeeRequestDto.getManagerId())
                 );
 
-//        TODO: check if the employee and manager is already managed to each other
+        // check if the employee and manager is already managed to each other
          Optional<EmployeeManagement> employeeManagementDB = employeeManagementRepository.findEmployeeManagementByManagerIdAndEmployeeId(manager, employee);
 
          if (employeeManagementDB.isPresent()) {
              throw new RuntimeException("Employee and manager are already managed to each other");
          }
+
+        // Check if employee already has a manager
+        Optional<EmployeeManagement> employeeManagementOptional = employeeManagementRepository.findEmployeeManagementByEmployeeId(employee);
+        if (employeeManagementOptional.isPresent()) {
+            throw new RuntimeException("Employee already has a manager");
+        }
 
         // build employee management entity with pending status
         EmployeeManagement employeeManagement = EmployeeManagement.builder()
@@ -94,8 +100,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 //        check null of status
         if (status == null) {
             // find all employee requests by manager id
-            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_Id(managerId)
-                    .orElse(List.of());
+            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_Id(managerId);
             // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
             return employeeManagements.stream()
                     .map(employeeManagementMapper::mapToDto)
@@ -209,8 +214,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         // find all employee managements by employee id with status is pending
         // check if the status is null or not
         if (ownerId != null && status != null) {
-            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndManagerId_IdAndApprovalStatus(employeeId, ownerId, EmployeeRequestStatus.valueOf(status.toUpperCase()))
-                    .orElse(List.of());
+            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndManagerId_IdAndApprovalStatus(employeeId, ownerId, EmployeeRequestStatus.valueOf(status.toUpperCase()));
             // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
             return employeeManagements.stream()
                     .map(employeeManagementMapper::mapToDto)
@@ -218,16 +222,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         }
         else if (ownerId != null) {
-            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndManagerId_Id(employeeId, ownerId)
-                    .orElse(List.of());
+            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndManagerId_Id(employeeId, ownerId);
             // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
             return employeeManagements.stream()
                     .map(employeeManagementMapper::mapToDto)
                     .collect(Collectors.toList());
         }
         else if (status != null) {
-            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(employeeId, EmployeeRequestStatus.valueOf(status.toUpperCase()))
-                    .orElse(List.of());
+            List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(employeeId, EmployeeRequestStatus.valueOf(status.toUpperCase()));
             // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
             return employeeManagements.stream()
                     .map(employeeManagementMapper::mapToDto)
@@ -235,8 +237,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         else {
                 // find all employee requests by employee id
-                List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_Id(employeeId)
-                        .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+                List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployeeId_Id(employeeId);
+                if (employeeManagements.isEmpty()) {
+                    throw new RuntimeException("Employee not found with id " + employeeId);
+                }
                 // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
                 return employeeManagements.stream()
                         .map(employeeManagementMapper::mapToDto)

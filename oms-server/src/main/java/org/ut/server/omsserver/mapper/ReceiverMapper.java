@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReceiverMapper {
     private final ShopOwnerRepository shopOwnerRepository;
-    public ReceiverDto mapToDto(Receiver receiver) {
+    public ReceiverDto mapToDto(Receiver receiver, ShopOwner owner) {
         return ReceiverDto.builder()
                 .id(receiver.getId())
                 .name(receiver.getName())
@@ -30,13 +30,15 @@ public class ReceiverMapper {
                 .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
                 .callBeforeSend(receiver.getCallBeforeSend())
                 .receiveAtPost(receiver.getReceiveAtPost())
+                .ownerId(owner == null ? null : owner.getId())
+                .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                 .build();
     }
 
-    public List<ReceiverDto> mapToDtos(List<Receiver> receivers) {
+    public List<ReceiverDto> mapToDtos(List<Receiver> receivers, ShopOwner owner) {
         if (receivers != null) {
             return receivers.stream().map(
-                    receiver -> mapToDto(receiver)
+                    receiver -> mapToDto(receiver, owner)
             ).collect(Collectors.toList());
         }
         else {

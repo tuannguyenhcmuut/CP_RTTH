@@ -13,6 +13,9 @@ import org.ut.server.omsserver.service.StoreService;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/stores")
@@ -108,5 +111,21 @@ public class StoreController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    // get all stores of owner
+    @GetMapping("/owner/getall")
+    public GenericResponseDTO<List<StoreDto>> getOwnerStores(
+        @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<StoreDto> ownerStores = storeService.getOwnerStores(userId);
+        return GenericResponseDTO.<List<StoreDto>>builder()
+            .data(ownerStores)
+            .code(MessageCode.SUCCESS.toString())
+            .message(MessageConstants.SUCCESS_GET_OWNER_STORES)
+            .timestamps(new Date())
+            .build();
+    }
+    
 
 }

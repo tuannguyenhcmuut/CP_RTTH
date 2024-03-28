@@ -127,7 +127,7 @@ public class SecurityConfig {
                         if (user.getRoles().stream().anyMatch(role -> role.getName().name().equals("ROLE_EMPLOYEE"))) {
                             // add permissions to authorities
                             List<EmployeeManagement> empl_mangments = employeeManagementRepository
-                                    .findEmployeeManagementsByEmployeeId_Id(userId).orElse(null);
+                                    .findEmployeeManagementsByEmployeeId_Id(userId);
                             empl_mangments.stream().map(
                                     empl_mangment -> {
                                         authorities.add(

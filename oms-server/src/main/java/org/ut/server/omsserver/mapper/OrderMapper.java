@@ -65,6 +65,7 @@ public class OrderMapper {
                 .isBulky(orderRequest.getIsBulky())
                 .isFragile(orderRequest.getIsFragile())
                 .isValuable(orderRequest.getIsValuable())
+                .createdBy(orderRequest.getCreatedBy())
                 .build();
     }
 
@@ -98,6 +99,8 @@ public class OrderMapper {
                 .isBulky(orderDto.getIsBulky())
                 .isFragile(orderDto.getIsFragile())
                 .isValuable(orderDto.getIsValuable())
+                .createdBy(orderDto.getCreatedBy())
+                .lastUpdatedBy(orderDto.getLastUpdatedBy())
                 .build();
     }
 
@@ -107,16 +110,25 @@ public class OrderMapper {
         ).collect(Collectors.toList()) : null;
     }
 
-    public OrderDto mapToDto(Order order) {
-        Receiver receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
-                .orElseThrow(
-                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
-                );
+    public OrderDto mapToDto(Order order, ShopOwner owner) {
+//        Receiver receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
+//                .orElseThrow(
+//                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
+//                );
+        Receiver receiver = receiverRepository.findById(order.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        if (!receiver.getShopOwner().getId().equals( owner.getId())) {
+            throw new RuntimeException("Receiver and Owner are not matched!");
+        }
 
-        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
-                .orElseThrow(
-                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
-                );
+//        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
+//                .orElseThrow(
+//                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
+//                );
+
+        Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
+        if (!store.getShopOwner().getId().equals(owner.getId())) {
+            throw new RuntimeException("Store and Owner are not matched!");
+        }
 
         if (order != null) {
             return OrderDto.builder()
@@ -129,8 +141,8 @@ public class OrderMapper {
                             order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getShopOwner().getId()) : null
                     )
                     .userId(order.getShopOwner().getId())
-                    .storeDto(storeMapper.mapToDto(store))
-                    .receiverDto(receiverMapper.mapToDto(receiver))
+                    .storeDto(storeMapper.mapToDto(store, null))
+                    .receiverDto(receiverMapper.mapToDto(receiver,null))
                     .orderStatus(order.getOrderStatus() != null ? order.getOrderStatus() : OrderStatus.CREATED)
                     .price(order.getPrice())
                     .discount(order.getDiscount())
@@ -139,14 +151,18 @@ public class OrderMapper {
                     .isFragile(order.getIsFragile())
                     .isValuable(order.getIsValuable())
                     .deliveryId(order.getDelivery().getId())
+                    .createdBy(order.getCreatedBy())
+                    .lastUpdatedBy(order.getLastUpdatedBy())
+                    .ownerId(owner == null ? null : owner.getId())
+                    .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                     .build();
         }
         return null;
     }
 
-    public List<OrderDto> mapToDtos(List<Order> orders) {
+    public List<OrderDto> mapToDtos(List<Order> orders, ShopOwner owner) {
         return orders != null ? orders.stream().map(
-                order -> mapToDto(order)
+                order -> mapToDto(order, owner)
         ).collect(Collectors.toList()) : null;
     }
 

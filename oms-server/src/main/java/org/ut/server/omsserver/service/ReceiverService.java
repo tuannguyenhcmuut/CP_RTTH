@@ -4,10 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.ReceiverDto;
+import org.ut.server.omsserver.exception.EmployeeManagementException;
 import org.ut.server.omsserver.exception.UserNotFoundException;
 import org.ut.server.omsserver.mapper.ReceiverMapper;
+import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Receiver;
 import org.ut.server.omsserver.model.ShopOwner;
+import org.ut.server.omsserver.model.Store;
+import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
+import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.ReceiverRepository;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
 
@@ -20,6 +25,7 @@ public class ReceiverService {
     private final ReceiverRepository receiverRepository;
     private final ShopOwnerRepository shopOwnerRepository;
     private final ReceiverMapper receiverMapper;
+    private final EmployeeManagementRepository employeeManagementRepository;
 
     public List<ReceiverDto> getAllReceivers(UUID userId) {
         ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
@@ -27,7 +33,14 @@ public class ReceiverService {
         );
 
         List<Receiver> receivers = receiverRepository.findReceiversByShopOwner(owner);
-        return receiverMapper.mapToDtos(receivers);
+        List<ReceiverDto> receiverDtos =  receiverMapper.mapToDtos(receivers, null);
+        try {
+            List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId);
+            receiverDtos.addAll(ownerReceiverDtos);
+        }
+        catch (Exception e) {
+        }
+        return receiverDtos;
     }
 
     public ReceiverDto addNewReceiver(ReceiverDto newReceiver, UUID userId) {
@@ -36,7 +49,7 @@ public class ReceiverService {
         );
         Receiver receiver = receiverMapper.mapDtoToEntity(newReceiver, userId);
         receiverRepository.save(receiver);
-        return receiverMapper.mapToDto(receiver);
+        return receiverMapper.mapToDto(receiver, null);
     }
 
     public void deleteReceiverById(Long receiverId, UUID userId) {
@@ -52,11 +65,24 @@ public class ReceiverService {
     public ReceiverDto getReceiverById(Long receiverId, UUID userId) {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (receiver.getShopOwner().getId().equals(userId)) {
-            return receiverMapper.mapToDto(receiver);
+            return receiverMapper.mapToDto(receiver, null);
         }
         else {
             throw new RuntimeException("Receiver and User are not matched!");
         }
+    }
+
+    public List<ReceiverDto> getOwnerReceivers(UUID userId) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManagerId();
+        // get all stores of user's owner
+        List<Receiver> stores = receiverRepository.findReceiversByShopOwner(owner);
+        return receiverMapper.mapToDtos(stores, owner);
     }
 
 //    public ResponseEntity<String> updateReceiverById(Long id, Receiver updatedReceiver) {

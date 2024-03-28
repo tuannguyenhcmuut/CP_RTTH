@@ -39,7 +39,7 @@ public class OrderItemService {
                          .id(orderItem.get().getId())
                          .price(orderItem.get().getPrice())
                          .quantity(orderItem.get().getQuantity())
-                         .product(productMapper.mapToDto(product))
+                         .product(productMapper.mapToDto(product,null))
                          .build();
 
                 } catch (Exception e) {

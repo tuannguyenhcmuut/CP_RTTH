@@ -64,7 +64,7 @@ public class OrderItemMapper {
                     .price(orderItem.getPrice())
                     .quantity(orderItem.getQuantity())
                     .orderId(orderItem.getOrderId() == null ? null : orderItem.getOrderId().getId())
-                    .product(productMapper.mapToDto(product.get()))
+                    .product(productMapper.mapToDto(product.get(), null))
                     .build();
             }
             else return null;

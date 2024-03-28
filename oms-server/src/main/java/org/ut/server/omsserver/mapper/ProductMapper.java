@@ -21,11 +21,13 @@ public class ProductMapper {
     @Autowired
     private final ShopOwnerRepository shopOwnerRepository;
 
-    public List<ProductDto> mapEntitiesToDtos(List<Product> products) {
+    public List<ProductDto> mapEntitiesToDtos(List<Product> products, ShopOwner owner) {
         if (products == null) {
             return null;
         }
-        return products.stream().map(this::mapToDto).collect(Collectors.toList());
+        return products.stream().map(
+                product -> mapToDto(product, owner)
+        ).collect(Collectors.toList());
     }
 
     public List<Product> mapDtosToEntities(List<ProductDto> productDtos) {
@@ -63,7 +65,7 @@ public class ProductMapper {
 
     }
 
-    public ProductDto mapToDto(Product product) {
+    public ProductDto mapToDto(Product product, ShopOwner owner) {
         if (product == null) {
             return null;
         }
@@ -83,6 +85,8 @@ public class ProductMapper {
                         categoryMapper.mapToDtos(product.getCategories())
                 )
                 .userId(product.getShopOwner().getId())
+                .ownerId(owner == null ? null : owner.getId())
+                .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                 .build();
     }
 }

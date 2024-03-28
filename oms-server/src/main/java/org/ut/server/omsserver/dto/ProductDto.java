@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ut.server.omsserver.model.enums.ProductStatus;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -27,5 +30,10 @@ public class ProductDto {
     private String photoUrl;
     private ProductStatus status;
     private List<CategoryDto> categories;
+    @JsonInclude(Include.NON_NULL)
     private UUID userId;
+    @JsonInclude(Include.NON_NULL)
+    private UUID ownerId;
+    @JsonInclude(Include.NON_NULL)
+    private String ownerName;
 }
