@@ -11,7 +11,7 @@ import lombok.Data;
 public class PriceDto {
     private String serviceCode;
     private String serviceName;
-    private Integer price;
+    private Float price;
 
     @JsonInclude(Include.NON_NULL)
     private Integer exchangeWeight;

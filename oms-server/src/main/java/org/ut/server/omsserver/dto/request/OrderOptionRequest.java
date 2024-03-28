@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 
 public class OrderOptionRequest {
-    private String serviceName;
+    private String serviceCode;
 }

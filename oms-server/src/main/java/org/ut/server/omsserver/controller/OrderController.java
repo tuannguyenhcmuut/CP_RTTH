@@ -204,28 +204,54 @@ public class OrderController {
         @RequestBody List<OrderOptionRequest> options,
         @RequestHeader("Authorization") String token
     ) {
-        //TODO: process POST request
-        // build sample priceDto
         List<PriceDto> priceDtos = new ArrayList<>();
-        priceDtos.add(PriceDto.builder()
-                .serviceCode("STD")
-                .serviceName("Standard Shipping")
-                .price(5000)
-                .build());
-        priceDtos.add(PriceDto.builder()
-                .serviceCode("EXP")
-                .serviceName("Express Shipping")
-                .price(10000)
-                .build());
-        priceDtos.add(PriceDto.builder()
-                .serviceCode("INT")
-                .serviceName("ALL")
-                .price(20000)
-                .exchangeWeight(1000)
-                .build());
+        float total_price = 0;
+        if (options != null) {
+            for (OrderOptionRequest option : options) {
+                PriceDto priceDto = PriceDto.builder()
+                        .serviceCode(option.getServiceCode())
+                        .serviceName(this.getServiceName(option.getServiceCode()))
+                        .price(this.getOptionPrice(option.getServiceCode()  ))
+                        .build();
+                priceDtos.add(priceDto);
+                total_price += priceDto.getPrice();
+            }
+        }
+        priceDtos.add(0,
+                PriceDto.builder()
+                    .serviceCode("ALL")
+                    .serviceName("Tổng cộng")
+                    .price(total_price)
+                    .build()
+        );
         return priceDtos;
-        
-        
+    }
+
+    private String getServiceName(String serviceCode) {
+        if (serviceCode.equals("fragile")) {
+            return "Hàng dễ vỡ";
+        } else if (serviceCode.equals("bulky")) {
+            return "Hàng cồng kềnh";
+        } else if (serviceCode.equals("valuable")) {
+            return "Hàng quý giá";
+        } else if (serviceCode.equals("document")) {
+            return "Tài liệu";
+        }
+        return "";
+    }
+
+    private float getOptionPrice(String serviceCode) {
+        if (serviceCode.equals("fragile")) {
+            return 1000.0f;
+        } else if (serviceCode.equals("bulky")) {
+            return 2000.0f;
+        } else if (serviceCode.equals("valuable")) {
+            return 3000.0f;
+        } else if (serviceCode.equals("document")) {
+            return 4000.0f;
+        }
+        return 0;
+
     }
 
 //    create order for shop owner
