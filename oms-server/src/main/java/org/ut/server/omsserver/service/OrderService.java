@@ -108,7 +108,7 @@ public class OrderService {
 //            orderRequest.setReceiver(receiverMapper.mapToDto(receiver));
         }
         // find user
-        ShopOwner user = shopOwnerRepository.findShopOwnerById(orderRequest.getUserId())
+        ShopOwner user = shopOwnerRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found") );
         orderRequest.setCreatedBy(user.getEmail());
         Order newOrder = orderMapper.mapRequestToEntity(orderRequest);
@@ -131,7 +131,7 @@ public class OrderService {
         // 2nd save
         newOrder = orderRepository.save(newOrder);
 
-        log.error("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
+        log.debug("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
         return orderMapper.mapToDto(newOrder, null);
     }
 

@@ -115,8 +115,11 @@ public class OrderMapper {
 //                .orElseThrow(
 //                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
 //                );
+
         Receiver receiver = receiverRepository.findById(order.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
-        if (!receiver.getShopOwner().getId().equals( owner.getId())) {
+        if (!receiver.getShopOwner().getId().equals(
+                owner != null ? owner.getId() : order.getShopOwner().getId()
+        )) {
             throw new RuntimeException("Receiver and Owner are not matched!");
         }
 
@@ -126,7 +129,9 @@ public class OrderMapper {
 //                );
 
         Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
-        if (!store.getShopOwner().getId().equals(owner.getId())) {
+        if (!store.getShopOwner().getId().equals(
+                owner != null ? owner.getId() : order.getShopOwner().getId()
+        )) {
             throw new RuntimeException("Store and Owner are not matched!");
         }
 
