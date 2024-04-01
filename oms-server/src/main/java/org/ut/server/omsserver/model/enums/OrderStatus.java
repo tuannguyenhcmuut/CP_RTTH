@@ -1,11 +1,24 @@
 package org.ut.server.omsserver.model.enums;
 
+import java.awt.*;
+
 public enum OrderStatus {
     CREATED,
     PROCESSING,
     SHIPPED,
     DELIVERED,
-    CANCELLED
+    CANCELLED;
+
+    public static boolean contains(String test) {
+
+        for (OrderStatus c : OrderStatus.values()) {
+            if (c.name().equals(test)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 /**

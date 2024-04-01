@@ -2,10 +2,14 @@ package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
+import org.ut.server.omsserver.dto.request.StatusRequest;
 import org.ut.server.omsserver.exception.*;
 import org.ut.server.omsserver.mapper.*;
 import org.ut.server.omsserver.model.*;
@@ -190,13 +194,55 @@ public class OrderService {
     }
 
     public OrderDto updateOrderStatus(UUID userId, Long orderId, String status) {
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
+
+//        check the status is valid
+        validateOrderStatus(status, order);
+
         order.setOrderStatus(OrderStatus.valueOf(status));
+        ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found") );
+        order.setLastUpdatedBy(user.getEmail());
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
+    }
+
+    private static void validateOrderStatus(String status, Order order) {
+        if (!OrderStatus.contains(status)) {
+            throw new OrderUpdateException("Invalid order status");
+        }
+//        CREATED, -> chi dc update thanh cancelled hoac processing
+        if (order.getOrderStatus().equals(OrderStatus.CREATED)) {
+            if (!status.equals("CANCELLED") && !status.equals("PROCESSING")) {
+                throw new OrderUpdateException(String.format("Cannot update status to %s from CREATED status", status));
+            }
+        }
+//        PROCESSING -> chi dc update thanh shipped hoac cancelled
+        if (order.getOrderStatus().equals(OrderStatus.PROCESSING)) {
+            if (!status.equals("SHIPPED") && !status.equals("CANCELLED")) {
+                throw new OrderUpdateException(String.format("Cannot update status to %s from PROCESSING status", status));
+            }
+        }
+
+//        SHIPPED -> chi dc update thanh delivered hoac cancelled
+        if (order.getOrderStatus().equals(OrderStatus.SHIPPED)) {
+            if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
+                throw new OrderUpdateException(String.format("Cannot update status to %s from SHIPPED status", status));
+            }
+        }
+//        DELIVERED -> chi dc update thanh cancelled
+        if (order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+            if (!status.equals("CANCELLED")) {
+                throw new OrderUpdateException(String.format("Cannot update status to %s from DELIVERED status", status));
+            }
+        }
+//        CANCELLED -> khong dc update
+        if (order.getOrderStatus().equals(OrderStatus.CANCELLED)) {
+            throw new OrderUpdateException("Cannot update from CANCELLED status");
+        }
     }
 
     public OrderDto updateOrder(UUID userId, Long orderId, OrderDto orderDto) {
@@ -248,22 +294,10 @@ public class OrderService {
         return orderMapper.mapToDto(order, null);
     }
 
-
-    // TODO:
-//    public ResponseEntity<String> updateOrderStatus(UUID userId, Long order_id, StatusRequest statusRequest){
-//        Order order = orderRepository.findOrderByIdAndUser_Id(order_id, userId);
-//        Status status = statusRepository.findById(statusRequest.getStatusId()).orElse(null);
-//        if (order == null) {
-//            return new ResponseEntity<>("Order not found", HttpStatus.BAD_REQUEST);
-//        }
-//        if (status == null) {
-//            return new ResponseEntity<>("Status not found", HttpStatus.BAD_REQUEST);
-//        }
-//        // update status
-//        order.setOrderStatus(status);
-//        // order.setLastStatusUpdate(LocalDateTime.now());
-//        orderRepository.save(order);
-//        return new ResponseEntity<>("Updated order status successfully", HttpStatus.OK);
+//
+//    // TODO:
+//    public OrderDto updateOrderStatus(UUID userId, Long orderId, String status){
+//
 //    }
 
     public void deleteOrder(UUID userId, Long orderId) {
@@ -427,6 +461,28 @@ public class OrderService {
         order.setIsValuable(orderDto.getIsValuable());
         order.setLastUpdatedBy(user.getEmail());
 
+        orderRepository.save(order);
+        return orderMapper.mapToDto(order, owner);
+    }
+
+    public OrderDto updateOwnerOrderStatus(UUID userId, Long orderId, String status) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+
+        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner employee = emplMgnt.getEmployeeId();
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
+                .orElseThrow(
+                        () -> new OrderNotFoundException("Order not found!")
+                );
+
+        validateOrderStatus(status, order);
+
+        order.setOrderStatus(OrderStatus.valueOf(status));
+        order.setLastUpdatedBy(employee.getEmail());
         orderRepository.save(order);
         return orderMapper.mapToDto(order, owner);
     }

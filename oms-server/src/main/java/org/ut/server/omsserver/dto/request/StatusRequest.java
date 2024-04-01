@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.ut.server.omsserver.model.enums.OrderStatus;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatusRequest {
-    private Long statusId;
+    private OrderStatus newStatus;
 }

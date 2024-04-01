@@ -513,6 +513,24 @@ public class RestExceptionHandler {
                     status
             );
         }
+//        OrderUpdateException
+        if (e instanceof OrderUpdateException) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+
+            // converting the stack trace to a String
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            e.printStackTrace(printWriter);
+
+            return new ResponseEntity<>(
+                    new ErrorResponse(
+                            status,
+                            e.getMessage(),
+                            stringWriter.toString()
+                    ),
+                    status
+            );
+        }
 
         // delivery not found
         if (e instanceof DeliveryNotFoundException) {

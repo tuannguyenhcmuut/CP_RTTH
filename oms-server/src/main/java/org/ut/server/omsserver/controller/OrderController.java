@@ -12,7 +12,9 @@ import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.PriceDto;
 import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
+import org.ut.server.omsserver.dto.request.StatusRequest;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
+import org.ut.server.omsserver.model.enums.OrderStatus;
 import org.ut.server.omsserver.service.OrderService;
 
 import javax.transaction.Transactional;
@@ -141,6 +143,21 @@ public class OrderController {
                     .build();
     }
 
+    @PatchMapping("/{orderId}/status")
+    public GenericResponseDTO<OrderDto> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody StatusRequest status,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto updatedOrderDto = orderService.updateOrderStatus(userId, orderId, status.getNewStatus().name());
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(updatedOrderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
 
 
     // delete an order
@@ -311,6 +328,23 @@ public class OrderController {
                 .build();
     }
 
+//    update owner order status
+    @PatchMapping("/owner/{orderId}/status")
+    @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<OrderDto> updateOwnerOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody StatusRequest status,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto updatedOrderDto = orderService.updateOwnerOrderStatus(userId, orderId, status.getNewStatus().name());
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(updatedOrderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
 
 
 
