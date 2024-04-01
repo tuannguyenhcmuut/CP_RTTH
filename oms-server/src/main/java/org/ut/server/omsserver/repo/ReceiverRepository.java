@@ -14,4 +14,5 @@ public interface ReceiverRepository extends JpaRepository<Receiver, Long> {
     List<Receiver> findReceiversByShopOwner(ShopOwner shopOwner);
     Optional<Receiver> findReceiverByIdAndShopOwner_Id(Long receiverId, UUID userId);
 
+    Optional<Receiver> findByIdAndShopOwner_Id(Long receiverId, UUID userId);
 }

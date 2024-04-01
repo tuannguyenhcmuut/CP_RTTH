@@ -12,4 +12,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findStoresByShopOwner(User user);
     Optional<Store> findStoreByIdAndShopOwner_Id(Long storeId, UUID userId);
+
+    Optional<Store> findByIdAndShopOwner_Id(Long storeId, UUID userId);
 }

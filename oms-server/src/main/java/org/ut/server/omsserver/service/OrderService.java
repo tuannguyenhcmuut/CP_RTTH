@@ -2,14 +2,10 @@ package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
-import org.ut.server.omsserver.dto.request.StatusRequest;
 import org.ut.server.omsserver.exception.*;
 import org.ut.server.omsserver.mapper.*;
 import org.ut.server.omsserver.model.*;
@@ -65,7 +61,7 @@ public class OrderService {
 //    }
 
     public OrderDto getOrderById(UUID userId, Long orderId) {
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
@@ -90,7 +86,7 @@ public class OrderService {
             orderRequest.setStore(storeMapper.mapToDto(store, null));
         }
         else {
-            store = storeRepository.findStoreByIdAndShopOwner_Id(orderRequest.getStore().getId(), orderRequest.getUserId())
+            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), orderRequest.getUserId())
                     .orElseThrow(
                             () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStore().getId().toString())
                     );
@@ -105,7 +101,7 @@ public class OrderService {
             orderRequest.setReceiver(receiverMapper.mapToDto(receiver, null));
         }
         else {
-            receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), orderRequest.getUserId())
+            receiver = receiverRepository.findByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), orderRequest.getUserId())
                     .orElseThrow(
                             () -> new ReceiverNotFoundException("Receiver not found by id: " + orderRequest.getReceiver().getId().toString())
                     );
@@ -158,12 +154,12 @@ public class OrderService {
     }
 
     public OrderDto updateReceiver(UUID userId, Long orderId, Long receiverId) {
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
         // find receiver
-        Receiver receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(receiverId, userId)
+        Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(receiverId, userId)
                 .orElseThrow(
                         () -> new ReceiverNotFoundException("Receiver not found by id: " + receiverId.toString())
                 );
@@ -175,13 +171,41 @@ public class OrderService {
         return orderMapper.mapToDto(order, null);
     }
 
+//    update owner receiver
+    public OrderDto updateOwnerReceiver(UUID userId, Long orderId, Long receiverId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner user = emplMgnt.getEmployeeId();
+
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
+                .orElseThrow(
+                        () -> new OrderNotFoundException("Order not found!")
+                );
+        // find receiver
+        Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(receiverId, owner.getId())
+                .orElseThrow(
+                        () -> new ReceiverNotFoundException("Receiver not found by id: " + receiverId.toString())
+                );
+        if (order == null) {
+            throw new OrderNotFoundException("Order not found");
+        }
+        order.setReceiver(receiver);
+        order.setLastUpdatedBy(user.getEmail());
+        orderRepository.save(order);
+        return orderMapper.mapToDto(order, owner);
+    }
+
     public OrderDto updateStore(UUID userId, Long orderId, Long storeId) {
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
         // find store
-        Store store = storeRepository.findStoreByIdAndShopOwner_Id(storeId, userId)
+        Store store = storeRepository.findByIdAndShopOwner_Id(storeId, userId)
                 .orElseThrow(
                         () -> new StoreNotFoundException("Store not found by id: " + storeId.toString())
                 );
@@ -189,8 +213,38 @@ public class OrderService {
             throw new OrderNotFoundException("Order not found");
         }
         order.setStore(store);
+        order.setLastUpdatedBy(store.getShopOwner().getEmail());
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
+    }
+
+
+//    update owner order, store
+    public OrderDto updateOwnerStore(UUID userId, Long orderId, Long storeId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner user = emplMgnt.getEmployeeId();
+
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
+                .orElseThrow(
+                        () -> new OrderNotFoundException("Order not found!")
+                );
+        // find store
+        Store store = storeRepository.findByIdAndShopOwner_Id(storeId, owner.getId())
+                .orElseThrow(
+                        () -> new StoreNotFoundException("Store not found by id: " + storeId.toString())
+                );
+        if (order == null) {
+            throw new OrderNotFoundException("Order not found");
+        }
+        order.setStore(store);
+        order.setLastUpdatedBy(user.getEmail());
+        orderRepository.save(order);
+        return orderMapper.mapToDto(order, owner);
     }
 
     public OrderDto updateOrderStatus(UUID userId, Long orderId, String status) {
@@ -250,7 +304,7 @@ public class OrderService {
         ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found") );
 
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
@@ -258,12 +312,12 @@ public class OrderService {
             throw new OrderNotFoundException("Order not found");
         }
 
-        Receiver receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
+        Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
                 .orElseThrow(
                         () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
                 );
 
-        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
+        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
                 .orElseThrow(
                         () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
                 );
@@ -301,7 +355,7 @@ public class OrderService {
 //    }
 
     public void deleteOrder(UUID userId, Long orderId) {
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(orderId, userId)
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
@@ -346,7 +400,7 @@ public class OrderService {
             throw new StoreNotFoundException("Store is not existed.");
         }
         else {
-//            store = storeRepository.findStoreByIdAndShopOwner_Id(orderRequest.getStore().getId(), owner.getId())
+//            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), owner.getId())
 //                    .orElseThrow(
 //                            () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStore().getId().toString())
 //                    );
@@ -431,7 +485,7 @@ public class OrderService {
         if (!receiver.getShopOwner().getId().equals(owner.getId())) {
             throw new RuntimeException("Receiver and Owner are not matched!");
         }
-//        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
+//        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
 //                .orElseThrow(
 //                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
 //                );

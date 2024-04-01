@@ -190,6 +190,7 @@ public class OrderController {
 
     // http://localhost:8083/api/v1/order/2/user/1/receiver/1
     @PatchMapping("/{orderId}/receiver/{receiverId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
     public GenericResponseDTO<OrderDto> updateReceiver(
             @PathVariable Long orderId,
             @PathVariable Long receiverId,
@@ -214,6 +215,62 @@ public class OrderController {
 //                    .build();
 //        }
     }
+
+//    update owner receiver
+    @PatchMapping("/{orderId}/owner/receiver/{receiverId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<OrderDto> updateOwnerReceiver(
+            @PathVariable Long orderId,
+            @PathVariable Long receiverId,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto orderDto = orderService.updateOwnerReceiver(userId, orderId, receiverId);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(orderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+//    update store by order id
+    @PatchMapping("/{orderId}/store/{storeId}")
+    public GenericResponseDTO<OrderDto> updateStore(
+            @PathVariable Long orderId,
+            @PathVariable Long storeId,
+            @RequestHeader("Authorization") String token
+    ) {
+//        try {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto orderDto = orderService.updateStore(userId, orderId, storeId);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(orderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+    //    update owner order, store
+    @PatchMapping("/{orderId}/owner/store/{storeId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<OrderDto> updateOwnerStore(
+            @PathVariable Long orderId,
+            @PathVariable Long storeId,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto orderDto = orderService.updateOwnerStore(userId, orderId, storeId);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(orderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+
 
     // calculate the total price and option's prices based on order options 
     @PostMapping("/price/calculate")
@@ -311,7 +368,7 @@ public class OrderController {
     }
 
 //    update order for owner
-    @PutMapping("/owner/{orderId}")
+    @PutMapping("/{orderId}/owner")
     @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
      public GenericResponseDTO<OrderDto> updateOwnerOrder(
             @PathVariable Long orderId,
@@ -329,7 +386,7 @@ public class OrderController {
     }
 
 //    update owner order status
-    @PatchMapping("/owner/{orderId}/status")
+    @PatchMapping("/{orderId}/owner/status")
     @PreAuthorize("hasAnyAuthority('UPDATE_ORDER','MANAGE_ORDER')")
     public GenericResponseDTO<OrderDto> updateOwnerOrderStatus(
             @PathVariable Long orderId,
