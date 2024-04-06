@@ -93,5 +93,47 @@ public class StoreService {
         return storeMapper.mapToDtos(stores, owner);
     }
 
-    
+
+    public StoreDto updateStoreById(Long storeId, StoreDto updatedStore, UUID userId) {
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store not found"));
+        if (store.getShopOwner().getId().equals(userId)) {
+            // name
+            if (updatedStore.getName() != null) {
+                store.setName(updatedStore.getName());
+            }
+            // address
+            if (updatedStore.getAddress() != null) {
+                store.setAddress(updatedStore.getAddress());
+            }
+            // phone
+            if (updatedStore.getPhoneNumber() != null) {
+                store.setPhoneNumber(updatedStore.getPhoneNumber());
+            }
+            //  detailedAddress
+            if (updatedStore.getDetailedAddress() != null) {
+                store.setDetailedAddress(updatedStore.getDetailedAddress());
+            }
+//            description
+            if (updatedStore.getDescription() != null) {
+                store.setDescription(updatedStore.getDescription());
+            }
+//            storePickUpTime
+            if (updatedStore.getStorePickUpTime() != null) {
+                store.setStorePickUpTime(updatedStore.getStorePickUpTime());
+            }
+//            isDefault
+            if (updatedStore.getIsDefault() != null) {
+                store.setIsDefault(updatedStore.getIsDefault());
+            }
+//            sendAtPost
+            if (updatedStore.getSendAtPost() != null) {
+                store.setSendAtPost(updatedStore.getSendAtPost());
+            }
+            storeRepository.save(store);
+            return storeMapper.mapToDto(store, null);
+        }
+        else {
+            throw new RuntimeException("Store and User are not matched!");
+        }
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.NotificationDTO;
 import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Notification;
+import org.ut.server.omsserver.model.Order;
 import org.ut.server.omsserver.model.ShopOwner;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.NotificationRepository;
@@ -67,7 +68,7 @@ public class NotificationService implements INotificationService {
         ShopOwner employee = shopOwnerRepository.findShopOwnerById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
 
-        // ,amager
+        // mamager
         ShopOwner manager = shopOwnerRepository.findShopOwnerById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found with id " + managerId));
         Notification notification = new Notification();
@@ -76,6 +77,18 @@ public class NotificationService implements INotificationService {
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void notifyOrderInfoToOwner(ShopOwner owner, ShopOwner employee, Order order, String message) {
+        // existing code...
+        // find shop owner
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setReceiver(owner);
+        notification.setRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);
     }
 

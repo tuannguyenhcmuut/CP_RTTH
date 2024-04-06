@@ -90,6 +90,29 @@ public class StoreController {
         }
     }
 
+//    update store by id
+    @PutMapping("/{storeId}")
+    public GenericResponseDTO<StoreDto> updateStoreById(
+            @PathVariable("storeId") Long storeId,
+            @RequestBody StoreDto updatedStore,
+            @RequestHeader("Authorization") String token
+    ) {
+        try {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            StoreDto storeDto = storeService.updateStoreById(storeId, updatedStore, userId);
+            return GenericResponseDTO.<StoreDto>builder()
+                    .data(storeDto)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_STORE_UPDATED)
+                    .timestamps(new Date())
+                    .build();
+        }
+        catch  (Exception e){
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     // delete store by id
     @DeleteMapping("/{storeId}")
     public GenericResponseDTO<String> deleteStoreById(

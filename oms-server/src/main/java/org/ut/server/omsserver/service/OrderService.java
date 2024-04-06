@@ -12,6 +12,7 @@ import org.ut.server.omsserver.model.*;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.model.enums.OrderStatus;
 import org.ut.server.omsserver.repo.*;
+import org.ut.server.omsserver.service.impl.NotificationService;
 import org.ut.server.omsserver.utils.RandomGenUtils;
 
 import javax.persistence.EntityManager;
@@ -45,6 +46,7 @@ public class OrderService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
+    private final NotificationService notificationService;
 
 
 //    public List<OrderItem> saveItems(OrderDto orderDto, Order order) {
@@ -462,6 +464,9 @@ public class OrderService {
         newOrder = orderRepository.save(newOrder);
 
         log.error("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
+
+        // notify to owner
+        notificationService.notifyOrderInfoToOwner(owner, user, newOrder, String.format("Employee %s has created a new order: %s", user.getEmail(), newOrder.getCode()));
         return orderMapper.mapToDto(newOrder, owner);
     }
 
@@ -516,6 +521,7 @@ public class OrderService {
         order.setLastUpdatedBy(user.getEmail());
 
         orderRepository.save(order);
+        notificationService.notifyOrderInfoToOwner(owner, user, order, String.format("Employee %s has updated an order infomation: %s", user.getEmail(), order.getCode()));
         return orderMapper.mapToDto(order, owner);
     }
 
@@ -538,6 +544,7 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.valueOf(status));
         order.setLastUpdatedBy(employee.getEmail());
         orderRepository.save(order);
+        notificationService.notifyOrderInfoToOwner(owner, employee, order, String.format("Employee %s has updated an order %s status to %s", employee.getEmail(), order.getCode(), order.getOrderStatus()));
         return orderMapper.mapToDto(order, owner);
     }
 }

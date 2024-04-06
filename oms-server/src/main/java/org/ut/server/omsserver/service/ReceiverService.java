@@ -85,6 +85,35 @@ public class ReceiverService {
         return receiverMapper.mapToDtos(stores, owner);
     }
 
+    public ReceiverDto updateReceiverById(Long receiverId, ReceiverDto updatedReceiver, UUID userId) {
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        if (receiver.getShopOwner().getId().equals(userId)) {
+                if (updatedReceiver.getNote() != null) {
+                    receiver.setNote(updatedReceiver.getNote());
+                }
+                if (updatedReceiver.getReceivedPlace() != null) {
+                    receiver.setReceivedPlace(updatedReceiver.getReceivedPlace());
+                }
+                if (updatedReceiver.getDeliveryTimeFrame() != null) {
+                receiver.setDeliveryTimeFrame(updatedReceiver.getDeliveryTimeFrame());
+            }
+            if (updatedReceiver.getCallBeforeSend() != null) {
+                receiver.setCallBeforeSend(updatedReceiver.getCallBeforeSend());
+            }
+            if (updatedReceiver.getReceiveAtPost() != null) {
+                receiver.setReceiveAtPost(updatedReceiver.getReceiveAtPost());
+            }
+            receiverRepository.save(receiver);
+            return receiverMapper.mapToDto(receiver, null);
+        }
+        else {
+            throw new RuntimeException("Receiver and User are not matched!");
+        }
+    }
+
+//    update receiver by id
+
+
 //    public ResponseEntity<String> updateReceiverById(Long id, Receiver updatedReceiver) {
 //        Optional<Receiver> receiver = receiverRepository.findById(id);
 //        if (receiver.isPresent()) {

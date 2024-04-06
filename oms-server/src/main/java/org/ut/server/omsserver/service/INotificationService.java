@@ -2,6 +2,8 @@ package org.ut.server.omsserver.service;
 
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.NotificationDTO;
+import org.ut.server.omsserver.model.Order;
+import org.ut.server.omsserver.model.ShopOwner;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,4 +16,5 @@ public interface INotificationService {
     public List<NotificationDTO> getNotifications(UUID userId);
     public void markAsRead(UUID userId, Long notificationId);
     public void requestEmployee(UUID employeeId, UUID managerId);
+    public void notifyOrderInfoToOwner(ShopOwner owner, ShopOwner employee, Order order, String message);
 }

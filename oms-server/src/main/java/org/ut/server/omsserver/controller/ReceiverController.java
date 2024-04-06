@@ -127,4 +127,20 @@ public class ReceiverController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @PutMapping("/{receiverId}")
+    public GenericResponseDTO<ReceiverDto> updateReceiverById(
+            @PathVariable Long receiverId,
+            @RequestBody ReceiverDto updatedReceiver,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        ReceiverDto receiverDto = receiverService.updateReceiverById(receiverId, updatedReceiver, userId);
+        return GenericResponseDTO.<ReceiverDto>builder()
+                .data(receiverDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_RECEIVER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
 }
