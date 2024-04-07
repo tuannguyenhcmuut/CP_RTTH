@@ -88,6 +88,10 @@ public class ReceiverService {
     public ReceiverDto updateReceiverById(Long receiverId, ReceiverDto updatedReceiver, UUID userId) {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (receiver.getShopOwner().getId().equals(userId)) {
+            receiver.setName(updatedReceiver.getName());
+            receiver.setPhoneNumber(updatedReceiver.getPhoneNumber());
+            receiver.setAddress(updatedReceiver.getAddress());
+            receiver.setDetailedAddress(updatedReceiver.getDetailedAddress());
                 if (updatedReceiver.getNote() != null) {
                     receiver.setNote(updatedReceiver.getNote());
                 }
