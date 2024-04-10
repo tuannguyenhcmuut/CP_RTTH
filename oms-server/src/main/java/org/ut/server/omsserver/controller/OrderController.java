@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
-import org.ut.server.omsserver.dto.OrderDto;
-import org.ut.server.omsserver.dto.PriceDto;
+import org.ut.server.omsserver.dto.*;
 import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.dto.request.StatusRequest;
@@ -403,10 +402,34 @@ public class OrderController {
                 .build();
     }
 
+    // get top 10 receiver by completed order spending
+    @GetMapping("/top-receiver")
+    public GenericResponseDTO<List<TopReceiverDto>> getTopReceiver(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<TopReceiverDto> orders = orderService.getTopReceiver(userId);
+        return GenericResponseDTO.<List<TopReceiverDto>>builder()
+                .data(orders)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_TOP_RECEIVER)
+                .timestamps(new Date())
+                .build();
+    }
 
-
-
-    // update receiver
-
+    // get data of total spending, total order by month of a user
+    @GetMapping("/statistic")
+    public GenericResponseDTO<List<ChartStatisticsDto>> getStatistic(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        List<ChartStatisticsDto> orders = orderService.getStatistic(userId);
+        return GenericResponseDTO.<List<ChartStatisticsDto>>builder()
+                .data(orders)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_STATISTIC)
+                .timestamps(new Date())
+                .build();
+    }
 
 }

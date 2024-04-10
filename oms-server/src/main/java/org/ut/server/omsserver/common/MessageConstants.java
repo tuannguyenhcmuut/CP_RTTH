@@ -121,4 +121,7 @@ public class MessageConstants {
     public static final String SUCCESS_OWNER_ORDER_CREATED = "Created owner's order successfully!";
     public static final String SUCCESS_GET_OWNER_ORDER = "Get owner's orders successfully";
     public static final String SUCCESS_OWNER_ORDER_UPDATED = "Update owner's order successfully";
+    public static final String SUCCESS_GET_TOP_RECEIVER = "Get top receiver successfully!";
+    public static final String SUCCESS_GET_STATISTIC = "Get statistic successfully!";
+    ;
 }

@@ -3,6 +3,7 @@ package org.ut.server.omsserver.mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.ut.server.omsserver.dto.ChartStatisticsDto;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.exception.DeliveryNotFoundException;
@@ -168,6 +169,19 @@ public class OrderMapper {
     public List<OrderDto> mapToDtos(List<Order> orders, ShopOwner owner) {
         return orders != null ? orders.stream().map(
                 order -> mapToDto(order, owner)
+        ).collect(Collectors.toList()) : null;
+    }
+
+    public ChartStatisticsDto mapToChartStatisticsDto(Object[] statistics) {
+        return statistics != null ? ChartStatisticsDto.builder()
+                .monthYear(statistics[0].toString())
+                .totalOrder(Integer.parseInt(statistics[1].toString()))
+                .totalAmount(Double.parseDouble(statistics[2].toString()))
+                .build() : null;
+    }
+    public List<ChartStatisticsDto> mapToChartStatisticsDtos(List<Object[]> statistics) {
+        return statistics != null ? statistics.stream().map(
+                obj -> mapToChartStatisticsDto(obj)
         ).collect(Collectors.toList()) : null;
     }
 

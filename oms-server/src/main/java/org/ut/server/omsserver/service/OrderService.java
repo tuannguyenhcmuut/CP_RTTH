@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
+import org.ut.server.omsserver.dto.ChartStatisticsDto;
 import org.ut.server.omsserver.dto.OrderDto;
+import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.exception.*;
 import org.ut.server.omsserver.mapper.*;
@@ -546,5 +548,17 @@ public class OrderService {
         orderRepository.save(order);
         notificationService.notifyOrderInfoToOwner(owner, employee, order, String.format("Employee %s has updated an order %s status to %s", employee.getEmail(), order.getCode(), order.getOrderStatus()));
         return orderMapper.mapToDto(order, owner);
+    }
+
+    public List<TopReceiverDto> getTopReceiver(UUID userId) {
+        List<Object[]> topReceivers = orderRepository.findTopReceivers(userId);
+
+        return receiverMapper.mapToTopReceiverDtos(topReceivers);
+
+    }
+
+    public List<ChartStatisticsDto> getStatistic(UUID userId) {
+        List<Object[]> statistics = orderRepository.findStatistics(userId);
+        return orderMapper.mapToChartStatisticsDtos(statistics);
     }
 }

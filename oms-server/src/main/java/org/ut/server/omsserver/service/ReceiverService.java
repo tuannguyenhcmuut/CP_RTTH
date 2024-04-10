@@ -10,7 +10,6 @@ import org.ut.server.omsserver.mapper.ReceiverMapper;
 import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Receiver;
 import org.ut.server.omsserver.model.ShopOwner;
-import org.ut.server.omsserver.model.Store;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.ReceiverRepository;
@@ -33,12 +32,11 @@ public class ReceiverService {
         );
 
         List<Receiver> receivers = receiverRepository.findReceiversByShopOwner(owner);
-        List<ReceiverDto> receiverDtos =  receiverMapper.mapToDtos(receivers, null);
+        List<ReceiverDto> receiverDtos = receiverMapper.mapToDtos(receivers, null);
         try {
             List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId);
             receiverDtos.addAll(ownerReceiverDtos);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         return receiverDtos;
     }
@@ -56,8 +54,7 @@ public class ReceiverService {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (receiver.getShopOwner().getId().equals(userId)) {
             receiverRepository.deleteById(receiverId);
-        }
-        else {
+        } else {
             throw new RuntimeException("Receiver and User are not matched!");
         }
     }
@@ -66,14 +63,13 @@ public class ReceiverService {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (receiver.getShopOwner().getId().equals(userId)) {
             return receiverMapper.mapToDto(receiver, null);
-        }
-        else {
+        } else {
             throw new RuntimeException("Receiver and User are not matched!");
         }
     }
 
     public List<ReceiverDto> getOwnerReceivers(UUID userId) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
@@ -88,17 +84,25 @@ public class ReceiverService {
     public ReceiverDto updateReceiverById(Long receiverId, ReceiverDto updatedReceiver, UUID userId) {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (receiver.getShopOwner().getId().equals(userId)) {
-            receiver.setName(updatedReceiver.getName());
-            receiver.setPhoneNumber(updatedReceiver.getPhoneNumber());
-            receiver.setAddress(updatedReceiver.getAddress());
-            receiver.setDetailedAddress(updatedReceiver.getDetailedAddress());
-                if (updatedReceiver.getNote() != null) {
-                    receiver.setNote(updatedReceiver.getNote());
-                }
-                if (updatedReceiver.getReceivedPlace() != null) {
-                    receiver.setReceivedPlace(updatedReceiver.getReceivedPlace());
-                }
-                if (updatedReceiver.getDeliveryTimeFrame() != null) {
+            if (updatedReceiver.getName() != null) {
+                receiver.setName(updatedReceiver.getName());
+            }
+            if (updatedReceiver.getPhoneNumber() != null) {
+                receiver.setPhoneNumber(updatedReceiver.getPhoneNumber());
+            }
+            if (updatedReceiver.getAddress() != null) {
+                receiver.setAddress(updatedReceiver.getAddress());
+            }
+            if (updatedReceiver.getDetailedAddress() != null) {
+                receiver.setDetailedAddress(updatedReceiver.getDetailedAddress());
+            }
+            if (updatedReceiver.getNote() != null) {
+                receiver.setNote(updatedReceiver.getNote());
+            }
+            if (updatedReceiver.getReceivedPlace() != null) {
+                receiver.setReceivedPlace(updatedReceiver.getReceivedPlace());
+            }
+            if (updatedReceiver.getDeliveryTimeFrame() != null) {
                 receiver.setDeliveryTimeFrame(updatedReceiver.getDeliveryTimeFrame());
             }
             if (updatedReceiver.getCallBeforeSend() != null) {
@@ -109,8 +113,7 @@ public class ReceiverService {
             }
             receiverRepository.save(receiver);
             return receiverMapper.mapToDto(receiver, null);
-        }
-        else {
+        } else {
             throw new RuntimeException("Receiver and User are not matched!");
         }
     }

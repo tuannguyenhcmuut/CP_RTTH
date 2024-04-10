@@ -3,6 +3,7 @@ package org.ut.server.omsserver.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.ut.server.omsserver.dto.ReceiverDto;
+import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.model.Receiver;
 import org.ut.server.omsserver.model.ShopOwner;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
@@ -15,6 +16,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReceiverMapper {
     private final ShopOwnerRepository shopOwnerRepository;
+
+    public List<TopReceiverDto> mapToTopReceiverDtos(List<Object[]> objects) {
+        if (objects == null) {
+            return null;
+        }
+        return objects.stream().map(
+                this::mapToTopReceiverDto
+        ).collect(Collectors.toList());
+    }
+
+    public TopReceiverDto mapToTopReceiverDto(Object[] obj) {
+        if (obj == null) {
+            return null;
+        }
+        return TopReceiverDto.builder()
+                .name((String) obj[0])
+                .totalAmount((Double) obj[1])
+                .build();
+    }
     public ReceiverDto mapToDto(Receiver receiver, ShopOwner owner) {
         return ReceiverDto.builder()
                 .id(receiver.getId())
