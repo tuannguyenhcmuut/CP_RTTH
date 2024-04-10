@@ -561,4 +561,21 @@ public class OrderService {
         List<Object[]> statistics = orderRepository.findStatistics(userId);
         return orderMapper.mapToChartStatisticsDtos(statistics);
     }
+
+    public OrderDto getOwnerOrderById(UUID userId, Long orderId) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner employee = emplMgnt.getEmployeeId();
+        Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
+                .orElseThrow(
+                        () -> new OrderNotFoundException("Order not found!")
+                );
+
+        return orderMapper.mapToDto(order, owner);
+    }
+
 }

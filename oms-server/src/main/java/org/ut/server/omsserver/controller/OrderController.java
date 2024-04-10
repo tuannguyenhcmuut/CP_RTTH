@@ -90,6 +90,23 @@ public class OrderController {
 //        }
     }
 
+    // get order of owner by id
+    @GetMapping("/{orderId}/owner")
+    @PreAuthorize("hasAnyAuthority('VIEW_ONLY', 'CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
+    public GenericResponseDTO<OrderDto> getOwnerOrderById(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long orderId
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        OrderDto orderDto = orderService.getOwnerOrderById(userId, orderId);
+        return GenericResponseDTO.<OrderDto>builder()
+                .data(orderDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_ORDER)
+                .timestamps(new Date())
+                .build();
+    }
+
     // create an order
     // http://localhost:8083/api/v1/order/user/1
     @PostMapping("")
