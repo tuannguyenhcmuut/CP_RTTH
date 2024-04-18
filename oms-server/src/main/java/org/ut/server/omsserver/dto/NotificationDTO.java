@@ -9,5 +9,6 @@ public class NotificationDTO {
     private Long id;
     private String message;
     private boolean isRead;
+    private String type;
     private LocalDateTime createdAt;
 }

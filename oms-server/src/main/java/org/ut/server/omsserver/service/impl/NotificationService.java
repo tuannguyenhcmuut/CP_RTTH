@@ -8,6 +8,7 @@ import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Notification;
 import org.ut.server.omsserver.model.Order;
 import org.ut.server.omsserver.model.ShopOwner;
+import org.ut.server.omsserver.model.enums.NotificationType;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.NotificationRepository;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
@@ -75,6 +76,9 @@ public class NotificationService implements INotificationService {
         notification.setMessage("You have received a new employee request to become employee of " + manager.getAccount().getUsername());
         notification.setReceiver(employee);
         notification.setRead(false);
+        notification.setType(
+                NotificationType.EMPLOYEE_REQUEST.toString()
+        );
         notification.setCreatedAt(LocalDateTime.now());
 
         notificationRepository.save(notification);
@@ -88,6 +92,9 @@ public class NotificationService implements INotificationService {
         notification.setMessage(message);
         notification.setReceiver(owner);
         notification.setRead(false);
+        notification.setType(
+                NotificationType.ORDER_INFO.toString()
+        );
         notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);
     }
@@ -103,6 +110,7 @@ public class NotificationService implements INotificationService {
             notificationDTO.setId(notification.getId());
             notificationDTO.setMessage(notification.getMessage());
             notificationDTO.setRead(notification.isRead());
+            notificationDTO.setType(notification.getType());
             notificationDTO.setCreatedAt(notification.getCreatedAt());
             return notificationDTO;
         }).collect(Collectors.toList());

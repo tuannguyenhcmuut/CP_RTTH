@@ -16,5 +16,7 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User receiver;
     private boolean isRead;
+//    notification type
+    private String type;
     private LocalDateTime createdAt;
 }

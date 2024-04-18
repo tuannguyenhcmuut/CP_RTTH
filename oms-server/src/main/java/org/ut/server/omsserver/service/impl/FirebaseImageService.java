@@ -33,7 +33,7 @@ public class FirebaseImageService implements IImageService {
 
         try {
 
-            ClassPathResource serviceAccount = new ClassPathResource("datn-oms-firebase-adminsdk-vdpv8-5bbedf5029.json");
+            ClassPathResource serviceAccount = new ClassPathResource("datn-oms-firebase-adminsdk-vdpv8-e50d8b2ed7.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))

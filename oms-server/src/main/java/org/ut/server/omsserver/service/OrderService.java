@@ -17,8 +17,6 @@ import org.ut.server.omsserver.repo.*;
 import org.ut.server.omsserver.service.impl.NotificationService;
 import org.ut.server.omsserver.utils.RandomGenUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +31,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final OrderItemMapper orderItemMapper;
     private final ReceiverRepository receiverRepository;
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
@@ -41,9 +38,8 @@ public class OrderService {
 //    storeMapper
     private final StoreMapper storeMapper;
     private final ReceiverMapper receiverMapper;
-    @PersistenceContext
-    private EntityManager entityManager;
-    private final OrderItemRepository orderItemRepository;
+//    @PersistenceContext
+//    private EntityManager entityManager;
 //    private final DeliveryService deliveryService;
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
@@ -468,7 +464,10 @@ public class OrderService {
         log.error("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
 
         // notify to owner
-        notificationService.notifyOrderInfoToOwner(owner, user, newOrder, String.format("Employee %s has created a new order: %s", user.getEmail(), newOrder.getCode()));
+        notificationService.notifyOrderInfoToOwner(
+                owner, user, newOrder,
+                String.format("Employee %s has created a new order: %s", user.getEmail(), newOrder.getCode())
+        );
         return orderMapper.mapToDto(newOrder, owner);
     }
 
@@ -523,7 +522,12 @@ public class OrderService {
         order.setLastUpdatedBy(user.getEmail());
 
         orderRepository.save(order);
-        notificationService.notifyOrderInfoToOwner(owner, user, order, String.format("Employee %s has updated an order infomation: %s", user.getEmail(), order.getCode()));
+        notificationService.notifyOrderInfoToOwner(
+                owner,
+                user,
+                order,
+                String.format("Employee %s has updated an order infomation: %s", user.getEmail(), order.getCode())
+        );
         return orderMapper.mapToDto(order, owner);
     }
 
@@ -546,7 +550,12 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.valueOf(status));
         order.setLastUpdatedBy(employee.getEmail());
         orderRepository.save(order);
-        notificationService.notifyOrderInfoToOwner(owner, employee, order, String.format("Employee %s has updated an order %s status to %s", employee.getEmail(), order.getCode(), order.getOrderStatus()));
+        notificationService.notifyOrderInfoToOwner(
+                owner,
+                employee,
+                order,
+                String.format("Employee %s has updated an order %s status to %s", employee.getEmail(), order.getCode(), order.getOrderStatus())
+        );
         return orderMapper.mapToDto(order, owner);
     }
 
