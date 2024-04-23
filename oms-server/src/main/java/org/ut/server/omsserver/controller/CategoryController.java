@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
@@ -53,7 +54,10 @@ public class CategoryController {
     // get all category by userId
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public GenericResponseDTO<List<CategoryDto>> getAllCategoryByUserId(@RequestHeader("Authorization") String token) {
+    public GenericResponseDTO<List<CategoryDto>> getAllCategoryByUserId(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Pageable pageable
+    ) {
 //        try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
             List<CategoryDto> category = categoryService.getAllCategoryByUserId(userId);

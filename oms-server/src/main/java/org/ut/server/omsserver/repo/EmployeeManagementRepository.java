@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface EmployeeManagementRepository extends JpaRepository<EmployeeManagement, Long> {
     // get employee request by id
     Optional<EmployeeManagement> findByEmployeeIdAndManagerId(ShopOwner employeeId, ShopOwner managerId);
+    Optional<EmployeeManagement> findByEmployeeId_IdAndManagerId_Id(UUID employeeId, UUID managerId);
+    Optional<EmployeeManagement> findByEmployeeId_IdAndManagerId_IdAndApprovalStatus(UUID employeeId_id, UUID managerId_id, EmployeeRequestStatus approvalStatus);
     List<EmployeeManagement> findEmployeeManagementsByManagerId_Id(UUID managerId);
     List<EmployeeManagement> findEmployeeManagementsByEmployeeId_Id(UUID employeeId);
     List<EmployeeManagement> findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(UUID employeeId, EmployeeRequestStatus requestStatus);

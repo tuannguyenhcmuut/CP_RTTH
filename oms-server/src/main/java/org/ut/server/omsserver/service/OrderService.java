@@ -583,7 +583,6 @@ public class OrderService {
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
-
         return orderMapper.mapToDto(order, owner);
     }
 
