@@ -1,5 +1,6 @@
 package org.ut.server.omsserver.repo;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.ShopOwner;
@@ -29,6 +30,7 @@ public interface EmployeeManagementRepository extends JpaRepository<EmployeeMana
     Optional<EmployeeManagement> findEmployeeManagementByManagerIdAndEmployeeId(ShopOwner managerId, ShopOwner employeeId);
 
     List<EmployeeManagement> findEmployeeManagementsByManagerId_IdAndApprovalStatus(UUID managerId, EmployeeRequestStatus requestStatus);
+    List<EmployeeManagement> findEmployeeManagementsByManagerId_IdAndApprovalStatus(UUID managerId, EmployeeRequestStatus requestStatus, Pageable pageable);
     Optional<EmployeeManagement> findEmployeeManagementByEmployeeId_Id(UUID employeeId);
 
     Optional<EmployeeManagement> findEmployeeManagementByEmployeeId(ShopOwner employee);

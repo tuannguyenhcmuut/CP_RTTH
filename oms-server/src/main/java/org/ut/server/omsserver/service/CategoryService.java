@@ -1,6 +1,7 @@
 package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.CategoryDto;
 import org.ut.server.omsserver.mapper.CategoryMapper;
@@ -26,9 +27,17 @@ public class CategoryService {
         return categoryMapper.mapToDto(newCategory);
     }
 
-    public List<CategoryDto> getAllCategoryByUserId(UUID userId) {
-        List<Category> categories = categoryRepository.findCategoriesByUserId(userId);
+    public List<CategoryDto> getAllCategoryByUserId(UUID userId, Pageable pageable) {
+        List<Category> categories;
+        if (pageable != null) {
+            categories = categoryRepository.findCategoriesByUserId(userId, pageable);
+            return categoryMapper.mapToDtos(categories);
+        }
+        else {
+            categories = categoryRepository.findCategoriesByUserId(userId);
+            return categoryMapper.mapToDtos(categories);
+        }
 
-        return categoryMapper.mapToDtos(categories);
+
     }
 }

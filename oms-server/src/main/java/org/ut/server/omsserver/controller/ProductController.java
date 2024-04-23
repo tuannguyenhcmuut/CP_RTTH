@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,14 +17,13 @@ import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.exception.FileUploadException;
 import org.ut.server.omsserver.model.Product;
 import org.ut.server.omsserver.service.ProductService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -74,11 +74,15 @@ public class ProductController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<List<ProductDto>> getAllProduct(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
 //        try {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<ProductDto> products = productService.getAllProducts(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<ProductDto> products = productService.getAllProducts(userId, pageable);
         return GenericResponseDTO.<List<ProductDto>>builder()
                 .data(products)
                 .code(MessageCode.SUCCESS.toString())
@@ -214,10 +218,14 @@ public class ProductController {
 
     @GetMapping("/owner/getall")
     public GenericResponseDTO<List<ProductDto>> getAllProductByOwner(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<ProductDto> products = productService.getAllProductsByOwner(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<ProductDto> products = productService.getAllProductsByOwner(userId, pageable);
         return GenericResponseDTO.<List<ProductDto>>builder()
                 .data(products)
                 .code(MessageCode.SUCCESS.toString())

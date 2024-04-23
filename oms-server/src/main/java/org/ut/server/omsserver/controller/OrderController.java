@@ -2,28 +2,29 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
-import org.ut.server.omsserver.dto.*;
+import org.ut.server.omsserver.dto.ChartStatisticsDto;
+import org.ut.server.omsserver.dto.OrderDto;
+import org.ut.server.omsserver.dto.PriceDto;
+import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.dto.request.StatusRequest;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
-import org.ut.server.omsserver.model.enums.OrderStatus;
 import org.ut.server.omsserver.service.OrderService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -40,11 +41,15 @@ public class OrderController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<List<OrderDto>> getAllOrders(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdDate,desc") String[] sort
     ) {
 //        try {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<OrderDto> orders = orderService.getAllOrders(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<OrderDto> orders = orderService.getAllOrders(userId, pageable);
 
         return GenericResponseDTO.<List<OrderDto>>builder()
                 .data(orders)
@@ -352,10 +357,14 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('VIEW_ONLY', 'CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
 //    @PreAuthorize("hasPermission('VIEW_ONLY', 'CREATE_ORDER', 'UPDATE_ORDER','MANAGE_ORDER')")
     public GenericResponseDTO<List<OrderDto>> getOwnerOrders(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdDate,desc") String[] sort
     ) {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<OrderDto> orders = orderService.getOwnerOrders(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<OrderDto> orders = orderService.getOwnerOrders(userId, pageable);
         return GenericResponseDTO.<List<OrderDto>>builder()
                 .data(orders)
                 .code(MessageCode.SUCCESS.toString())

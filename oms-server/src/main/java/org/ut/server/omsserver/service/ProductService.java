@@ -2,6 +2,7 @@ package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -45,15 +46,22 @@ public class ProductService {
     }
 
     //    getAllProducts
-    public List<ProductDto> getAllProducts(UUID userId) {
-        List<Product> products = productRepository.findProductsByShopOwner_Id(userId);
+    public List<ProductDto> getAllProducts(UUID userId, Pageable pageable) {
+
+        List<Product> products;
+        if (pageable != null) {
+            products = productRepository.findProductsByShopOwner_Id(userId, pageable);
+        }
+        else {
+            products = productRepository.findProductsByShopOwner_Id(userId);
+        }
         log.info("Products: {}", products);
 
         // get product from their owner
         List<ProductDto> productDtos =  productMapper.mapEntitiesToDtos(products, null);
 
         try {
-            List<ProductDto> ownerProductDtos = this.getAllProductsByOwner(userId);
+            List<ProductDto> ownerProductDtos = this.getAllProductsByOwner(userId, pageable);
             productDtos.addAll(ownerProductDtos);
         }
         catch (Exception e) {
@@ -143,14 +151,20 @@ public class ProductService {
         return productMapper.mapToDto(product,null);
     }
 
-    public List<ProductDto> getAllProductsByOwner(UUID userId) {
+    public List<ProductDto> getAllProductsByOwner(UUID userId, Pageable pageable) {
         List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManagerId();
-        List<Product> products = productRepository.findProductsByShopOwner_Id(owner.getId());
+        List<Product> products;
+        if (pageable != null) {
+            products = productRepository.findProductsByShopOwner_Id(owner.getId(), pageable);
+        }
+        else {
+            products = productRepository.findProductsByShopOwner_Id(owner.getId());
+        }
         return productMapper.mapEntitiesToDtos(products, owner);
     }
 }

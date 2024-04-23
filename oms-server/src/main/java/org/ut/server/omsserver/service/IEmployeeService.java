@@ -1,5 +1,6 @@
 package org.ut.server.omsserver.service;
 
+import org.springframework.data.domain.Pageable;
 import org.ut.server.omsserver.dto.EmployeeInfoDto;
 import org.ut.server.omsserver.dto.EmployeeManagementDto;
 import org.ut.server.omsserver.dto.request.EmployeeRequestDto;
@@ -27,7 +28,8 @@ public interface IEmployeeService {
 
     List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId);
 
-    List<EmployeeInfoDto> getAllEmployees(UUID managerId);
+//    List<EmployeeInfoDto> getAllEmployees(UUID managerId);
+    List<EmployeeInfoDto> getAllEmployees(UUID managerId, Pageable pageable);
 
     List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId);
 

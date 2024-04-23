@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Person {
 
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     protected String name;
 
     @Column(nullable = false, length = 15)

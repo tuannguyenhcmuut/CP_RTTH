@@ -11,6 +11,7 @@ import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.CategoryDto;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.CategoryService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -56,11 +57,14 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<List<CategoryDto>> getAllCategoryByUserId(
             @RequestHeader("Authorization") String token,
-            @RequestParam(required = false) Pageable pageable
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "categoryName,asc") String[] sort
     ) {
 //        try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-            List<CategoryDto> category = categoryService.getAllCategoryByUserId(userId);
+            Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+            List<CategoryDto> category = categoryService.getAllCategoryByUserId(userId, pageable);
             return GenericResponseDTO.<List<CategoryDto>>builder()
                     .data(category)
                     .code(MessageCode.SUCCESS.toString())

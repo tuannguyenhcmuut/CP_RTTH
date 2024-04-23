@@ -1,6 +1,7 @@
 package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.ReceiverDto;
@@ -26,15 +27,22 @@ public class ReceiverService {
     private final ReceiverMapper receiverMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
 
-    public List<ReceiverDto> getAllReceivers(UUID userId) {
+    public List<ReceiverDto> getAllReceivers(UUID userId, Pageable pageable) {
         ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(MessageConstants.USER_NOT_FOUND)
         );
 
-        List<Receiver> receivers = receiverRepository.findReceiversByShopOwner(owner);
+        List<Receiver> receivers;
+        if (pageable != null) {
+            receivers = receiverRepository.findReceiversByShopOwner(owner, pageable);
+        }
+        else {
+            receivers = receiverRepository.findReceiversByShopOwner(owner);
+        }
+
         List<ReceiverDto> receiverDtos = receiverMapper.mapToDtos(receivers, null);
         try {
-            List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId);
+            List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId, pageable);
             receiverDtos.addAll(ownerReceiverDtos);
         } catch (Exception e) {
         }
@@ -68,7 +76,7 @@ public class ReceiverService {
         }
     }
 
-    public List<ReceiverDto> getOwnerReceivers(UUID userId) {
+    public List<ReceiverDto> getOwnerReceivers(UUID userId, Pageable pageable) {
         List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
@@ -77,7 +85,7 @@ public class ReceiverService {
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManagerId();
         // get all stores of user's owner
-        List<Receiver> stores = receiverRepository.findReceiversByShopOwner(owner);
+        List<Receiver> stores = receiverRepository.findReceiversByShopOwner(owner, pageable);
         return receiverMapper.mapToDtos(stores, owner);
     }
 

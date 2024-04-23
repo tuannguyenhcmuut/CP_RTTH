@@ -1,6 +1,7 @@
 package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.StoreDto;
@@ -29,17 +30,23 @@ public class StoreService {
     private final StoreMapper storeMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
 
-    public List<StoreDto> getAllStores(UUID userId) {
+    public List<StoreDto> getAllStores(UUID userId, Pageable pageable) {
         Optional<User> owner = userRepository.findById(userId);
         if (owner.isEmpty()) {
             throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
 
-        List<Store> stores = storeRepository.findStoresByShopOwner(owner.get());
+        List<Store> stores;
+        if (pageable != null) {
+            stores = storeRepository.findStoresByShopOwner(owner.get(), pageable);
+        }
+        else {
+            stores = storeRepository.findStoresByShopOwner(owner.get());
+        }
         List<StoreDto> storeDtos = storeMapper.mapToDtos(stores, null);
 //        get owner stores
         try {
-            List<StoreDto> ownerStoreDtos = this.getOwnerStores(userId);
+            List<StoreDto> ownerStoreDtos = this.getOwnerStores(userId, pageable);
             storeDtos.addAll(ownerStoreDtos);
         }
         catch (Exception e) {
@@ -78,7 +85,7 @@ public class StoreService {
         }
     }
 
-    public List<StoreDto> getOwnerStores(UUID userId) {
+    public List<StoreDto> getOwnerStores(UUID userId, Pageable pageable) {
         // TODO Auto-generated method stub
         // get its owner in employee table
         List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
@@ -89,7 +96,13 @@ public class StoreService {
         // TODO: check employee permission that has get or not
         ShopOwner owner = emplMgnt.getManagerId();
         // get all stores of user's owner
-        List<Store> stores = storeRepository.findStoresByShopOwner(owner);
+        List<Store> stores;
+        if (pageable != null) {
+            stores = storeRepository.findStoresByShopOwner(owner, pageable);
+        }
+        else {
+            stores = storeRepository.findStoresByShopOwner(owner);
+        }
         return storeMapper.mapToDtos(stores, owner);
     }
 

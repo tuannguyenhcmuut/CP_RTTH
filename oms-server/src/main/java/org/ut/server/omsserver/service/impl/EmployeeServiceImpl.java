@@ -2,6 +2,7 @@ package org.ut.server.omsserver.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.EmployeeInfoDto;
 import org.ut.server.omsserver.dto.EmployeeManagementDto;
@@ -195,10 +196,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public List<EmployeeInfoDto> getAllEmployees(UUID managerId) {
+    public List<EmployeeInfoDto> getAllEmployees(UUID managerId, Pageable pageable) {
 //        return null;
         // find all employee managements by manager id with status is accepted
-        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_IdAndApprovalStatus(managerId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> employeeManagements;
+        if (pageable != null) {
+            employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_IdAndApprovalStatus(managerId, EmployeeRequestStatus.ACCEPTED, pageable);
+        }
+        else {
+            employeeManagements = employeeManagementRepository.findEmployeeManagementsByManagerId_IdAndApprovalStatus(managerId, EmployeeRequestStatus.ACCEPTED);
+        }
         // Convert the EmployeeManagement entities to EmployeeInfoDto objects and return the list
         return employeeManagements.stream()
                 .map(employeeManagementMapper::mapToEmployeeInfoDto)

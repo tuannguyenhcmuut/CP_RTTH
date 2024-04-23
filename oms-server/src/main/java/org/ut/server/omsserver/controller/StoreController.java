@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -9,12 +10,11 @@ import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.StoreDto;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.StoreService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -27,11 +27,15 @@ public class StoreController {
 
     @GetMapping("")
     public GenericResponseDTO<List<StoreDto>> getAllStores(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-            List<StoreDto> storeDtos = storeService.getAllStores(userId);
+            Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+            List<StoreDto> storeDtos = storeService.getAllStores(userId, pageable);
             return GenericResponseDTO.<List<StoreDto>>builder()
                     .data(storeDtos)
                     .code(MessageCode.SUCCESS.toString())
@@ -138,10 +142,14 @@ public class StoreController {
     // get all stores of owner
     @GetMapping("/owner/getall")
     public GenericResponseDTO<List<StoreDto>> getOwnerStores(
-        @RequestHeader("Authorization") String token
+        @RequestHeader("Authorization") String token,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size,
+        @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<StoreDto> ownerStores = storeService.getOwnerStores(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<StoreDto> ownerStores = storeService.getOwnerStores(userId, pageable);
         return GenericResponseDTO.<List<StoreDto>>builder()
             .data(ownerStores)
             .code(MessageCode.SUCCESS.toString())

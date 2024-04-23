@@ -2,6 +2,7 @@ package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.ChartStatisticsDto;
@@ -136,10 +137,13 @@ public class OrderService {
     }
 
 
-    public List<OrderDto> getAllOrders(UUID userId) {
+    public List<OrderDto> getAllOrders(UUID userId, Pageable pageable) {
+        if (pageable != null) {
+            return orderMapper.mapToDtos(orderRepository.findOrdersByShopOwner_Id(userId, pageable), null);
+        }
         List<Order> orders = orderRepository.findOrdersByShopOwner_Id(userId);
         if (orders == null) {
-            return null;
+            return List.of();
 //            throw new RuntimeException("Order not found");
         }
         // mapping
@@ -370,7 +374,7 @@ public class OrderService {
         orderRepository.deleteById(order.getId());
     }
 
-    public List<OrderDto> getOwnerOrders(UUID userId) {
+    public List<OrderDto> getOwnerOrders(UUID userId, Pageable pageable) {
         List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
@@ -378,7 +382,13 @@ public class OrderService {
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         // TODO: check employee permission that has get or not
         ShopOwner owner = emplMgnt.getManagerId();
-        List<Order> orders = orderRepository.findOrdersByShopOwner_Id(owner.getId());
+        List<Order> orders;
+        if (pageable != null) {
+            orders = orderRepository.findOrdersByShopOwner_Id(owner.getId(), pageable);
+        }
+        else {
+            orders = orderRepository.findOrdersByShopOwner_Id(owner.getId());
+        }
         return orderMapper.mapToDtos(orders, owner);
     }
 

@@ -2,6 +2,7 @@ package org.ut.server.omsserver.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.NotificationDTO;
 import org.ut.server.omsserver.model.EmployeeManagement;
@@ -101,10 +102,11 @@ public class NotificationService implements INotificationService {
 
     @Override
     public List<NotificationDTO> getNotifications(
-            UUID userId
+            UUID userId,
+            Pageable pageable
     ) {
        // get all notification for a user
-        List<Notification> notis = notificationRepository.findByReceiverId(userId).orElse(Collections.emptyList());
+        List<Notification> notis = notificationRepository.findByReceiverId(userId, pageable).orElse(Collections.emptyList());
         return notis.stream().map(notification -> {
             NotificationDTO notificationDTO = new NotificationDTO();
             notificationDTO.setId(notification.getId());

@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
@@ -10,6 +11,7 @@ import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.ReceiverDto;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.ReceiverService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -26,12 +28,16 @@ public class ReceiverController {
 
     //Get list receiver of store
     @GetMapping("")
-    public GenericResponseDTO<List<ReceiverDto>> getReceiverById(
-            @RequestHeader("Authorization") String token
+    public GenericResponseDTO<List<ReceiverDto>> getAllReceiver(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-            List<ReceiverDto> receiverDtos = receiverService.getAllReceivers(userId);
+            Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+            List<ReceiverDto> receiverDtos = receiverService.getAllReceivers(userId, pageable);
             return GenericResponseDTO.<List<ReceiverDto>>builder()
                     .data(receiverDtos)
                     .code(MessageCode.SUCCESS.toString())
@@ -110,11 +116,15 @@ public class ReceiverController {
 
     @GetMapping("/owner/getall")
     public GenericResponseDTO<List<ReceiverDto>> getOwnerReceivers(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-            List<ReceiverDto> receiverDtos = receiverService.getOwnerReceivers(userId);
+            Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+            List<ReceiverDto> receiverDtos = receiverService.getOwnerReceivers(userId, pageable);
             return GenericResponseDTO.<List<ReceiverDto>>builder()
                     .data(receiverDtos)
                     .code(MessageCode.SUCCESS.toString())

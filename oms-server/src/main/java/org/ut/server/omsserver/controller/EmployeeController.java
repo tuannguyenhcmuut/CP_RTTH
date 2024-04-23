@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
@@ -13,6 +14,7 @@ import org.ut.server.omsserver.dto.request.EmployeeRequestDto;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.model.enums.PermissionLevel;
 import org.ut.server.omsserver.service.IEmployeeService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -209,11 +211,15 @@ public class EmployeeController {
 
     @GetMapping("")
     public GenericResponseDTO<List<EmployeeInfoDto>> getAllEmployees(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
         // get all employees
         UUID managerId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<EmployeeInfoDto> employees =  employeeService.getAllEmployees(managerId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<EmployeeInfoDto> employees =  employeeService.getAllEmployees(managerId, pageable);
         return GenericResponseDTO.<List<EmployeeInfoDto>>builder()
                 .data(employees)
                 .code(MessageCode.SUCCESS.toString())

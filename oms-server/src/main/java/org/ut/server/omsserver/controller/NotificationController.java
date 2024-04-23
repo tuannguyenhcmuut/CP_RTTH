@@ -2,6 +2,7 @@ package org.ut.server.omsserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
@@ -10,6 +11,7 @@ import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.NotificationDTO;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.INotificationService;
+import org.ut.server.omsserver.utils.RestParamUtils;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -31,10 +33,14 @@ public class NotificationController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<List<NotificationDTO>> getNotifications(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort
     ) {
         UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<NotificationDTO> notifications = notificationService.getNotifications(userId);
+        Pageable pageable = RestParamUtils.getPageable(page, size, sort);
+        List<NotificationDTO> notifications = notificationService.getNotifications(userId, pageable);
         return GenericResponseDTO.<List<NotificationDTO>>builder()
                 .data(notifications)
                 .code(MessageCode.SUCCESS.toString())
