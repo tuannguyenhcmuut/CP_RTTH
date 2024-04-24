@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.ut.server.omsserver.model.enums.OrderStatus;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -86,7 +86,7 @@ public class Order {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -94,6 +94,8 @@ public class Order {
     @Column(name = "last_updated_by")
     private String lastUpdatedBy;
 
+    @Column(name = "last_updated_date")
+    private LocalDateTime lastUpdatedDate;
 //    public void setStore(Store store) {
 //        if (this.store != null) {
 //            this.store.setOrder(null);

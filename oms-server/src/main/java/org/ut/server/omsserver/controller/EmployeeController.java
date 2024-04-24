@@ -111,7 +111,7 @@ public class EmployeeController {
     ) {
         // get all request of a manager
         UUID managerId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<EmployeeManagementDto> ownerRequests =  employeeService.getRequests(managerId, employeeId, status);
+        List<EmployeeManagementDto> ownerRequests =  employeeService.getRequests(managerId, employeeId, status, false);
         return GenericResponseDTO.<List<EmployeeManagementDto>>builder()
                 .data(ownerRequests)
                 .code(MessageCode.SUCCESS.toString())
@@ -128,7 +128,7 @@ public class EmployeeController {
     ) {
         // get all request of an employee
         UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<EmployeeManagementDto> employeeRequests =  employeeService.getRequests(null, employeeId, status);
+        List<EmployeeManagementDto> employeeRequests =  employeeService.getRequests(null, employeeId, status, true);
 
         return GenericResponseDTO.<List<EmployeeManagementDto>>builder()
                 .data(employeeRequests)
@@ -214,7 +214,7 @@ public class EmployeeController {
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "name,asc") String[] sort
+            @RequestParam(defaultValue = "approvalStatus,asc") String[] sort
     ) {
         // get all employees
         UUID managerId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));

@@ -1,11 +1,9 @@
 package org.ut.server.omsserver.model.enums;
 
-import java.awt.*;
-
 public enum OrderStatus {
     CREATED,
     PROCESSING,
-    SHIPPED,
+    SHIPPING,
     DELIVERED,
     CANCELLED;
 

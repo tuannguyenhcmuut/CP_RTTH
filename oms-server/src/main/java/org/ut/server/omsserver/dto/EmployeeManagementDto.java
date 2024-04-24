@@ -1,6 +1,6 @@
 package org.ut.server.omsserver.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
@@ -14,7 +14,7 @@ public class EmployeeManagementDto {
 //    @JsonIgnore
     private Long id;
     private UUID employeeId;
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID managerId;
     private Set<String> permissions;
     // status

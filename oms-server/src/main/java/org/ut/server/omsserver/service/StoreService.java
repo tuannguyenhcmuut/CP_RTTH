@@ -88,13 +88,13 @@ public class StoreService {
     public List<StoreDto> getOwnerStores(UUID userId, Pageable pageable) {
         // TODO Auto-generated method stub
         // get its owner in employee table
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         // TODO: check employee permission that has get or not
-        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner owner = emplMgnt.getManager();
         // get all stores of user's owner
         List<Store> stores;
         if (pageable != null) {

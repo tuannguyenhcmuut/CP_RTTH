@@ -9,6 +9,7 @@ import org.ut.server.omsserver.model.Discount;
 import org.ut.server.omsserver.model.OrderPrice;
 import org.ut.server.omsserver.model.enums.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,9 +36,18 @@ public class OrderDto {
     private Boolean isValuable; // gia tri
     private Long deliveryId;
     private String createdBy;
+
+    @JsonInclude(Include.NON_NULL)
+    private LocalDateTime createdDate;
+
     private String lastUpdatedBy;
+
+    @JsonInclude(Include.NON_NULL)
+    private LocalDateTime lastUpdatedDate;
+
     @JsonInclude(Include.NON_NULL)
     private UUID ownerId;
+
     @JsonInclude(Include.NON_NULL)
     private String ownerName;
 }

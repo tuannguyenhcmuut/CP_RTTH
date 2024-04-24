@@ -127,7 +127,7 @@ public class SecurityConfig {
                         if (user.getRoles().stream().anyMatch(role -> role.getName().name().equals("ROLE_EMPLOYEE"))) {
                             // add permissions to authorities
                             List<EmployeeManagement> empl_mangments = employeeManagementRepository
-                                    .findEmployeeManagementsByEmployeeId_Id(userId);
+                                    .findEmployeeManagementsByEmployee_Id(userId);
                             empl_mangments.stream().map(
                                     empl_mangment -> {
                                         authorities.add(
@@ -140,7 +140,7 @@ public class SecurityConfig {
                     } catch (Exception e) {
                         throw new UsernameNotFoundException("Username not found" + username);
                     }
-                } else if (user.getRoles().contains(ERole.ROLE_SHIPPER)) {
+                } else if (checkRoleSet(user.getRoles(), ERole.ROLE_SHIPPER)) {
                     // shipper
                     try {
                         Shipper shipper = shipperRepository.findByAccount_Username(username).orElseThrow(

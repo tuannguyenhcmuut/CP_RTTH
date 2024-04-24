@@ -33,8 +33,8 @@ public class EmployeeManagementMapper {
 
         return EmployeeManagement.builder()
                 .id(employeeManagementDto.getId())
-                .employeeId(employee)
-                .managerId(manager)
+                .employee(employee)
+                .manager(manager)
                 .permissionLevel(
                         employeeManagementDto.getPermissions().stream().map(
                                 PermissionLevel::valueOf
@@ -48,9 +48,9 @@ public class EmployeeManagementMapper {
 
         return EmployeeManagementDto.builder()
                 .id(employeeManagement.getId())
-                .employeeId(employeeManagement.getEmployeeId().getId())
+                .employeeId(employeeManagement.getEmployee().getId())
                 .managerId(
-                        employeeManagement.getManagerId() != null ? employeeManagement.getManagerId().getId() : null)
+                        employeeManagement.getManager() != null ? employeeManagement.getManager().getId() : null)
                 .status(employeeManagement.getApprovalStatus())
                 .permissions(
                         employeeManagement.getPermissionLevel().stream().map(
@@ -62,15 +62,15 @@ public class EmployeeManagementMapper {
 
     public EmployeeInfoDto mapToEmployeeInfoDto(EmployeeManagement employeeManagement) {
         return EmployeeInfoDto.builder()
-                .employeeId(employeeManagement.getEmployeeId().getId())
+                .employeeId(employeeManagement.getEmployee().getId())
                 .name( String.format("%s %s",
-                        employeeManagement.getEmployeeId().getFirstName(),
-                        employeeManagement.getEmployeeId().getLastName()
+                        employeeManagement.getEmployee().getFirstName(),
+                        employeeManagement.getEmployee().getLastName()
                         ))
-                .phone(employeeManagement.getEmployeeId().getPhoneNumber())
-                .email(employeeManagement.getEmployeeId().getEmail())
+                .phone(employeeManagement.getEmployee().getPhoneNumber())
+                .email(employeeManagement.getEmployee().getEmail())
                 .managerId(
-                        employeeManagement.getManagerId() != null ? employeeManagement.getManagerId().getId() : null)
+                        employeeManagement.getManager() != null ? employeeManagement.getManager().getId() : null)
                 .permissions(
                         employeeManagement.getPermissionLevel().stream().map(
                                 Enum::name

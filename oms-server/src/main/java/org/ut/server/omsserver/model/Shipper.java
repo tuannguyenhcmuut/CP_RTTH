@@ -18,6 +18,7 @@ public class Shipper extends User {
 //    @OneToOne(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "username", nullable=false, unique=true, referencedColumnName = "username")
 //    private Account account;
+    private String address;
     private Float rating;
 //    public void setAccount(Account account) {
 //        if (account == null) {

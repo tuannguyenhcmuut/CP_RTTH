@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.ut.server.omsserver.model.enums.*;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -25,9 +24,9 @@ public class Delivery {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @Column(name = "shipper_id")
-    private UUID shipperId;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Shipper shipper;
 
     @Column(name = "status")
     private DeliveryStatus status;
@@ -64,9 +63,11 @@ public class Delivery {
 
     private String note;
 
-    private Date deliveryDate;
+    private LocalDateTime deliveryDate;
 
-    private Date receivedDate;
+    private LocalDateTime receivedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastUpdated;
 
 
 

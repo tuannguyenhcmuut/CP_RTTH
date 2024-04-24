@@ -5,8 +5,7 @@ import org.springframework.stereotype.Component;
 import org.ut.server.omsserver.dto.DeliveryDto;
 import org.ut.server.omsserver.dto.request.DeliveryRequest;
 import org.ut.server.omsserver.exception.OrderNotFoundException;
-import org.ut.server.omsserver.model.Delivery;
-import org.ut.server.omsserver.model.Order;
+import org.ut.server.omsserver.model.*;
 import org.ut.server.omsserver.model.enums.DeliveryStatus;
 import org.ut.server.omsserver.repo.OrderRepository;
 
@@ -16,6 +15,14 @@ public class DeliveryMapper {
     private OrderRepository orderRepository;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private ShipperMapper shipperMapper;
+//    receiverMapper
+    @Autowired
+    private ReceiverMapper receiverMapper;
+//    storeMapper
+    @Autowired
+    private StoreMapper storeMapper;
 
     public Delivery mapRequestToEntity(DeliveryRequest deliveryRequest, Long orderId) {
         // find order
@@ -39,14 +46,16 @@ public class DeliveryMapper {
     }
 
     public DeliveryDto mapEntityToDto(Delivery delivery) {
-
+// find order
+        Order order = orderRepository.findById(delivery.getOrder().getId())
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
         return DeliveryDto.builder()
                 .id(delivery.getId())
-                .orderDto(orderMapper.mapToDto(delivery.getOrder(), null)) // TODO:
-                .shipperId(delivery.getShipperId())
+                .order(orderMapper.mapToDto(delivery.getOrder(), null)) // TODO:
+                .shipper(shipperMapper.mapToDto(delivery.getShipper()))
+                .receiver(receiverMapper.mapToDto(order.getReceiver(), null))
+                .store(storeMapper.mapToDto(order.getStore(), null))
                 .status(delivery.getStatus())
-                .shipperName(delivery.getShipperName())
-                .shipperPhone(delivery.getShipperPhone())
                 .payer(delivery.getPayer())
                 .hasLostInsurance(delivery.isHasLostInsurance())
                 .isCollected(delivery.isCollected())
@@ -58,6 +67,9 @@ public class DeliveryMapper {
                 .collectionFee(delivery.getCollectionFee())
                 .isDraft(delivery.getIsDraft())
                 .note(delivery.getNote())
+                .deliveryDate(delivery.getDeliveryDate())
+                .receivedDate(delivery.getReceivedDate())
+                .lastUpdated(delivery.getLastUpdated())
                 .build();
     }
 }

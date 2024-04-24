@@ -33,9 +33,9 @@ public class ChatMessageService {
     public void sendMessage(User sender, User receiver, String content) {
         // Check if the sender has the right to send a message to the receiver
         // For example, a user can only send a message to another user if they are friends
-        Optional<EmployeeManagement> employManagement1 = employeeManagementRepository.findByEmployeeId_IdAndManagerId_IdAndApprovalStatus(sender.getId(), receiver.getId(), EmployeeRequestStatus.ACCEPTED);
+        Optional<EmployeeManagement> employManagement1 = employeeManagementRepository.findByEmployee_IdAndManager_IdAndApprovalStatus(sender.getId(), receiver.getId(), EmployeeRequestStatus.ACCEPTED);
         if (employManagement1.isEmpty()) {
-            Optional<EmployeeManagement> employManagement2 = employeeManagementRepository.findByEmployeeId_IdAndManagerId_IdAndApprovalStatus(receiver.getId(), sender.getId(), EmployeeRequestStatus.ACCEPTED);
+            Optional<EmployeeManagement> employManagement2 = employeeManagementRepository.findByEmployee_IdAndManager_IdAndApprovalStatus(receiver.getId(), sender.getId(), EmployeeRequestStatus.ACCEPTED);
             if (employManagement2.isEmpty()) {
                 throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
             }

@@ -1,7 +1,18 @@
 package org.ut.server.omsserver.model.enums;
 
 public enum DeliveryStatus {
-    PENDING, SHIPPED, DELIVERED, CANCELED
+    PENDING, SHIPPING, DELIVERED, CANCELED;
+
+    public static boolean contains(String test) {
+
+        for (DeliveryStatus c : DeliveryStatus.values()) {
+            if (c.name().equals(test)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 /**
   *  Shipped: This status means that the order has been shipped from the store and is on its way to the customer

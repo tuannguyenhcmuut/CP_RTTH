@@ -39,7 +39,7 @@ public class NotificationService implements INotificationService {
 
         Notification notification = new Notification();
         notification.setMessage("Your employee request has been approved.");
-        notification.setReceiver(employeeManagementOptional.getManagerId());
+        notification.setReceiver(employeeManagementOptional.getManager());
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
@@ -55,7 +55,7 @@ public class NotificationService implements INotificationService {
 
         Notification notification = new Notification();
         notification.setMessage("Your employee request has been rejected.");
-        notification.setReceiver(employeeManagementOptional.getManagerId());
+        notification.setReceiver(employeeManagementOptional.getManager());
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 

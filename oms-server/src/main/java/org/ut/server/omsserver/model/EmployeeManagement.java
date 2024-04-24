@@ -23,10 +23,10 @@ public class EmployeeManagement {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private ShopOwner employeeId;
+    private ShopOwner employee;
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
-    private ShopOwner managerId;
+    private ShopOwner manager;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status", nullable = false)
@@ -36,6 +36,4 @@ public class EmployeeManagement {
     @ElementCollection(targetClass = PermissionLevel.class, fetch = FetchType.EAGER)
     @JoinTable(name = "permission_level", joinColumns = @JoinColumn(name = "id"))
      private Set<PermissionLevel> permissionLevel;
-
-
 }

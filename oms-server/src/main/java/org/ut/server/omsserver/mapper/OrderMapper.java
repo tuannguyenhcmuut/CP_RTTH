@@ -7,12 +7,13 @@ import org.ut.server.omsserver.dto.ChartStatisticsDto;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.exception.DeliveryNotFoundException;
-import org.ut.server.omsserver.exception.ReceiverNotFoundException;
-import org.ut.server.omsserver.exception.StoreNotFoundException;
 import org.ut.server.omsserver.exception.UserNotFoundException;
 import org.ut.server.omsserver.model.*;
 import org.ut.server.omsserver.model.enums.OrderStatus;
-import org.ut.server.omsserver.repo.*;
+import org.ut.server.omsserver.repo.DeliveryRepository;
+import org.ut.server.omsserver.repo.ReceiverRepository;
+import org.ut.server.omsserver.repo.ShopOwnerRepository;
+import org.ut.server.omsserver.repo.StoreRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,7 +102,9 @@ public class OrderMapper {
                 .isFragile(orderDto.getIsFragile())
                 .isValuable(orderDto.getIsValuable())
                 .createdBy(orderDto.getCreatedBy())
+                .createdDate(orderDto.getCreatedDate())
                 .lastUpdatedBy(orderDto.getLastUpdatedBy())
+                .lastUpdatedDate(orderDto.getLastUpdatedDate())
                 .build();
     }
 
@@ -158,7 +161,9 @@ public class OrderMapper {
                     .isValuable(order.getIsValuable())
                     .deliveryId(order.getDelivery().getId())
                     .createdBy(order.getCreatedBy())
+                    .createdDate(order.getCreatedDate())
                     .lastUpdatedBy(order.getLastUpdatedBy())
+                    .lastUpdatedDate(order.getLastUpdatedDate())
                     .ownerId(owner == null ? null : owner.getId())
                     .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                     .build();

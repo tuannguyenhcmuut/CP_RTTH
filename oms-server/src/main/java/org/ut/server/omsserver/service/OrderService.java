@@ -10,7 +10,10 @@ import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.exception.*;
-import org.ut.server.omsserver.mapper.*;
+import org.ut.server.omsserver.mapper.DeliveryMapper;
+import org.ut.server.omsserver.mapper.OrderMapper;
+import org.ut.server.omsserver.mapper.ReceiverMapper;
+import org.ut.server.omsserver.mapper.StoreMapper;
 import org.ut.server.omsserver.model.*;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.model.enums.OrderStatus;
@@ -19,6 +22,7 @@ import org.ut.server.omsserver.service.impl.NotificationService;
 import org.ut.server.omsserver.utils.RandomGenUtils;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +48,7 @@ public class OrderService {
 //    private final DeliveryService deliveryService;
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
+    private final DeliveryService deliverService;
     private final EmployeeManagementRepository employeeManagementRepository;
     private final NotificationService notificationService;
 
@@ -112,22 +117,33 @@ public class OrderService {
         ShopOwner user = shopOwnerRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found") );
         orderRequest.setCreatedBy(user.getEmail());
+
         Order newOrder = orderMapper.mapRequestToEntity(orderRequest);
         newOrder.setItems(newOrder.getItems());  // mapping relationship
         newOrder.setStore(store);
         newOrder.setReceiver(receiver);
         newOrder.setCreatedBy(user.getEmail()) ;
         newOrder.setLastUpdatedBy(user.getEmail());
+        newOrder.setLastUpdatedDate(LocalDateTime.now());
 
         newOrder = orderRepository.save(newOrder);
 
 
         // delivery
-        Delivery newDelivery = deliveryMapper.mapRequestToEntity(orderRequest.getDelivery(), newOrder.getId());
-        Delivery savedDelivery = deliveryRepository.save(newDelivery);
-        newOrder.setDelivery(savedDelivery);
+//        Delivery newDelivery = deliveryMapper.mapRequestToEntity(orderRequest.getDelivery(), newOrder.getId());
+        Delivery delivery = deliverService.createDelivery(orderRequest.getDelivery(), newOrder.getId());
+//        Delivery savedDelivery = deliveryRepository.save(newDelivery);
+        newOrder.setDelivery(delivery);
         newOrder.setOrderStatus(OrderStatus.CREATED);
         newOrder.setCode("ORDER-" + RandomGenUtils.getRandomInt(1, 1000000));
+//        private String shipperName;
+//        private String shipperPhone;
+//        private String storeAddress;
+//        private String storePhone;
+//        private String receiverPhone;
+//        private String receiverAddress;
+//        private String receiverName;
+
 
         // 2nd save
         newOrder = orderRepository.save(newOrder);
@@ -171,19 +187,22 @@ public class OrderService {
             throw new OrderNotFoundException("Order not found");
         }
         order.setReceiver(receiver);
+        order.setLastUpdatedBy(order.getShopOwner().getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
     }
 
 //    update owner receiver
     public OrderDto updateOwnerReceiver(UUID userId, Long orderId, Long receiverId) {
-        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner user = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner user = emplMgnt.getEmployee();
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
@@ -199,6 +218,8 @@ public class OrderService {
         }
         order.setReceiver(receiver);
         order.setLastUpdatedBy(user.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+
         orderRepository.save(order);
         return orderMapper.mapToDto(order, owner);
     }
@@ -218,6 +239,8 @@ public class OrderService {
         }
         order.setStore(store);
         order.setLastUpdatedBy(store.getShopOwner().getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
     }
@@ -225,13 +248,13 @@ public class OrderService {
 
 //    update owner order, store
     public OrderDto updateOwnerStore(UUID userId, Long orderId, Long storeId) {
-        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner user = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner user = emplMgnt.getEmployee();
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
@@ -247,6 +270,8 @@ public class OrderService {
         }
         order.setStore(store);
         order.setLastUpdatedBy(user.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+
         orderRepository.save(order);
         return orderMapper.mapToDto(order, owner);
     }
@@ -264,8 +289,23 @@ public class OrderService {
         ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found") );
         order.setLastUpdatedBy(user.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
+    }
+
+    public Order updateOrderStatusForShipper(UUID shipperId, Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        if (!order.getDelivery().getShipper().getId().equals(shipperId)) {
+            throw new RuntimeException("You are not the shipper of this delivery");
+        }
+//        validateOrderStatus(status, order);
+        order.setOrderStatus(OrderStatus.valueOf(status));
+        order.setLastUpdatedBy(order.getDelivery().getShipper().getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+        orderRepository.save(order);
+        return order;
     }
 
     private static void validateOrderStatus(String status, Order order) {
@@ -286,7 +326,7 @@ public class OrderService {
         }
 
 //        SHIPPED -> chi dc update thanh delivered hoac cancelled
-        if (order.getOrderStatus().equals(OrderStatus.SHIPPED)) {
+        if (order.getOrderStatus().equals(OrderStatus.SHIPPING)) {
             if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
                 throw new OrderUpdateException(String.format("Cannot update status to %s from SHIPPED status", status));
             }
@@ -347,6 +387,7 @@ public class OrderService {
         order.setIsFragile(orderDto.getIsFragile());
         order.setIsValuable(orderDto.getIsValuable());
         order.setLastUpdatedBy(user.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
 
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
@@ -375,13 +416,13 @@ public class OrderService {
     }
 
     public List<OrderDto> getOwnerOrders(UUID userId, Pageable pageable) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         // TODO: check employee permission that has get or not
-        ShopOwner owner = emplMgnt.getManagerId();
+        ShopOwner owner = emplMgnt.getManager();
         List<Order> orders;
         if (pageable != null) {
             orders = orderRepository.findOrdersByShopOwner_Id(owner.getId(), pageable);
@@ -393,14 +434,14 @@ public class OrderService {
     }
 
     public OrderDto createOwnerOrder(OrderRequest orderRequest) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(orderRequest.getUserId(), EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(orderRequest.getUserId(), EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         // TODO: check employee permission that has get or not
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner user = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner user = emplMgnt.getEmployee();
 
         Store store;
         Receiver receiver;
@@ -458,11 +499,14 @@ public class OrderService {
         newOrder.setReceiver(receiver);
         newOrder.setCreatedBy(user.getEmail());
         newOrder.setLastUpdatedBy(user.getEmail());
+        newOrder.setLastUpdatedDate(LocalDateTime.now());
         newOrder = orderRepository.save(newOrder);
 
 
         // delivery
         Delivery newDelivery = deliveryMapper.mapRequestToEntity(orderRequest.getDelivery(), newOrder.getId());
+        // TODO: find suitable shipper
+        newDelivery.setShipper(deliverService.findBestSuitShipper(newDelivery));
         Delivery savedDelivery = deliveryRepository.save(newDelivery);
         newOrder.setDelivery(savedDelivery);
         newOrder.setOrderStatus(OrderStatus.CREATED);
@@ -483,14 +527,14 @@ public class OrderService {
 
     public OrderDto updateOwnerOrder(UUID userId, Long orderId, OrderDto orderDto) {
 
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         // TODO: check employee permission that has get or not
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner user = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner user = emplMgnt.getEmployee();
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
@@ -530,6 +574,7 @@ public class OrderService {
         order.setIsFragile(orderDto.getIsFragile());
         order.setIsValuable(orderDto.getIsValuable());
         order.setLastUpdatedBy(user.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
 
         orderRepository.save(order);
         notificationService.notifyOrderInfoToOwner(
@@ -542,14 +587,14 @@ public class OrderService {
     }
 
     public OrderDto updateOwnerOrderStatus(UUID userId, Long orderId, String status) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
 
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner employee = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
@@ -559,6 +604,8 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.valueOf(status));
         order.setLastUpdatedBy(employee.getEmail());
+        order.setLastUpdatedDate(LocalDateTime.now());
+
         orderRepository.save(order);
         notificationService.notifyOrderInfoToOwner(
                 owner,
@@ -582,18 +629,24 @@ public class OrderService {
     }
 
     public OrderDto getOwnerOrderById(UUID userId, Long orderId) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
-        ShopOwner owner = emplMgnt.getManagerId();
-        ShopOwner employee = emplMgnt.getEmployeeId();
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
                         () -> new OrderNotFoundException("Order not found!")
                 );
         return orderMapper.mapToDto(order, owner);
     }
+
+    // get all order of shipper
+
+    // phân shipper vào
+
+    // update status order
 
 }

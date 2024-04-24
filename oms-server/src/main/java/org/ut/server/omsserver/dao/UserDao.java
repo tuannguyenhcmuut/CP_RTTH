@@ -63,7 +63,7 @@ public class UserDao {
                 if (userAccount.getRoles().stream().anyMatch(role -> role.getName().name().equals("ROLE_EMPLOYEE"))) {
                     // add permissions to authorities
                     List<EmployeeManagement> empl_mangments = employeeManagementRepository
-                            .findEmployeeManagementsByEmployeeId_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+                            .findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
                     empl_mangments.stream().map(
                             empl_mangment -> {
                                 authorities.add(
@@ -87,7 +87,7 @@ public class UserDao {
             } catch (Exception e) {
                 throw new UsernameNotFoundException("Username not found" + username);
             }
-        } else if (userAccount.getRoles().contains(ERole.ROLE_SHIPPER)) {
+        } else if (checkRoleSet(userAccount.getRoles(), ERole.ROLE_SHIPPER)) {
             // shipper
             try {
                 Shipper shipper = shipperRepository.findByAccount_Username(username).orElseThrow(

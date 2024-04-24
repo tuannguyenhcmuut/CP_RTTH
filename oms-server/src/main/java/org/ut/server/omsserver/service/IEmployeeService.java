@@ -24,7 +24,7 @@ public interface IEmployeeService {
 
     void rejectEmployeeRequest(UUID employeeId, Long requestId);
 
-    List<EmployeeManagementDto> getRequests(UUID managerId, UUID employeeId, String status);
+    List<EmployeeManagementDto> getRequests(UUID managerId, UUID employeeId, String status, Boolean isEmployeeGetAll);
 
     List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId);
 

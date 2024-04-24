@@ -4,17 +4,16 @@ import lombok.Builder;
 import lombok.Data;
 import org.ut.server.omsserver.model.enums.*;
 
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class DeliveryDto {
     private Long id;
-    private UUID shipperId;
+    private ShipperDto shipper;
     private DeliveryStatus status;
-    private String shipperName;
-    private String shipperPhone;
+    private StoreDto store;
+    private ReceiverDto receiver;
     private Payer payer;
     private boolean hasLostInsurance;
     private boolean isCollected;
@@ -26,7 +25,9 @@ public class DeliveryDto {
     private Float collectionFee;
     private Boolean isDraft;
     private String note;
-    private Date deliveryDate;
-    private Date receivedDate;
-    private OrderDto orderDto;
+    private LocalDateTime deliveryDate;
+    private LocalDateTime receivedDate;
+    private LocalDateTime lastUpdated;
+
+    private OrderDto order;
 }
