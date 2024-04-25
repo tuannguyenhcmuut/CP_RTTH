@@ -31,17 +31,17 @@ public class StoreService {
     private final EmployeeManagementRepository employeeManagementRepository;
 
     public List<StoreDto> getAllStores(UUID userId, Pageable pageable) {
-        Optional<User> owner = userRepository.findById(userId);
-        if (owner.isEmpty()) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         }
 
         List<Store> stores;
         if (pageable != null) {
-            stores = storeRepository.findStoresByShopOwner(owner.get(), pageable);
+            stores = storeRepository.findStoresByShopOwner(user.get(), pageable);
         }
         else {
-            stores = storeRepository.findStoresByShopOwner(owner.get());
+            stores = storeRepository.findStoresByShopOwner(user.get());
         }
         List<StoreDto> storeDtos = storeMapper.mapToDtos(stores, null);
 //        get owner stores

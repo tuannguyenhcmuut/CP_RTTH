@@ -28,7 +28,9 @@ public class Store extends Person {
     @Column(name = "send_at_post")
     private Boolean sendAtPost;
     @JsonBackReference
-    @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private ShopOwner shopOwner;
 

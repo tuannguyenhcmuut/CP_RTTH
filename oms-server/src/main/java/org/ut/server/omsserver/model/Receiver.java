@@ -32,7 +32,9 @@ public class  Receiver extends Person {
     @Column(name = "receive_at_post")
     private Boolean receiveAtPost;
     @JsonBackReference
-    @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private ShopOwner shopOwner;
 //
