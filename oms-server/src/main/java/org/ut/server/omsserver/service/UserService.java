@@ -5,11 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.FileDto;
+import org.ut.server.omsserver.dto.request.UserRequestDTO;
 import org.ut.server.omsserver.dto.response.UserResponseDTO;
 import org.ut.server.omsserver.exception.AddressException;
+import org.ut.server.omsserver.exception.UserException;
 import org.ut.server.omsserver.exception.UserNotFoundException;
 import org.ut.server.omsserver.mapper.AddressMapper;
 import org.ut.server.omsserver.mapper.UserMapper;
@@ -21,6 +25,7 @@ import org.ut.server.omsserver.repo.UserRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,53 +83,48 @@ public class UserService {
 //        return userMapper.mapEntityToResponse(newUser);
 //    }
 
-//    @Transactional
-//    public UserResponseDTO updateUser(UUID userId, UserRequestDTO userRequestDTO) {
-//        Optional<User> user = userRepository.findById(userId);
-//        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
-//        if (user.get().getId() != userId) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "User id not match!");
-//        User userEntity = user.get();
-//        userEntity.setFirstName(
-//                userRequestDTO.getFirstName() != null ? userRequestDTO.getFirstName() : userEntity.getFirstName()
-//        );
-//        userEntity.setLastName(
-//                userRequestDTO.getLastName() != null ? userRequestDTO.getLastName() : userEntity.getLastName()
-//        );
-//        userEntity.setGender(
-//                userRequestDTO.getGender() != null ? userRequestDTO.getGender() : userEntity.getGender()
-//        );
-//        try {
-//            userEntity.setPhoneNumber(
-//                    userRequestDTO.getPhoneNumber() != null ? userRequestDTO.getPhoneNumber() : userEntity.getPhoneNumber()
-//            );
-//        } catch (Exception e) {
-//            throw new UserException("Phone number is registered!");
-//        }
-//
-//        userEntity.setDateOfBirth(
-//                userRequestDTO.getDateOfBirth() != null ? userRequestDTO.getDateOfBirth() : userEntity.getDateOfBirth()
-//        );
-//        try {
-//            userEntity.setAvatarUrl(
-//                (userRequestDTO.getAvatar() != null && userRequestDTO.getAvatar().length() > 0) ?
-////                    FileUtils.base64ToBlob(userRequestDTO.getAvatar()) :
-//                    userEntity.getAvatarUrl()
-//            );
-//
-//        } catch (SQLException e) {
-//            throw new FileUploadException(e.getMessage());
-//        }
-//        if (userRequestDTO.getAddresses() != null ) {
-////            userEntity.getAddresses().clear();
-////            userEntity.setAddresses(
-////                    addressMapper.mapDtosToEntities(userRequestDTO.getAddresses())
-////                );
-//        }
-//        userEntity.setLastLogin(LocalDateTime.now());
-//
-//        userEntity = userRepository.save(userEntity);
-//        return userMapper.mapEntityToResponse(userEntity);
-//    }
+    @Transactional
+    public UserResponseDTO updateUser(UUID userId, UserRequestDTO userRequestDTO) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
+        if (user.get().getId() != userId) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "User id not match!");
+        User userEntity = user.get();
+        userEntity.setFirstName(
+                userRequestDTO.getFirstName() != null ? userRequestDTO.getFirstName() : userEntity.getFirstName()
+        );
+        userEntity.setLastName(
+                userRequestDTO.getLastName() != null ? userRequestDTO.getLastName() : userEntity.getLastName()
+        );
+        userEntity.setGender(
+                userRequestDTO.getGender() != null ? userRequestDTO.getGender() : userEntity.getGender()
+        );
+        try {
+            userEntity.setPhoneNumber(
+                    userRequestDTO.getPhoneNumber() != null ? userRequestDTO.getPhoneNumber() : userEntity.getPhoneNumber()
+            );
+        } catch (Exception e) {
+            throw new UserException("Phone number is registered!");
+        }
+
+        userEntity.setDateOfBirth(
+                userRequestDTO.getDateOfBirth() != null ? userRequestDTO.getDateOfBirth() : userEntity.getDateOfBirth()
+        );
+        userEntity.setAvatarUrl(
+                userEntity.getAvatarUrl()
+        );
+
+
+        if (userRequestDTO.getAddresses() != null ) {
+//            userEntity.getAddresses().clear();
+//            userEntity.setAddresses(
+//                    addressMapper.mapDtosToEntities(userRequestDTO.getAddresses())
+//                );
+        }
+        userEntity.setLastLogin(LocalDateTime.now());
+
+        userEntity = userRepository.save(userEntity);
+        return userMapper.mapEntityToResponse(userEntity);
+    }
 
     public void deleteUserById(UUID id) {
         // find

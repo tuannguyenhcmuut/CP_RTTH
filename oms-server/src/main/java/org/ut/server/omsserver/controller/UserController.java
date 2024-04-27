@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.FileDto;
+import org.ut.server.omsserver.dto.request.UserRequestDTO;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.dto.response.UserResponseDTO;
 import org.ut.server.omsserver.model.Address;
@@ -73,16 +74,16 @@ public class UserController {
 //                 .build();
 //    }
 
-//    @PatchMapping("/{userId}/update")
-//    public GenericResponseDTO<UserResponseDTO> updateUser(@PathVariable UUID userId, @RequestBody UserRequestDTO userRequestDTO) {
-//        UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
-//        return GenericResponseDTO.<UserResponseDTO>builder()
-//                .data(userResponseDTO)
-//                .code(MessageCode.SUCCESS.toString())
-//                .message(MessageConstants.SUCCESS_USER_UPDATED)
-//                .timestamps(new Date())
-//                .build();
-//    }
+    @PatchMapping("/update")
+    public GenericResponseDTO<UserResponseDTO> updateUser(@PathVariable UUID userId, @RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO userResponseDTO = userService.updateUser(userId, userRequestDTO);
+        return GenericResponseDTO.<UserResponseDTO>builder()
+                .data(userResponseDTO)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_USER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
 
 
     @DeleteMapping("/{userId}")
