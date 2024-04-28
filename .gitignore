@@ -46,3 +46,5 @@ README.html
 .idea
 .exercism
 *.log
+oms-server/src/main/resources/application-local.properties
+oms-server/src/main/resources/application-prod.properties

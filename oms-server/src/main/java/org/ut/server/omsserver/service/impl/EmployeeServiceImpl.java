@@ -63,7 +63,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             throw new RuntimeException("Employee not found with phone number or email");
         }
         // find manager by id
-        ShopOwner manager = shopOwnerRepository.findShopOwnerById(employeeRequestDto.getManagerId())
+        ShopOwner manager = shopOwnerRepository.findById(employeeRequestDto.getManagerId())
                 .orElseThrow(
                         () -> new RuntimeException("Manager not found with id " + employeeRequestDto.getManagerId())
                 );
