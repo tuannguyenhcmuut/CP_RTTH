@@ -162,7 +162,7 @@ export default function CustomerTable() {
                     Summary
                   </Heading>
                   <Text pt='2' fontSize='sm' style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    Quyền: {req.permissions.map((tag, index) => (
+                    Quyền: {req.permissions.map((tag: string, index: number) => (
                     <div key={index}>
                       {tag === "VIEW_ONLY" && (
                         <Badge ml={2} colorScheme="gray">

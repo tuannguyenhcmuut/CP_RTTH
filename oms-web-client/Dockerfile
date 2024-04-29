@@ -1,36 +1,21 @@
-# Step 1: Use the official Node.js 16 image as the base image
-FROM node:16-alpine as builder
+FROM node:18-alpine AS build
 
-# Set the working directory in the container
 WORKDIR /app
-
-# Copy package.json and package-lock.json (or yarn.lock) to the working directory
 COPY package*.json ./
-COPY yarn.lock ./
-
-# Install dependencies
-RUN yarn install --frozen-lockfile
-
-# Copy the rest of your application code
+RUN npm ci
 COPY . .
+RUN npm run build
 
-# Build the Next.js application
-RUN yarn build
+FROM node:18-alpine AS runtime
 
-# Step 2: Use a smaller base image to run your application
-FROM node:16-alpine
-
-# Set the working directory in the container
 WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
 
-# Copy the built application from the builder stage
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-
-# Expose the port Next.js runs on
 EXPOSE 3000
+USER node
+# npm run dev
+CMD ["npm", "run", "start"]
 
-# Command to run your app
-CMD ["node_modules/.bin/next", "start"]
