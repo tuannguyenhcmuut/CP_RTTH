@@ -65,6 +65,9 @@ public class DeliveryService {
     public Shipper findBestSuitShipper(Delivery newDelivery) {
         // TODO: tạm thời tìm dc thằng shipper đầu
         List<Shipper> shippers = shipperRepository.findAll();
+        if (shippers.isEmpty()) {
+            return null;
+        }
         return shippers.get(0);
     }
     /* SHIPPER */

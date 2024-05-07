@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: oms-app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  server:
+    build: ./oms-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/oms-app
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  web-client:
+    build: ./oms-web-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    environment:
+      - NEXT_PUBLIC_API_URL=http://server:8080
+    volumes:
+      - ./oms-web-client/public:/app/public
+      - ./oms-web-client/package.json:/app/package.json
+      - ./oms-web-client/package-lock.json:/app/package-lock.json
+      - ./oms-web-client/node_modules:/app/node_modules
+      - ./oms-web-client/yarn.lock:/app/yarn.lock
+    
+
+volumes:
+  db-data:
+
