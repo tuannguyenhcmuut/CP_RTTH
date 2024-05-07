@@ -2,7 +2,7 @@ target/
 
 **/*.log
 #Resource
-src/main/resources/*.json
+#src/main/resources/*.json
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
@@ -13,9 +13,9 @@ src/main/resources/*.json
 .settings
 .springBeans
 .sts4-cache
-src/main/resources/datn-oms-firebase-adminsdk-vdpv8-5bbedf5029.json
-src/main/java/resources/*.properties
-src/main/java/resources/*.json
+#src/main/resources/datn-oms-firebase-adminsdk-vdpv8-5bbedf5029.json
+#src/main/java/resources/*.properties
+#src/main/java/resources/*.json
 # Created by https://www.gitignore.io/api/git,java,maven,eclipse,windows
 
 ### Eclipse ###
@@ -142,7 +142,7 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 .mvn/
 mvnw*
-**/src/main/**/application.properties
+#**/src/main/**/application.properties
 
 
 ### Windows ###
