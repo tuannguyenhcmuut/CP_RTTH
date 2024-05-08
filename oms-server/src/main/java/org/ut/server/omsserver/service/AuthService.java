@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.request.RegisterDto;
 import org.ut.server.omsserver.mapper.ShipperMapper;
 import org.ut.server.omsserver.mapper.ShopOwnerMapper;
@@ -41,14 +42,14 @@ public class AuthService {
     public ResponseEntity<?> register(RegisterDto registerDTO) throws JsonProcessingException {
             Optional<Account> account = accountRepository.findById(registerDTO.getUsername());
         if(account.isPresent()) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+            return ResponseEntity.badRequest().body(MessageConstants.USERNAME_EXISTED);
         }
 
         if (checkEmail(registerDTO.getEmail())) {
-            return ResponseEntity.badRequest().body("Email is already in use!");
+            return ResponseEntity.badRequest().body(MessageConstants.EMAIL_EXISTED);
         }
         if (checkPhoneNumber(registerDTO.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body("Phone number is already in use!");
+            return ResponseEntity.badRequest().body(MessageConstants.PHONE_EXISTED);
         }
 
         Set<String> strRoles = registerDTO.getRoles();
@@ -109,17 +110,17 @@ public class AuthService {
         if (strRoles.contains("shipper")) {
             Shipper shipper = shipperMapper.newShipper(newAccount, registerDTO);
             Shipper savedUser = shipperRepository.save(shipper);
-            return ResponseEntity.ok(MessageFormat.format("Shipper {0} registered successfully!", savedUser.getAccount().getUsername()));
+            return ResponseEntity.ok(MessageFormat.format(MessageConstants.SUCCESS_REGISTER, "Shipper" , savedUser.getAccount().getUsername()));
         }
         else if (strRoles.contains("user")) {
             ShopOwner shopOwner = shopOwnerMapper.newShopOwner(newAccount, registerDTO);
             ShopOwner savedUser = shopOwnerRepository.save(shopOwner);
-            return ResponseEntity.ok(MessageFormat.format("User {0} registered successfully!", savedUser.getAccount().getUsername()));
+            return ResponseEntity.ok(MessageFormat.format(MessageConstants.SUCCESS_REGISTER, "người dùng", savedUser.getAccount().getUsername()));
         }
         else {
             ShopOwner shopOwner = shopOwnerMapper.newShopOwner(newAccount, registerDTO);
             ShopOwner savedUser = shopOwnerRepository.save(shopOwner);
-            return ResponseEntity.ok(MessageFormat.format("User {0} registered successfully!", savedUser.getAccount().getUsername()));
+            return ResponseEntity.ok(MessageFormat.format(MessageConstants.SUCCESS_REGISTER,"tài xế", savedUser.getAccount().getUsername()));
         }
     }
 

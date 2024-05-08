@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.request.LoginDto;
 import org.ut.server.omsserver.dto.request.RegisterDto;
@@ -80,7 +81,7 @@ public class AuthController {
                             jwtToken,
                             refreshToken.getToken(),
                             roles,
-                            "Login successfully"
+                            MessageConstants.SUCCESS_LOGIN
                     ),
                     HttpStatus.OK
             );

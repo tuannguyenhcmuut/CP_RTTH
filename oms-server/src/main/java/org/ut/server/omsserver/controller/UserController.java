@@ -152,7 +152,7 @@ public class UserController {
     @DeleteMapping("{userId}/address/{addressId}")
     public ResponseEntity<String> deleteAddressById(@PathVariable UUID userId,@PathVariable Long addressId) {
         userService.deleteAddressById(userId, addressId);
-        return ResponseEntity.ok("Delete address successfully!");
+        return ResponseEntity.ok(MessageConstants.SUCCESS_ADDRESS_DELETED);
     }
 
     //update user by id
