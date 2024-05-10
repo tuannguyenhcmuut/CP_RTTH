@@ -55,10 +55,10 @@ public class DeliveryService {
 
         log.debug("Delivery found: {}", delivery);
         // find order
-        Order order = orderRepository.findOrderByIdAndShopOwner_Id(delivery.getOrder().getId(), userId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+//        Order order = orderRepository.findByIdAndShopOwner_Id(delivery.getOrder().getId(), userId)
+//                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
-        log.debug("Order found: {}", order);
+//        log.debug("Order found: {}", order);
         return deliveryMapper.mapEntityToDto(delivery);
     }
 

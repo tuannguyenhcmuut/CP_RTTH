@@ -3,6 +3,7 @@ package org.ut.server.omsserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -74,6 +75,7 @@ public class StoreController {
 
     // add new store
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public GenericResponseDTO<StoreDto> addNewStore(
             @RequestBody StoreDto newStore,
             @RequestHeader("Authorization") String token

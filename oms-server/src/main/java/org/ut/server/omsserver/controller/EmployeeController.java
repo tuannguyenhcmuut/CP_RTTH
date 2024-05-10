@@ -58,7 +58,7 @@ public class EmployeeController {
     }
 
     // approve employee
-    @PostMapping("/{requestId}/approve")
+    @PatchMapping("/{requestId}/approve")
     @ResponseStatus(HttpStatus.OK)
     public String  approveEmployee(
             @RequestHeader("Authorization") String token,
@@ -72,7 +72,7 @@ public class EmployeeController {
     }
 
     // reject employee
-    @PostMapping("/{requestId}/reject")
+    @PatchMapping("/{requestId}/reject")
     @ResponseStatus(HttpStatus.OK)
     public String rejectEmployee(
             @PathVariable Long requestId,

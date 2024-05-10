@@ -52,4 +52,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "GROUP BY month_with_year " +
             "ORDER BY month_with_year;", nativeQuery = true)
     List<Object[]> findStatistics(UUID userId);
+
+    @Query(value = "SELECT COUNT(o) FROM \"order\" o WHERE o.user_id = :userId AND DATE(o.created_date) = CURRENT_DATE", nativeQuery = true)
+    Long countTotalOrderCreatedToday(@Param("userId") UUID userId);
+
+    @Query(value = "SELECT COUNT(o) FROM \"order\" o WHERE o.user_id = :userId AND DATE(o.last_updated_date) = CURRENT_DATE AND o.status_code = 'DELIVERED'", nativeQuery = true)
+    Long countTotalOrderDeliveredToday(@Param("userId") UUID userId);
+
+    // calculate total revenue of shop owner
+    @Query(value = "SELECT SUM(op.collection_charge) FROM \"order\" o JOIN order_price op ON o.price_id = op.id WHERE o.user_id = :userId", nativeQuery = true)
+    Double calculateTotalRevenue(@Param("userId") UUID userId);
+
+    // calculate total received money of shop owner
+
 }

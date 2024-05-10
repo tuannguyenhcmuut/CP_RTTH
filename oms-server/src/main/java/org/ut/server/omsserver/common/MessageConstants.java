@@ -125,4 +125,6 @@ public class MessageConstants {
     public static final String SUCCESS_ADDRESS_DELETED = "Xóa địa chỉ thành công!";
     public static final String SUCCESS_REGISTER = "Tài khoản {0}: {1} được đăng ký thành công!";
 
+    public static final String SUCCESS_STATUS_UPDATED = "Cập nhật trạng thái thành công!";
+    public static final String SUCCESS_GET_DELIVERY = "Lấy thông tin giao hàng thành công!";
 }

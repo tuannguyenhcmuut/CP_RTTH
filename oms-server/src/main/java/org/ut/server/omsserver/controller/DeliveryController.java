@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.DeliveryDto;
 import org.ut.server.omsserver.dto.request.DeliveryStatusRequest;
@@ -94,7 +95,7 @@ public class DeliveryController {
             return GenericResponseDTO.<List<DeliveryDto>>builder()
                     .data(deliveryDtos)
                     .code("200")
-                    .message("Success")
+                    .message(MessageConstants.SUCCESS_GET_DELIVERY)
                     .timestamps(new Date())
                     .build();
     }
@@ -137,7 +138,7 @@ public class DeliveryController {
             return GenericResponseDTO.<DeliveryDto>builder()
                     .data(deliveryDto)
                     .code("200")
-                    .message("Order")
+                    .message(MessageConstants.SUCCESS_STATUS_UPDATED)
                     .timestamps(new Date())
                     .build();
     }

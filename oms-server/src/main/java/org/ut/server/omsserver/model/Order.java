@@ -3,6 +3,8 @@ package org.ut.server.omsserver.model;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.ut.server.omsserver.model.enums.OrderStatus;
 
 import javax.persistence.*;
@@ -57,7 +59,8 @@ public class Order {
     private OrderStatus orderStatus;
 
     // join orderPrice
-    @OneToOne( cascade=CascadeType.ALL)
+    @OneToOne( cascade={CascadeType.ALL}, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "price_id", nullable = true)
     private OrderPrice price;
 

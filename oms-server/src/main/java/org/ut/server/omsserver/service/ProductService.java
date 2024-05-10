@@ -94,17 +94,18 @@ public class ProductService {
                 .orElseThrow(
                         () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
                 );
-        productToUpdate.setCode(product.getCode());
-        productToUpdate.setName(product.getName());
-        productToUpdate.setDescription(product.getDescription());
-        productToUpdate.setPrice(product.getPrice());
-        productToUpdate.setWeight(product.getWeight());
-        productToUpdate.setHeight(product.getHeight());
-        productToUpdate.setWidth(product.getWidth());
-        productToUpdate.setLength(product.getLength());
-        productToUpdate.setCategories(product.getCategories());
-        productToUpdate.setPhotoUrl(product.getPhotoUrl());
-        productToUpdate.setStatus(product.getStatus());
+        if (product.getCode() != null) productToUpdate.setCode(product.getCode());
+        // check if getName is not null
+        if (product.getName() != null) productToUpdate.setName(product.getName());
+        if (product.getDescription() != null) productToUpdate.setDescription(product.getDescription());
+        if (product.getPrice() != null) productToUpdate.setPrice(product.getPrice());
+        if (product.getWeight() != null) productToUpdate.setWeight(product.getWeight());
+        if (product.getHeight() != null) productToUpdate.setHeight(product.getHeight());
+        if (product.getWidth() != null) productToUpdate.setWidth(product.getWidth());
+        if (product.getLength() != null) productToUpdate.setLength(product.getLength());
+        if (product.getCategories() != null) productToUpdate.setCategories(product.getCategories());
+        if (product.getPhotoUrl() != null) productToUpdate.setPhotoUrl(product.getPhotoUrl());
+        if (product.getStatus() != null) productToUpdate.setStatus(product.getStatus());
         productRepository.save(productToUpdate);
         return productMapper.mapToDto(productToUpdate,null);
     }

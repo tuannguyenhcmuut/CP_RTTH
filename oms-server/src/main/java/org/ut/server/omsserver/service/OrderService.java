@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.ChartStatisticsDto;
+import org.ut.server.omsserver.dto.DashboardComponentInfoDto;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
@@ -367,7 +368,7 @@ public class OrderService {
                 );
 
         // find delivery
-        Delivery delivery = deliveryRepository.findByIdAndOrderId(orderDto.getDeliveryId(),orderId)
+        Delivery delivery = deliveryRepository.findByIdAndOrderId(order.getDelivery().getId(), orderId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Delivery not found by order id: " + orderId.toString())
                 );
@@ -408,9 +409,12 @@ public class OrderService {
 
         // delete order items
         order.getItems().forEach(orderItemService::deleteOrderItem);
+        // delete order price
         // delete delivery
         deliveryRepository.deleteById(order.getDelivery().getId());
+
         // delete order price
+
         // delete order
         orderRepository.deleteById(order.getId());
     }
@@ -555,7 +559,7 @@ public class OrderService {
         }
 
         // find delivery
-        Delivery delivery = deliveryRepository.findByIdAndOrderId(orderDto.getDeliveryId(), orderId)
+        Delivery delivery = deliveryRepository.findByIdAndOrderId(order.getDelivery().getId(), orderId)
                 .orElseThrow(
                         () -> new OrderNotFoundException("Delivery not found by order id: " + orderId.toString())
                 );
@@ -641,6 +645,21 @@ public class OrderService {
                         () -> new OrderNotFoundException("Order not found!")
                 );
         return orderMapper.mapToDto(order, owner);
+    }
+
+
+    // count total number of order that is created today
+    public DashboardComponentInfoDto getDashboardComponentValues(UUID userId) {
+        Long totalTodayOrders = orderRepository.countTotalOrderCreatedToday(userId);
+        Long totalTodayDeliveredOrders = orderRepository.countTotalOrderDeliveredToday(userId);
+        Double totalRevenue = orderRepository.calculateTotalRevenue(userId);
+
+        return DashboardComponentInfoDto.builder()
+                .totalTodayOrders(totalTodayOrders)
+                .totalTodayDeliveries(totalTodayDeliveredOrders)
+                .totalRevenue(totalRevenue)
+                .build();
+
     }
 
     // get all order of shipper

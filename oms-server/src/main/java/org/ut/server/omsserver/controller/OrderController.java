@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
-import org.ut.server.omsserver.dto.ChartStatisticsDto;
-import org.ut.server.omsserver.dto.OrderDto;
-import org.ut.server.omsserver.dto.PriceDto;
-import org.ut.server.omsserver.dto.TopReceiverDto;
+import org.ut.server.omsserver.dto.*;
 import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.dto.request.StatusRequest;
@@ -458,6 +455,20 @@ public class OrderController {
                 .build();
     }
 
+    // get total order created today
+    @GetMapping("/statistic-completed")
+    public GenericResponseDTO<DashboardComponentInfoDto> getTotalOrderCreatedToday(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        DashboardComponentInfoDto totalOrder = orderService.getDashboardComponentValues(userId);
+        return GenericResponseDTO.<DashboardComponentInfoDto>builder()
+                .data(totalOrder)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_STATISTIC)
+                .timestamps(new Date())
+                .build();
+    }
 
 
 
