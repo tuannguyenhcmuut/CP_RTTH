@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose-server.yml'
+        DOCKER_COMPOSE_FILE = './oms-server/docker-compose-server.yml'
     }
     stages {
         
