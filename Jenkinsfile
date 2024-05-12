@@ -14,9 +14,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dir('oms-server') {
                         sh 'docker compose -f ${DOCKER_COMPOSE_FILE} up -d --no-deps --build'
-                    }
                 }
             }
         }
