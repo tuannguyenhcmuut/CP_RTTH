@@ -25,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                        bat 'docker compose -f ${DOCKER_COMPOSE_FILE} up -d --no-deps --build'
+                        bat 'docker compose -f ./oms-server/docker-compose-server.yml up -d --no-deps --build'
                 }
             }
         }
