@@ -524,7 +524,7 @@ public class OrderService {
         // notify to owner
         notificationService.notifyOrderInfoToOwner(
                 owner, user, newOrder,
-                String.format("Employee %s has created a new order: %s", user.getEmail(), newOrder.getCode())
+                String.format(MessageConstants.EMPLOYEE_ORDER_CREATED_MESSAGE, user.getEmail(), newOrder.getCode())
         );
         return orderMapper.mapToDto(newOrder, owner);
     }
@@ -585,7 +585,7 @@ public class OrderService {
                 owner,
                 user,
                 order,
-                String.format("Employee %s has updated an order infomation: %s", user.getEmail(), order.getCode())
+                String.format(MessageConstants.EMPLOYEE_UPDATE_ORDER_STATUS_MESSAGE, user.getEmail(), order.getCode())
         );
         return orderMapper.mapToDto(order, owner);
     }
@@ -615,7 +615,7 @@ public class OrderService {
                 owner,
                 employee,
                 order,
-                String.format("Employee %s has updated an order %s status to %s", employee.getEmail(), order.getCode(), order.getOrderStatus())
+                String.format(MessageConstants.EMPLOYEE_ORDER_UPDATED_MESSAGE, employee.getEmail(), order.getCode(), order.getOrderStatus())
         );
         return orderMapper.mapToDto(order, owner);
     }

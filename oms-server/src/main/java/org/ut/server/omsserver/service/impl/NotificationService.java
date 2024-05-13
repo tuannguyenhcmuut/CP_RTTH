@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.NotificationDTO;
 import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Notification;
@@ -38,7 +39,7 @@ public class NotificationService implements INotificationService {
 
 
         Notification notification = new Notification();
-        notification.setMessage("Your employee request has been approved.");
+        notification.setMessage(MessageConstants.SUCCESS_APPROVE_EMPLOYEE_REQUEST);
         notification.setReceiver(employeeManagementOptional.getManager());
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
@@ -54,7 +55,7 @@ public class NotificationService implements INotificationService {
 
 
         Notification notification = new Notification();
-        notification.setMessage("Your employee request has been rejected.");
+        notification.setMessage(MessageConstants.SUCCESS_REJECT_EMPLOYEE_REQUEST);
         notification.setReceiver(employeeManagementOptional.getManager());
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
@@ -74,7 +75,7 @@ public class NotificationService implements INotificationService {
         ShopOwner manager = shopOwnerRepository.findShopOwnerById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found with id " + managerId));
         Notification notification = new Notification();
-        notification.setMessage("You have received a new employee request to become employee of " + manager.getAccount().getUsername());
+        notification.setMessage(String.format(MessageConstants.REQUEST_EMPLOYEE_MESSAGE, manager.getAccount().getUsername()));
         notification.setReceiver(employee);
         notification.setRead(false);
         notification.setType(

@@ -127,4 +127,28 @@ public class MessageConstants {
 
     public static final String SUCCESS_STATUS_UPDATED = "Cập nhật trạng thái thành công!";
     public static final String SUCCESS_GET_DELIVERY = "Lấy thông tin giao hàng thành công!";
+    public static final String REQUEST_EMPLOYEE_MESSAGE = "Bạn đã nhận được một yêu cầu mới để trở thành nhân viên của %s";
+//    Nhân viên %s đã tạo một đơn hàng mới: %s
+    public static final String EMPLOYEE_ORDER_CREATED_MESSAGE = "Nhân viên %s đã tạo một đơn hàng mới: %s";
+//    Nhân viên %s đã cập nhật thông tin đơn hàng: %s
+    public static final String EMPLOYEE_ORDER_UPDATED_MESSAGE = "Nhân viên %s đã cập nhật thông tin đơn hàng: %s";
+
+    //    Nhân viên %s đã cập nhật trạng thái của đơn hàng %s thành %s
+    public static final String EMPLOYEE_UPDATE_ORDER_STATUS_MESSAGE = "Nhân viên %s đã cập nhật trạng thái của đơn hàng %s thành %s";
+    public static final String SUCCESS_GET_ORDER_DETAIL = "Lấy chi tiết đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_DETAILS = "Lấy danh sách chi tiết đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS = "Lấy trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUSES = "Lấy danh sách trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY = "Lấy lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORIES = "Lấy danh sách lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL = "Lấy chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAILS = "Lấy danh sách chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS = "Lấy trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUSES = "Lấy danh sách trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS_HISTORY = "Lấy lịch sử trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS_HISTORIES = "Lấy danh sách lịch sử trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
+    public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS_HISTORY_DETAIL = "Lấy chi tiết lịch sử trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
+
+
 }
+
