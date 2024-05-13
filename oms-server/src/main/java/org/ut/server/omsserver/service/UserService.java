@@ -103,7 +103,7 @@ public class UserService {
                     userRequestDTO.getPhoneNumber() != null ? userRequestDTO.getPhoneNumber() : userEntity.getPhoneNumber()
             );
         } catch (Exception e) {
-            throw new UserException("Phone number is registered!");
+            throw new UserException(MessageConstants.PHONE_EXISTED);
         }
 
         userEntity.setDateOfBirth(

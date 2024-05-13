@@ -2,6 +2,7 @@ package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -105,7 +106,7 @@ public class ShopOwnerService {
                     userRequestDTO.getPhoneNumber() != null ? userRequestDTO.getPhoneNumber() : userEntity.getPhoneNumber()
             );
         } catch (Exception e) {
-            throw new UserException("Phone number is registered!");
+            throw new UserException(MessageConstants.PHONE_EXISTED);
         }
 
         userEntity.setDateOfBirth(
@@ -121,8 +122,17 @@ public class ShopOwnerService {
             );
         }
         userEntity.setLastLogin(LocalDateTime.now());
+        try {
+            userEntity = shopOwnerRepository.save(userEntity);
+            shopOwnerRepository.flush();
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new UserException(MessageConstants.PHONE_EXISTED);
+        }
+        catch (Exception e) {
+            throw new UserException("Lỗi khi cập nhật thông tin người dùng!");
+        }
 
-        userEntity = shopOwnerRepository.save(userEntity);
         return shopOwnerMapper.mapEntityToResponse(userEntity);
     }
 

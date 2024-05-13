@@ -19,7 +19,7 @@ public class MessageConstants {
     public static final String SUCCESS_GET_ADDRESS = "Lấy địa chỉ thành công!";
     public static final String UNSUCCESSFUL_GET_ADDRESS = "Lấy địa chỉ không thành công!";
 
-    public static final String PHONE_EXISTED = "Số điện thoại đã tồn tại!";
+    public static final String PHONE_EXISTED = "Số điện thoại đã tồn tại. Hãy thử số khác!";
     public static final String SUCCESS_ADDRESS_CREATED = "Tạo địa chỉ thành công!";
     public static final String SUCCESS_GET_ORDER = "Lấy đơn hàng thành công!";
     public static final String UNSUCCESSFUL_GET_ORDER = "Lấy đơn hàng không thành công!";
