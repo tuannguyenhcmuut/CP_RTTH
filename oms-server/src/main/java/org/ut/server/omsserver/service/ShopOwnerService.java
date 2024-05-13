@@ -168,7 +168,6 @@ public class ShopOwnerService {
 
 
     public void deleteAddressById(UUID userId, Long id) {
-//        find address
         Optional<Address> address = addressRepository.findById(id);
         if (address.isEmpty()) throw new AddressException("Address not found!");
 
