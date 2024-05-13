@@ -113,7 +113,9 @@ public class ShopOwnerService {
                 userRequestDTO.getDateOfBirth() != null ? userRequestDTO.getDateOfBirth() : userEntity.getDateOfBirth()
         );
 
-        userEntity.setAvatarUrl(userRequestDTO.getAvatar());
+        if (userRequestDTO.getAvatar() != null) {
+            userEntity.setAvatarUrl(userRequestDTO.getAvatar());
+        }
 
         if (userRequestDTO.getAddresses() != null) {
             userEntity.getAddresses().clear();
