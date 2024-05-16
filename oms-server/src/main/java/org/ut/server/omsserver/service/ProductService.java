@@ -28,7 +28,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-//@Transactional
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
