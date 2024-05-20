@@ -66,22 +66,22 @@ public class StoreService {
 
     public void deleteStoreById(Long storeId, UUID userId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreNotFoundException("Store not found"));
+                .orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
         if (store.getShopOwner().getId().equals(userId)) {
             storeRepository.deleteById(storeId);
         }
         else {
-            throw new RuntimeException("Store and User are not matched!");
+            throw new RuntimeException(MessageConstants.STORE_AND_USER_NOT_MATCHED);
         }
     }
 
     public StoreDto getStoreById(UUID userId, Long storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store not found"));
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
         if (store.getShopOwner().getId().equals(userId)) {
             return storeMapper.mapToDto(store, null);
         }
         else {
-            throw new RuntimeException("Store and User are not matched!");
+            throw new RuntimeException(MessageConstants.STORE_AND_USER_NOT_MATCHED);
         }
     }
 
@@ -108,7 +108,7 @@ public class StoreService {
 
 
     public StoreDto updateStoreById(Long storeId, StoreDto updatedStore, UUID userId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store not found"));
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
         if (store.getShopOwner().getId().equals(userId)) {
             // name
             if (updatedStore.getName() != null) {
@@ -146,7 +146,7 @@ public class StoreService {
             return storeMapper.mapToDto(store, null);
         }
         else {
-            throw new RuntimeException("Store and User are not matched!");
+            throw new RuntimeException(MessageConstants.STORE_AND_USER_NOT_MATCHED);
         }
     }
 }

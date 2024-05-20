@@ -16,6 +16,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.service.IImageService;
 
 import java.awt.image.BufferedImage;
@@ -86,13 +87,13 @@ public class FirebaseImageService implements IImageService {
         Bucket bucket = StorageClient.getInstance().bucket();
 
         if (StringUtils.isEmpty(name)) {
-            throw new IOException("invalid file name");
+            throw new IOException(MessageConstants.FILE_NOT_FOUND);
         }
 
         Blob blob = bucket.get(name);
 
         if (blob == null) {
-            throw new IOException("file not found");
+            throw new IOException();
         }
 
         blob.delete();

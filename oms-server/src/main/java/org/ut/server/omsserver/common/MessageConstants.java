@@ -112,6 +112,8 @@ public class MessageConstants {
     public static final String SUCCESS_MARK_AS_READ = "Đánh dấu đã đọc thành công!";
 
     // User does not have any shop owner!
+//    User not found
+    public static final String USER_NOT_FOUND_MESSAGE = "Không tìm thấy người dùng";
     public static final String ERROR_USER_NOT_HAS_OWNER = "Người dùng không có bất kỳ chủ cửa hàng nào!";
     public static final String SUCCESS_GET_OWNER_STORES = "Lấy danh sách cửa hàng của chủ thành công!";
     public static final String SUCCESS_GET_OWNER_RECEIVERS = "Lấy danh sách người nhận của chủ thành công!" ;
@@ -149,6 +151,91 @@ public class MessageConstants {
     public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS_HISTORIES = "Lấy danh sách lịch sử trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
     public static final String SUCCESS_GET_ORDER_STATUS_HISTORY_DETAIL_STATUS_HISTORY_DETAIL = "Lấy chi tiết lịch sử trạng thái chi tiết lịch sử trạng thái đơn hàng thành công!";
 
+//    "Product is used in order items"
+    public static final String PRODUCT_IN_USE = "Sản phẩm đang được sử dụng trong đơn hàng";
+//    "Product not found by id: %s"
+    public static final String PRODUCT_NOT_FOUND = "Không tìm thấy sản phẩm theo id: %s";
+//    "Receiver not found"
+    public static final String RECEIVER_NOT_FOUND = "Không tìm thấy người nhận";
+//    "Receiver and User are not matched!"
+    public static final String RECEIVER_AND_USER_NOT_MATCHED = "Người nhận và người dùng không khớp!";
+//    "Address not found!"
+    public static final String ADDRESS_NOT_FOUND = "Không tìm thấy địa chỉ!";
+//    "Lỗi khi cập nhật thông tin người dùng!"
+    public static final String ERROR_UPDATE_USER_INFO = "Lỗi khi cập nhật thông tin người dùng!";
+//    ShopOwner id not match!
+    public static final String SHOP_OWNER_ID_NOT_MATCH = "ID chủ cửa hàng không khớp!";
+//    "ShopOwner Not found!"
+    public static final String SHOP_OWNER_NOT_FOUND = "Không tìm thấy chủ cửa hàng!";
+//    "Order not found!"
+    public static final String ORDER_NOT_FOUND = "Không tìm thấy đơn hàng!";
+//    "Store and Owner are not matched!"
+    public static final String STORE_AND_OWNER_NOT_MATCHED = "Cửa hàng và chủ không khớp!";
+//    "Receiver is not existed."
+    public static final String RECEIVER_IS_NOT_EXISTED = "Người nhận không tồn tại.";
+//    "Receiver and Owner are not matched!"
+    public static final String RECEIVER_AND_OWNER_NOT_MATCHED = "Người nhận và chủ không khớp!";
+//    "Some of product of owner is not found."
+    public static final String PRODUCT_OF_OWNER_NOT_FOUND = "Một số sản phẩm của chủ không tìm thấy.";
+//"Store not found by id: "
+    public static final String STORE_NOT_FOUND_BY_ID = "Không tìm thấy cửa hàng theo id: %s";
+//    Store not found
+    public static final String STORE_NOT_FOUND = "Không tìm thấy cửa hàng";
+//    Store and User are not matched
+    public static final String STORE_AND_USER_NOT_MATCHED = "Cửa hàng và người dùng không khớp";
+//    "Receiver not found by id: "
+    public static final String RECEIVER_NOT_FOUND_BY_ID = "Không tìm thấy người nhận theo id: %s";
+//    "You are not the shipper of this delivery
+    public static final String NOT_SHIPPER_OF_DELIVERY = "Bạn không phải là người giao hàng của đơn hàng này";
+//"Invalid order status"
+    public static final String INVALID_ORDER_STATUS = "Trạng thái đơn hàng không hợp lệ";
+//    Delivery not found by order id:
+    public static final String DELIVERY_NOT_FOUND_BY_ORDER_ID = "Không tìm thấy giao hàng theo id đơn hàng: %s";
+//    "Delivery not found"
+    public static final String DELIVERY_NOT_FOUND = "Không tìm thấy giao hàng";
+//    "Store is not existed."
+    public static final String STORE_IS_NOT_EXISTED = "Cửa hàng không tồn tại.";
+//    "Cannot update status to %s from CREATED status"
+    public static final String CANNOT_UPDATE_STATUS_FROM_CREATED = "Không thể cập nhật trạng thái thành %s từ trạng thái CREATED";
+//    "Cannot update status to %s from PROCESSING status"
+    public static final String CANNOT_UPDATE_STATUS_FROM_PROCESSING = "Không thể cập nhật trạng thái thành %s từ trạng thái PROCESSING";
+//    "Cannot update status to %s from SHIPPED status"
+    public static final String CANNOT_UPDATE_STATUS_FROM_SHIPPED = "Không thể cập nhật trạng thái thành %s từ trạng thái SHIPPED";
+//    "Cannot update status to %s from DELIVERED status"
+    public static final String CANNOT_UPDATE_STATUS_FROM_DELIVERED = "Không thể cập nhật trạng thái thành %s từ trạng thái DELIVERED";
+//    "Cannot update from CANCELLED status"
+    public static final String CANNOT_UPDATE_FROM_CANCELLED = "Không thể cập nhật từ trạng thái CANCELLED";
+//    Cannot update status to %s from PENDING status
+    public static final String CANNOT_UPDATE_STATUS_FROM_PENDING = "Không thể cập nhật trạng thái thành %s từ trạng thái PENDING";
+//    "Cannot update status to %s from SHIPPING status"
+    public static final String CANNOT_UPDATE_STATUS_FROM_SHIPPING = "Không thể cập nhật trạng thái thành %s từ trạng thái SHIPPING";
+//    "Refresh token was expired. Please make a new sign in request"
+    public static final String REFRESH_TOKEN_EXPIRED = "Refresh token đã hết hạn. Vui lòng thực hiện yêu cầu đăng nhập mới";
+//    "file not found"
+    public static final String FILE_NOT_FOUND = "Không tìm thấy tệp";
+//    Employee role not found
+    public static final String EMPLOYEE_ROLE_NOT_FOUND = "Không tìm thấy vai trò nhân viên";
+//    "Employee request not found with id "
+    public static final String EMPLOYEE_REQUEST_NOT_FOUND = "Yêu cầu nhân viên không tìm thấy với id ";
+//    "Employee ID mismatch"
+    public static final String EMPLOYEE_ID_MISMATCH = "ID nhân viên không khớp";
+//    "Employee request is not pending"
+    public static final String EMPLOYEE_REQUEST_NOT_PENDING = "Yêu cầu nhân viên phải là Pending để thực hiện thao tác này!";
+//    "Employee management not found with id "
+    public static final String EMPLOYEE_MANAGEMENT_NOT_FOUND = "Quản lý nhân viên không tìm thấy với id ";
+//    "Employee already has a manager"
+    public static final String EMPLOYEE_ALREADY_HAS_MANAGER = "Nhân viên đã có một quản lý";
+//    "Employee and manager are already managed to each other"
+    public static final String EMPLOYEE_AND_MANAGER_ALREADY_MANAGED = "Nhân viên và quản lý đã được quản lý lẫn nhau";
+//    "Manager not found with id "
+    public static final String MANAGER_NOT_FOUND = "Quản lý không tìm thấy với id ";
+//    "Employee not found with phone number or email"
+    public static final String EMPLOYEE_NOT_FOUND_WITH_PHONE_OR_EMAIL = "Nhân viên không tìm thấy với số điện thoại hoặc email";
+//    "Employee not found with email number "
+    public static final String EMPLOYEE_NOT_FOUND_WITH_EMAIL = "Nhân viên không tìm thấy với email ";
+
+
 
 }
+
 

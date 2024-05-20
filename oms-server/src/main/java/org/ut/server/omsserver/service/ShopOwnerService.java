@@ -52,7 +52,7 @@ public class ShopOwnerService {
     public UserResponseDTO getUserInfo(UUID userId) {
         Optional<ShopOwner> user = shopOwnerRepository.findById(userId);
         if (user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
-//            return new ResponseEntity<>("ShopOwner Not found!", HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>(MessageConstants.SHOP_OWNER_NOT_FOUND, HttpStatus.BAD_REQUEST);
 
         return shopOwnerMapper.mapEntityToResponse(user.get());
     }
@@ -90,7 +90,7 @@ public class ShopOwnerService {
         Optional<ShopOwner> user = shopOwnerRepository.findById(userId);
         if (user.isEmpty()) throw new UserNotFoundException(MessageConstants.USER_NOT_FOUND);
         if (user.get().getId() != userId)
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "ShopOwner id not match!");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, MessageConstants.SHOP_OWNER_ID_NOT_MATCH);
         ShopOwner userEntity = user.get();
         userEntity.setFirstName(
                 userRequestDTO.getFirstName() != null ? userRequestDTO.getFirstName() : userEntity.getFirstName()
@@ -132,7 +132,7 @@ public class ShopOwnerService {
             throw new UserException(MessageConstants.PHONE_EXISTED);
         }
         catch (Exception e) {
-            throw new UserException("Lỗi khi cập nhật thông tin người dùng!");
+            throw new UserException(MessageConstants.ERROR_UPDATE_USER_INFO);
         }
 
         return shopOwnerMapper.mapEntityToResponse(userEntity);
@@ -172,13 +172,13 @@ public class ShopOwnerService {
         if (address.isEmpty()) throw new AddressException("Address not found!");
 
         if (address.get().getShopOwner().getId() != userId)
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "ShopOwner id not match!");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, MessageConstants.SHOP_OWNER_ID_NOT_MATCH);
         addressRepository.deleteById(id);
     }
 
     public UserResponseDTO uploadAvatar(MultipartFile avatar, UUID userId) throws IOException {
         ShopOwner user = shopOwnerRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("ShopOwner Not found!")
+                () -> new UserNotFoundException(MessageConstants.SHOP_OWNER_NOT_FOUND)
         );
         String filename = imageService.save(avatar);
         String avatarString = imageService.getImageUrl(filename);
@@ -189,7 +189,7 @@ public class ShopOwnerService {
 
     public UUID getUserIdByUsername(String username) {
         Optional<ShopOwner> user = shopOwnerRepository.findByAccount_Username(username);
-        if (user.isEmpty()) throw new UserNotFoundException("ShopOwner Not found!");
+        if (user.isEmpty()) throw new UserNotFoundException(MessageConstants.SHOP_OWNER_NOT_FOUND);
 
         return user.get().getId();
     }

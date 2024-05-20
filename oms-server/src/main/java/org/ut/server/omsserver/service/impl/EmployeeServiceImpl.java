@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.EmployeeInfoDto;
 import org.ut.server.omsserver.dto.EmployeeManagementDto;
 import org.ut.server.omsserver.dto.request.EmployeeRequestDto;
@@ -48,37 +49,37 @@ public class EmployeeServiceImpl implements IEmployeeService {
             // find employee by phone
             employee = shopOwnerRepository.findShopOwnerByPhoneNumber(employeeRequestDto.getEmployeePhone())
                     .orElseThrow(
-                            () -> new RuntimeException("Employee not found with phone number " + employeeRequestDto.getEmployeePhone())
+                            () -> new RuntimeException(MessageConstants.EMPLOYEE_NOT_FOUND_WITH_PHONE_OR_EMAIL + employeeRequestDto.getEmployeePhone())
                     );
         }
         else if (employeeRequestDto.getEmployeeEmail() != null) {
             // find employee by email
             employee = shopOwnerRepository.findShopOwnerByEmail(employeeRequestDto.getEmployeeEmail())
                     .orElseThrow(
-                            () -> new RuntimeException("Employee not found with email number " + employeeRequestDto.getEmployeeEmail())
+                            () -> new RuntimeException(MessageConstants.EMPLOYEE_NOT_FOUND_WITH_EMAIL + employeeRequestDto.getEmployeeEmail())
                     );
         }
         else {
             // throw exception
-            throw new RuntimeException("Employee not found with phone number or email");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_NOT_FOUND_WITH_PHONE_OR_EMAIL);
         }
         // find manager by id
         ShopOwner manager = shopOwnerRepository.findById(employeeRequestDto.getManagerId())
                 .orElseThrow(
-                        () -> new RuntimeException("Manager not found with id " + employeeRequestDto.getManagerId())
+                        () -> new RuntimeException(MessageConstants.MANAGER_NOT_FOUND + employeeRequestDto.getManagerId())
                 );
 
         // check if the employee and manager is already managed to each other
          Optional<EmployeeManagement> employeeManagementDB = employeeManagementRepository.findEmployeeManagementByManagerAndEmployee(manager, employee);
 
          if (employeeManagementDB.isPresent()) {
-             throw new RuntimeException("Employee and manager are already managed to each other");
+             throw new RuntimeException(MessageConstants.EMPLOYEE_AND_MANAGER_ALREADY_MANAGED);
          }
 
         // Check if employee already has a manager
         Optional<EmployeeManagement> employeeManagementOptional = employeeManagementRepository.findEmployeeManagementByEmployee(employee);
         if (employeeManagementOptional.isPresent()) {
-            throw new RuntimeException("Employee already has a manager");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_ALREADY_HAS_MANAGER);
         }
 
         // build employee management entity with pending status
@@ -122,14 +123,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public void approveEmployeeRequest(UUID employeeId, Long requestId) {
         EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Employee request not found with id " + requestId));
+                .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + requestId));
 
         if (!employeeManagementOptional.getEmployee().getId().equals(employeeId)) {
-            throw new RuntimeException("Employee ID mismatch");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_ID_MISMATCH);
         }
         // check if the current status is pending or not
         if (employeeManagementOptional.getApprovalStatus() != EmployeeRequestStatus.PENDING) {
-            throw new RuntimeException("Employee request is not pending");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_PENDING);
         }
         employeeManagementOptional.setApprovalStatus(EmployeeRequestStatus.ACCEPTED);
 
@@ -141,7 +142,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         //
         if (employeeRole.isEmpty()) {
-            throw new RuntimeException("Employee role not found");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_ROLE_NOT_FOUND);
         }
 
         roles.add(employeeRole.get());
@@ -157,14 +158,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public void rejectEmployeeRequest(UUID employeeId, Long requestId) {
         EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Employee request not found with id " + requestId));
+                .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + requestId));
 
         if (!employeeManagementOptional.getEmployee().getId().equals(employeeId)) {
-            throw new RuntimeException("Employee ID mismatch");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_ID_MISMATCH);
         }
         // check if the current status is pending or not
         if (employeeManagementOptional.getApprovalStatus() != EmployeeRequestStatus.PENDING) {
-            throw new RuntimeException("Employee request is not pending");
+            throw new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_PENDING);
         }
         employeeManagementOptional.setApprovalStatus(EmployeeRequestStatus.REJECTED);
         employeeManagementRepository.save(employeeManagementOptional);
@@ -185,7 +186,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (isEmployeeGetAll) {
                 // find managerId
                 EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByEmployee_Id(employeeId)
-                        .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+                        .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
 
                 return getEmployeeRequests(employeeId, employeeManagement.getManager().getId(), status);
             }
@@ -198,7 +199,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId) {
         // find employee management by id
         EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByIdAndEmployee_Id(emplMgntId, employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+                .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
         // return the permission level of the employee
         return List.copyOf(employeeManagement.getPermissionLevel());
     }
@@ -255,7 +256,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 // find all employee requests by employee id
                 List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployee_Id(employeeId);
                 if (employeeManagements.isEmpty()) {
-                    throw new RuntimeException("Employee not found with id " + employeeId);
+                    throw new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId);
                 }
                 // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
                 return employeeManagements.stream()
@@ -270,9 +271,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         // find employee management by employee id and manager id
         // TODO: limit the request between 2 user is  unique
             EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByManagerAndEmployee(
-                shopOwnerRepository.findShopOwnerById(ownerId).orElseThrow(() -> new RuntimeException("Manager not found with id " + ownerId)),
-                shopOwnerRepository.findShopOwnerById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId))
-        ).orElseThrow(() -> new RuntimeException("Employee management not found with id " + employeeId));
+                shopOwnerRepository.findShopOwnerById(ownerId).orElseThrow(() -> new RuntimeException(MessageConstants.MANAGER_NOT_FOUND + ownerId)),
+                shopOwnerRepository.findShopOwnerById(employeeId).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId))
+        ).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
         // return the permission level of the employee
         return List.copyOf(employeeManagement.getPermissionLevel());
     }

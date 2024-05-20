@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.config.JwtUtils;
 import org.ut.server.omsserver.dto.request.TokenRefreshRequest;
 import org.ut.server.omsserver.dto.response.TokenRefreshResponseDto;
@@ -72,7 +73,7 @@ public class RefreshTokenService {
 
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new sign in request");
+            throw new TokenRefreshException(token.getToken(), MessageConstants.REFRESH_TOKEN_EXPIRED);
         }
 
         return token;

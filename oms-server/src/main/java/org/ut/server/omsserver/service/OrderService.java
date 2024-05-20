@@ -70,7 +70,7 @@ public class OrderService {
     public OrderDto getOrderById(UUID userId, Long orderId) {
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         // ok, found!
         // find list of product
@@ -95,7 +95,7 @@ public class OrderService {
         else {
             store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), orderRequest.getUserId())
                     .orElseThrow(
-                            () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStore().getId().toString())
+                            () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, orderRequest.getStore().getId().toString()))
                     );
 //            orderRequest.setSt/ore(storeMapper.mapToDto(store));
         }
@@ -110,13 +110,13 @@ public class OrderService {
         else {
             receiver = receiverRepository.findByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), orderRequest.getUserId())
                     .orElseThrow(
-                            () -> new ReceiverNotFoundException("Receiver not found by id: " + orderRequest.getReceiver().getId().toString())
+                            () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + orderRequest.getReceiver().getId().toString())
                     );
 //            orderRequest.setReceiver(receiverMapper.mapToDto(receiver));
         }
         // find user
         ShopOwner user = shopOwnerRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found") );
+                .orElseThrow(() -> new RuntimeException(MessageConstants.USER_NOT_FOUND_MESSAGE) );
         orderRequest.setCreatedBy(user.getEmail());
 
         Order newOrder = orderMapper.mapRequestToEntity(orderRequest);
@@ -161,7 +161,7 @@ public class OrderService {
         List<Order> orders = orderRepository.findOrdersByShopOwner_Id(userId);
         if (orders == null) {
             return List.of();
-//            throw new RuntimeException("Order not found");
+//            throw new RuntimeException(MessageConstants.ORDER_NOT_FOUND);
         }
         // mapping
         // test: user feign
@@ -177,15 +177,15 @@ public class OrderService {
     public OrderDto updateReceiver(UUID userId, Long orderId, Long receiverId) {
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         // find receiver
         Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(receiverId, userId)
                 .orElseThrow(
-                        () -> new ReceiverNotFoundException("Receiver not found by id: " + receiverId.toString())
+                        () -> new ReceiverNotFoundException(String.format(MessageConstants.RECEIVER_NOT_FOUND_BY_ID, receiverId.toString()))
                 );
         if (order == null) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
         order.setReceiver(receiver);
         order.setLastUpdatedBy(order.getShopOwner().getEmail());
@@ -207,15 +207,15 @@ public class OrderService {
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         // find receiver
         Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(receiverId, owner.getId())
                 .orElseThrow(
-                        () -> new ReceiverNotFoundException("Receiver not found by id: " + receiverId.toString())
+                        () -> new ReceiverNotFoundException(String.format(MessageConstants.RECEIVER_NOT_FOUND_BY_ID, receiverId.toString()))
                 );
         if (order == null) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
         order.setReceiver(receiver);
         order.setLastUpdatedBy(user.getEmail());
@@ -228,15 +228,15 @@ public class OrderService {
     public OrderDto updateStore(UUID userId, Long orderId, Long storeId) {
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         // find store
         Store store = storeRepository.findByIdAndShopOwner_Id(storeId, userId)
                 .orElseThrow(
-                        () -> new StoreNotFoundException("Store not found by id: " + storeId.toString())
+                        () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, storeId.toString()))
                 );
         if (order == null) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
         order.setStore(store);
         order.setLastUpdatedBy(store.getShopOwner().getEmail());
@@ -259,15 +259,15 @@ public class OrderService {
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         // find store
         Store store = storeRepository.findByIdAndShopOwner_Id(storeId, owner.getId())
                 .orElseThrow(
-                        () -> new StoreNotFoundException("Store not found by id: " + storeId.toString())
+                        () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, storeId.toString()))
                 );
         if (order == null) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
         order.setStore(store);
         order.setLastUpdatedBy(user.getEmail());
@@ -280,7 +280,7 @@ public class OrderService {
     public OrderDto updateOrderStatus(UUID userId, Long orderId, String status) {
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 
 //        check the status is valid
@@ -288,7 +288,7 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.valueOf(status));
         ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found") );
+                .orElseThrow(() -> new RuntimeException(MessageConstants.USER_NOT_FOUND_MESSAGE) );
         order.setLastUpdatedBy(user.getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
         orderRepository.save(order);
@@ -297,9 +297,9 @@ public class OrderService {
 
     public Order updateOrderStatusForShipper(UUID shipperId, Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND));
         if (!order.getDelivery().getShipper().getId().equals(shipperId)) {
-            throw new RuntimeException("You are not the shipper of this delivery");
+            throw new RuntimeException(MessageConstants.NOT_SHIPPER_OF_DELIVERY);
         }
 //        validateOrderStatus(status, order);
         order.setOrderStatus(OrderStatus.valueOf(status));
@@ -311,66 +311,66 @@ public class OrderService {
 
     private static void validateOrderStatus(String status, Order order) {
         if (!OrderStatus.contains(status)) {
-            throw new OrderUpdateException("Invalid order status");
+            throw new OrderUpdateException(MessageConstants.INVALID_ORDER_STATUS);
         }
 //        CREATED, -> chi dc update thanh cancelled hoac processing
         if (order.getOrderStatus().equals(OrderStatus.CREATED)) {
             if (!status.equals("CANCELLED") && !status.equals("PROCESSING")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from CREATED status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_CREATED, status));
             }
         }
 //        PROCESSING -> chi dc update thanh shipped hoac cancelled
         if (order.getOrderStatus().equals(OrderStatus.PROCESSING)) {
             if (!status.equals("SHIPPED") && !status.equals("CANCELLED")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from PROCESSING status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_PROCESSING, status));
             }
         }
 
 //        SHIPPED -> chi dc update thanh delivered hoac cancelled
         if (order.getOrderStatus().equals(OrderStatus.SHIPPING)) {
             if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from SHIPPED status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_SHIPPED, status));
             }
         }
 //        DELIVERED -> chi dc update thanh cancelled
         if (order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
             if (!status.equals("CANCELLED")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from DELIVERED status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_DELIVERED, status));
             }
         }
 //        CANCELLED -> khong dc update
         if (order.getOrderStatus().equals(OrderStatus.CANCELLED)) {
-            throw new OrderUpdateException("Cannot update from CANCELLED status");
+            throw new OrderUpdateException(MessageConstants.CANNOT_UPDATE_FROM_CANCELLED);
         }
     }
 
     public OrderDto updateOrder(UUID userId, Long orderId, OrderDto orderDto) {
 //        find shop owner email
         ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found") );
+                .orElseThrow(() -> new RuntimeException(MessageConstants.USER_NOT_FOUND_MESSAGE) );
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         if (order == null) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
 
         Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
                 .orElseThrow(
-                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
+                        () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiver().getId().toString())
                 );
 
         Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
                 .orElseThrow(
-                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
+                        () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, order.getStore().getId().toString()))
                 );
 
         // find delivery
         Delivery delivery = deliveryRepository.findByIdAndOrderId(order.getDelivery().getId(), orderId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Delivery not found by order id: " + orderId.toString())
+                        () -> new OrderNotFoundException(String.format(MessageConstants.DELIVERY_NOT_FOUND_BY_ORDER_ID, orderId.toString()))
                 );
 
         order.setReceiver(receiver);
@@ -403,7 +403,7 @@ public class OrderService {
     public void deleteOrder(UUID userId, Long orderId) {
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, userId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 //        orderRepository.delete(order);
 
@@ -452,7 +452,7 @@ public class OrderService {
 
         // store
         if (orderRequest.getStore().getId() == null) {
-            throw new StoreNotFoundException("Store is not existed.");
+            throw new StoreNotFoundException(MessageConstants.STORE_IS_NOT_EXISTED);
         }
         else {
 //            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), owner.getId())
@@ -462,13 +462,13 @@ public class OrderService {
 //            orderRequest.setStore(storeMapper.mapToDto(store));
             store = storeRepository.findById(orderRequest.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
             if (!store.getShopOwner().getId().equals(owner.getId())) {
-                throw new RuntimeException("Store and Owner are not matched!");
+                throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
             }
         }
 
         // receiver
         if (orderRequest.getReceiver().getId() == null) {
-            throw new ReceiverNotFoundException("Receiver is not existed.");
+            throw new ReceiverNotFoundException(MessageConstants.RECEIVER_IS_NOT_EXISTED);
         }
         else {
 //            receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), owner.getId())
@@ -477,7 +477,7 @@ public class OrderService {
 //                    );
             receiver = receiverRepository.findById(orderRequest.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
             if (!receiver.getShopOwner().getId().equals(owner.getId())) {
-                throw new RuntimeException("Receiver and Owner are not matched!");
+                throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
             }
 //            orderRequest.setReceiver(receiverMapper.mapToDto(receiver));
         }
@@ -490,7 +490,7 @@ public class OrderService {
                     );
                     // check if product is not found
                     if (product.isEmpty()) {
-                        throw new ProductNotFoundException("Some of product of owner is not found.");
+                        throw new ProductNotFoundException(MessageConstants.PRODUCT_OF_OWNER_NOT_FOUND);
                     }
                 }
         );
@@ -542,12 +542,12 @@ public class OrderService {
 
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 
         Receiver receiver = receiverRepository.findById(order.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (!receiver.getShopOwner().getId().equals(owner.getId())) {
-            throw new RuntimeException("Receiver and Owner are not matched!");
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
         }
 //        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
 //                .orElseThrow(
@@ -555,13 +555,13 @@ public class OrderService {
 //                );
         Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
         if (!store.getShopOwner().getId().equals(owner.getId())) {
-            throw new RuntimeException("Store and Owner are not matched!");
+            throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
         }
 
         // find delivery
         Delivery delivery = deliveryRepository.findByIdAndOrderId(order.getDelivery().getId(), orderId)
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Delivery not found by order id: " + orderId.toString())
+                        () -> new OrderNotFoundException(String.format(MessageConstants.DELIVERY_NOT_FOUND_BY_ORDER_ID, orderId.toString()))
                 );
         order.setReceiver(receiver);
         order.setStore(store);
@@ -601,7 +601,7 @@ public class OrderService {
         ShopOwner employee = emplMgnt.getEmployee();
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 
         validateOrderStatus(status, order);
@@ -642,7 +642,7 @@ public class OrderService {
         ShopOwner employee = emplMgnt.getEmployee();
         Order order = orderRepository.findByIdAndShopOwner_Id(orderId, owner.getId())
                 .orElseThrow(
-                        () -> new OrderNotFoundException("Order not found!")
+                        () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
         return orderMapper.mapToDto(order, owner);
     }

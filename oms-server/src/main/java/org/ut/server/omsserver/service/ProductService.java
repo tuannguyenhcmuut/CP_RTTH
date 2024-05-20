@@ -80,19 +80,19 @@ public class ProductService {
     public ProductDto getProductById(Long productId, UUID userId) {
         Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
-                        () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
+                        () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
                 );
 
         if (product.getShopOwner().getId().equals(userId)) {
             return productMapper.mapToDto(product,null);
         }
-        throw new ProductNotFoundException("Product not found by id: " + productId.toString());
+        throw new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()));
     }
 
     public ProductDto updateProduct(UUID userId, Long productId, Product product) {
         Product productToUpdate = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
-                        () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
+                        () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
                 );
         if (product.getCode() != null) productToUpdate.setCode(product.getCode());
         // check if getName is not null
@@ -115,11 +115,11 @@ public class ProductService {
         // check if product belongs to user
         Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
-                        () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
+                        () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
                 );
 
         if (orderItemRepository.existsOrderItemByProduct_Id(product.getId())) {
-            throw new ProductInUsedException("Product is used in order items");
+            throw new ProductInUsedException(MessageConstants.PRODUCT_IN_USE);
         }
         productRepository.deleteProductById(product.getId());
 
@@ -141,7 +141,7 @@ public class ProductService {
         // find product by id
         Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
-                        () -> new ProductNotFoundException("Product not found by id: " + productId.toString())
+                        () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
                 );
         String fileName = imageService.save(imageFile);
         String imageUrl = imageService.getImageUrl(fileName);

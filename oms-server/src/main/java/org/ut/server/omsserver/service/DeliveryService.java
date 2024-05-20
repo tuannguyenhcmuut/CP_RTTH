@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.DeliveryDto;
 import org.ut.server.omsserver.dto.request.DeliveryRequest;
 import org.ut.server.omsserver.exception.DeliveryNotFoundException;
@@ -51,12 +52,12 @@ public class DeliveryService {
 
     public DeliveryDto getDeliveryById(Long deliveryId, UUID userId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
-                .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
+                .orElseThrow(() -> new DeliveryNotFoundException(MessageConstants.DELIVERY_NOT_FOUND));
 
         log.debug("Delivery found: {}", delivery);
         // find order
 //        Order order = orderRepository.findByIdAndShopOwner_Id(delivery.getOrder().getId(), userId)
-//                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+//                .orElseThrow(() -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND));
 
 //        log.debug("Order found: {}", order);
         return deliveryMapper.mapEntityToDto(delivery);
@@ -84,9 +85,9 @@ public class DeliveryService {
 
     public DeliveryDto updateStatusDelivery(Long deliveryId, UUID shipperId, DeliveryStatus status) {
         Delivery delivery = deliveryRepository.findByIdAndShipper_Id(deliveryId, shipperId)
-                .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
+                .orElseThrow(() -> new DeliveryNotFoundException(MessageConstants.DELIVERY_NOT_FOUND));
         if (!delivery.getShipper().getId().equals(shipperId)) {
-            throw new RuntimeException("You are not the shipper of this delivery");
+            throw new RuntimeException(MessageConstants.NOT_SHIPPER_OF_DELIVERY);
         }
         validateOrderStatus(status.toString(), delivery);
         delivery.setStatus(status);
@@ -107,38 +108,38 @@ public class DeliveryService {
 
     private static void validateOrderStatus(String status, Delivery delivery) {
         if (!DeliveryStatus.contains(status)) {
-            throw new OrderUpdateException("Invalid order status");
+            throw new OrderUpdateException(MessageConstants.INVALID_ORDER_STATUS);
         }
 //        CREATED, -> chi dc update thanh cancelled hoac processing
         if (delivery.getStatus().equals(DeliveryStatus.PENDING)) {
             if (!status.equals("CANCELLED") && !status.equals("SHIPPING")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from PENDING status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_PENDING, status));
             }
         }
 //        PROCESSING -> chi dc update thanh DELIVERED hoac cancelled
         if (delivery.getStatus().equals(DeliveryStatus.SHIPPING)) {
             if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from SHIPPING status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_SHIPPING, status));
             }
         }
 
 //        DELIVERED -> chi dc update thanh cancelled
         if (delivery.getStatus().equals(DeliveryStatus.DELIVERED)) {
             if (!status.equals("CANCELLED")) {
-                throw new OrderUpdateException(String.format("Cannot update status to %s from DELIVERED status", status));
+                throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_DELIVERED, status));
             }
         }
 //        CANCELLED -> khong dc update
         if (delivery.getStatus().equals(DeliveryStatus.CANCELED)) {
-            throw new OrderUpdateException("Cannot update from CANCELLED status");
+            throw new OrderUpdateException(MessageConstants.CANNOT_UPDATE_FROM_CANCELLED);
         }
     }
 
     private Order updateOrderStatusForShipper(UUID shipperId, Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND));
         if (!order.getDelivery().getShipper().getId().equals(shipperId)) {
-            throw new RuntimeException("You are not the shipper of this delivery");
+            throw new RuntimeException(MessageConstants.NOT_SHIPPER_OF_DELIVERY);
         }
 //        validateOrderStatus(status, order);
         order.setOrderStatus(OrderStatus.valueOf(status));

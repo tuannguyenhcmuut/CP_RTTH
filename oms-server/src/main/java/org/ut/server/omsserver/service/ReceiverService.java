@@ -59,20 +59,20 @@ public class ReceiverService {
     }
 
     public void deleteReceiverById(Long receiverId, UUID userId) {
-        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (receiver.getShopOwner().getId().equals(userId)) {
             receiverRepository.deleteById(receiverId);
         } else {
-            throw new RuntimeException("Receiver and User are not matched!");
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_USER_NOT_MATCHED);
         }
     }
 
     public ReceiverDto getReceiverById(Long receiverId, UUID userId) {
-        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (receiver.getShopOwner().getId().equals(userId)) {
             return receiverMapper.mapToDto(receiver, null);
         } else {
-            throw new RuntimeException("Receiver and User are not matched!");
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_USER_NOT_MATCHED);
         }
     }
 
@@ -90,7 +90,7 @@ public class ReceiverService {
     }
 
     public ReceiverDto updateReceiverById(Long receiverId, ReceiverDto updatedReceiver, UUID userId) {
-        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (receiver.getShopOwner().getId().equals(userId)) {
             if (updatedReceiver.getName() != null) {
                 receiver.setName(updatedReceiver.getName());
@@ -122,7 +122,7 @@ public class ReceiverService {
             receiverRepository.save(receiver);
             return receiverMapper.mapToDto(receiver, null);
         } else {
-            throw new RuntimeException("Receiver and User are not matched!");
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_USER_NOT_MATCHED);
         }
     }
 
