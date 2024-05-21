@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class Store extends Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "store_id", nullable = false)
     private Long id;
 
     private String description;

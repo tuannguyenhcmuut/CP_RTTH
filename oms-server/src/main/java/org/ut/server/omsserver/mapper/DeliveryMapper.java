@@ -49,12 +49,27 @@ public class DeliveryMapper {
 // find order
         Order order = orderRepository.findById(delivery.getOrder().getId())
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        Receiver receiver = Receiver.builder()
+                .id(order.getReceiverId())
+                .note(order.getNote())
+                .receivedPlace(order.getReceivedPlace())
+                .deliveryTimeFrame(order.getDeliveryTimeFrame())
+                .callBeforeSend(order.getCallBeforeSend())
+                .receiveAtPost(order.getReceiveAtPost())
+                .build();
+        Store store = Store.builder()
+                .id(order.getStoreId())
+                .description(order.getStoreDescription())
+                .storePickUpTime(order.getStorePickUpTime())
+                .isDefault(order.getIsDefault())
+                .sendAtPost(order.getSendAtPost())
+                .build();
         return DeliveryDto.builder()
                 .id(delivery.getId())
                 .order(orderMapper.mapToDto(delivery.getOrder(), null)) // TODO:
                 .shipper(shipperMapper.mapToDto(delivery.getShipper()))
-                .receiver(receiverMapper.mapToDto(order.getReceiver(), null))
-                .store(storeMapper.mapToDto(order.getStore(), null))
+                .receiver(receiverMapper.mapToDto(receiver, null))
+                .store(storeMapper.mapToDto(store, null))
                 .status(delivery.getStatus())
                 .payer(delivery.getPayer())
                 .hasLostInsurance(delivery.isHasLostInsurance())

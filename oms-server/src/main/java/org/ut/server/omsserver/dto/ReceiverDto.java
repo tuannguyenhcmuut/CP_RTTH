@@ -1,20 +1,18 @@
 package org.ut.server.omsserver.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.UUID;
-
 import org.ut.server.omsserver.model.enums.DeliveryTime;
 import org.ut.server.omsserver.model.enums.ReceivedPlace;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.util.UUID;
 
 @Data
 @Builder
 public class ReceiverDto {
-    private Long id;
+    private Long receiverId;
     private String name;
     private String phoneNumber;
     private String address;

@@ -1,19 +1,17 @@
 package org.ut.server.omsserver.dto;
 
-import lombok.Builder;
-import lombok.Data;
-
-import java.util.UUID;
-
-import org.ut.server.omsserver.model.enums.StorePickUpTime;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Builder;
+import lombok.Data;
+import org.ut.server.omsserver.model.enums.StorePickUpTime;
+
+import java.util.UUID;
 
 @Builder
 @Data
 public class StoreDto {
-    private Long id;
+    private Long storeId;
     private String name;
     private String phoneNumber;
     private String address;

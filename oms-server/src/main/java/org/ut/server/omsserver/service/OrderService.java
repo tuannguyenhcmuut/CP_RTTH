@@ -88,31 +88,31 @@ public class OrderService {
         Receiver receiver;
 
         // store
-        if (orderRequest.getStore().getId() == null) {
+        if (orderRequest.getStore().getStoreId() == null) {
             store = storeRepository.save(
                     storeMapper.mapToEntity(orderRequest.getStore(), orderRequest.getUserId())
             );
             orderRequest.setStore(storeMapper.mapToDto(store, null));
         }
         else {
-            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), orderRequest.getUserId())
+            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getStoreId(), orderRequest.getUserId())
                     .orElseThrow(
-                            () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, orderRequest.getStore().getId().toString()))
+                            () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, orderRequest.getStore().getStoreId().toString()))
                     );
 //            orderRequest.setSt/ore(storeMapper.mapToDto(store));
         }
 
         // receiver
-        if (orderRequest.getReceiver().getId() == null) {
+        if (orderRequest.getReceiver().getReceiverId() == null) {
             receiver = receiverRepository.save(
                     receiverMapper.mapDtoToEntity(orderRequest.getReceiver(), orderRequest.getUserId())
             );
             orderRequest.setReceiver(receiverMapper.mapToDto(receiver, null));
         }
         else {
-            receiver = receiverRepository.findByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), orderRequest.getUserId())
+            receiver = receiverRepository.findByIdAndShopOwner_Id(orderRequest.getReceiver().getReceiverId(), orderRequest.getUserId())
                     .orElseThrow(
-                            () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + orderRequest.getReceiver().getId().toString())
+                            () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + orderRequest.getReceiver().getReceiverId().toString())
                     );
 //            orderRequest.setReceiver(receiverMapper.mapToDto(receiver));
         }
@@ -123,8 +123,21 @@ public class OrderService {
 
         Order newOrder = orderMapper.mapRequestToEntity(orderRequest);
         newOrder.setItems(newOrder.getItems());  // mapping relationship
-        newOrder.setStore(store);
-        newOrder.setReceiver(receiver);
+//        newOrder.setStore(store);
+        newOrder.setStoreId(store.getId());
+        newOrder.setStoreDescription(store.getDescription());
+        newOrder.setStorePickUpTime(store.getStorePickUpTime());
+        newOrder.setIsDefault(store.getIsDefault());
+        newOrder.setSendAtPost(store.getSendAtPost());
+        newOrder.setSendAtPost(store.getSendAtPost());
+//        newOrder.setReceiver(receiver);
+        newOrder.setReceiverId(receiver.getId());
+        newOrder.setNote(receiver.getNote());
+        newOrder.setReceivedPlace(receiver.getReceivedPlace());
+        newOrder.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        newOrder.setCallBeforeSend(receiver.getCallBeforeSend());
+        newOrder.setReceiveAtPost(receiver.getReceiveAtPost());
+
         newOrder.setCreatedBy(user.getEmail()) ;
         newOrder.setLastUpdatedBy(user.getEmail());
         newOrder.setLastUpdatedDate(LocalDateTime.now());
@@ -192,7 +205,14 @@ public class OrderService {
         if (order == null) {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
-        order.setReceiver(receiver);
+//        order.setReceiver(receiver);
+//        newOrder.setReceiver(receiver);
+        order.setReceiverId(receiver.getId());
+        order.setNote(receiver.getNote());
+        order.setReceivedPlace(receiver.getReceivedPlace());
+        order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        order.setCallBeforeSend(receiver.getCallBeforeSend());
+        order.setReceiveAtPost(receiver.getReceiveAtPost());
         order.setLastUpdatedBy(order.getShopOwner().getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
 
@@ -222,7 +242,12 @@ public class OrderService {
         if (order == null) {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
-        order.setReceiver(receiver);
+        order.setReceiverId(receiver.getId());
+        order.setNote(receiver.getNote());
+        order.setReceivedPlace(receiver.getReceivedPlace());
+        order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        order.setCallBeforeSend(receiver.getCallBeforeSend());
+        order.setReceiveAtPost(receiver.getReceiveAtPost());
         order.setLastUpdatedBy(user.getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
 
@@ -243,7 +268,14 @@ public class OrderService {
         if (order == null) {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
-        order.setStore(store);
+//        order.setStore(store);
+        //        order.setStore(store);
+        order.setStoreId(store.getId());
+        order.setStoreDescription(store.getDescription());
+        order.setStorePickUpTime(store.getStorePickUpTime());
+        order.setIsDefault(store.getIsDefault());
+        order.setSendAtPost(store.getSendAtPost());
+        order.setSendAtPost(store.getSendAtPost());
         order.setLastUpdatedBy(store.getShopOwner().getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
 
@@ -274,7 +306,14 @@ public class OrderService {
         if (order == null) {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
-        order.setStore(store);
+//        order.setStore(store);
+        //        order.setStore(store);
+        order.setStoreId(store.getId());
+        order.setStoreDescription(store.getDescription());
+        order.setStorePickUpTime(store.getStorePickUpTime());
+        order.setIsDefault(store.getIsDefault());
+        order.setSendAtPost(store.getSendAtPost());
+        order.setSendAtPost(store.getSendAtPost());
         order.setLastUpdatedBy(user.getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
 
@@ -379,14 +418,14 @@ public class OrderService {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
 
-        Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(order.getReceiver().getId(), order.getShopOwner().getId())
+        Receiver receiver = receiverRepository.findByIdAndShopOwner_Id(order.getReceiverId(), order.getShopOwner().getId())
                 .orElseThrow(
-                        () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiver().getId().toString())
+                        () -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiverId().toString())
                 );
 
-        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
+        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStoreId(), order.getShopOwner().getId())
                 .orElseThrow(
-                        () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, order.getStore().getId().toString()))
+                        () -> new StoreNotFoundException(String.format(MessageConstants.STORE_NOT_FOUND_BY_ID, order.getStoreId().toString()))
                 );
 
         // find delivery
@@ -395,8 +434,22 @@ public class OrderService {
                         () -> new OrderNotFoundException(String.format(MessageConstants.DELIVERY_NOT_FOUND_BY_ORDER_ID, orderId.toString()))
                 );
 
-        order.setReceiver(receiver);
-        order.setStore(store);
+//        order.setReceiver(receiver);
+//        order.setStore(store);
+        //        newOrder.setStore(store);
+        order.setStoreId(store.getId());
+        order.setStoreDescription(store.getDescription());
+        order.setStorePickUpTime(store.getStorePickUpTime());
+        order.setIsDefault(store.getIsDefault());
+        order.setSendAtPost(store.getSendAtPost());
+        order.setSendAtPost(store.getSendAtPost());
+//        order.setReceiver(receiver);
+        order.setReceiverId(receiver.getId());
+        order.setNote(receiver.getNote());
+        order.setReceivedPlace(receiver.getReceivedPlace());
+        order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        order.setCallBeforeSend(receiver.getCallBeforeSend());
+        order.setReceiveAtPost(receiver.getReceiveAtPost());
         order.setOrderStatus(orderDto.getOrderStatus());
         order.setCode(orderDto.getCode());
         order.setHeight(orderDto.getHeight());
@@ -473,31 +526,31 @@ public class OrderService {
         Receiver receiver;
 
         // store
-        if (orderRequest.getStore().getId() == null) {
+        if (orderRequest.getStore().getStoreId() == null) {
             throw new StoreNotFoundException(MessageConstants.STORE_IS_NOT_EXISTED);
         }
         else {
-//            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStore().getId(), owner.getId())
+//            store = storeRepository.findByIdAndShopOwner_Id(orderRequest.getStoreId(), owner.getId())
 //                    .orElseThrow(
-//                            () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStore().getId().toString())
+//                            () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStoreId().toString())
 //                    );
 //            orderRequest.setStore(storeMapper.mapToDto(store));
-            store = storeRepository.findById(orderRequest.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
+            store = storeRepository.findById(orderRequest.getStore().getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
             if (!store.getShopOwner().getId().equals(owner.getId())) {
                 throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
             }
         }
 
         // receiver
-        if (orderRequest.getReceiver().getId() == null) {
+        if (orderRequest.getReceiver().getReceiverId() == null) {
             throw new ReceiverNotFoundException(MessageConstants.RECEIVER_IS_NOT_EXISTED);
         }
         else {
-//            receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(orderRequest.getReceiver().getId(), owner.getId())
+//            receiver = receiverRepository.findReceiverByIdAndShopOwner_Id(orderRequest.getReceiverId(), owner.getId())
 //                    .orElseThrow(
-//                            () -> new ReceiverNotFoundException("Receiver of owner not found by id: " + orderRequest.getReceiver().getId().toString())
+//                            () -> new ReceiverNotFoundException("Receiver of owner not found by id: " + orderRequest.getReceiverId().toString())
 //                    );
-            receiver = receiverRepository.findById(orderRequest.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+            receiver = receiverRepository.findById(orderRequest.getReceiver().getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
             if (!receiver.getShopOwner().getId().equals(owner.getId())) {
                 throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
             }
@@ -521,8 +574,20 @@ public class OrderService {
         orderRequest.setUserId(owner.getId());
         Order newOrder = orderMapper.mapRequestToEntity(orderRequest);
         newOrder.setItems(newOrder.getItems());  // mapping relationship
-        newOrder.setStore(store);
-        newOrder.setReceiver(receiver);
+        //        newOrder.setStore(store);
+        newOrder.setStoreId(store.getId());
+        newOrder.setStoreDescription(store.getDescription());
+        newOrder.setStorePickUpTime(store.getStorePickUpTime());
+        newOrder.setIsDefault(store.getIsDefault());
+        newOrder.setSendAtPost(store.getSendAtPost());
+        newOrder.setSendAtPost(store.getSendAtPost());
+//        newOrder.setReceiver(receiver);
+        newOrder.setReceiverId(receiver.getId());
+        newOrder.setNote(receiver.getNote());
+        newOrder.setReceivedPlace(receiver.getReceivedPlace());
+        newOrder.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        newOrder.setCallBeforeSend(receiver.getCallBeforeSend());
+        newOrder.setReceiveAtPost(receiver.getReceiveAtPost());
         newOrder.setCreatedBy(user.getEmail());
         newOrder.setLastUpdatedBy(user.getEmail());
         newOrder.setLastUpdatedDate(LocalDateTime.now());
@@ -567,15 +632,15 @@ public class OrderService {
                         () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 
-        Receiver receiver = receiverRepository.findById(order.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (!receiver.getShopOwner().getId().equals(owner.getId())) {
             throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
         }
-//        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
+//        Store store = storeRepository.findByIdAndShopOwner_Id(order.getStoreId(), order.getShopOwner().getId())
 //                .orElseThrow(
-//                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
+//                        () -> new StoreNotFoundException("Store not found by id: " + order.getStoreId().toString())
 //                );
-        Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
+        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
         if (!store.getShopOwner().getId().equals(owner.getId())) {
             throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
         }
@@ -585,8 +650,21 @@ public class OrderService {
                 .orElseThrow(
                         () -> new OrderNotFoundException(String.format(MessageConstants.DELIVERY_NOT_FOUND_BY_ORDER_ID, orderId.toString()))
                 );
-        order.setReceiver(receiver);
-        order.setStore(store);
+        //        newOrder.setStore(store);
+        order.setStoreId(store.getId());
+        order.setStoreDescription(store.getDescription());
+        order.setStorePickUpTime(store.getStorePickUpTime());
+        order.setIsDefault(store.getIsDefault());
+        order.setSendAtPost(store.getSendAtPost());
+        order.setSendAtPost(store.getSendAtPost());
+//        order.setReceiver(receiver);
+        order.setReceiverId(receiver.getId());
+        order.setNote(receiver.getNote());
+        order.setReceivedPlace(receiver.getReceivedPlace());
+        order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
+        order.setCallBeforeSend(receiver.getCallBeforeSend());
+        order.setReceiveAtPost(receiver.getReceiveAtPost());
+
         order.setOrderStatus(orderDto.getOrderStatus());
         order.setCode(orderDto.getCode());
         order.setHeight(orderDto.getHeight());

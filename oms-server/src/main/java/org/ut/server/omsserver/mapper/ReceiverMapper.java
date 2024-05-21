@@ -37,7 +37,7 @@ public class ReceiverMapper {
     }
     public ReceiverDto mapToDto(Receiver receiver, ShopOwner owner) {
         return ReceiverDto.builder()
-                .id(receiver.getId())
+                .receiverId(receiver.getId())
                 .name(receiver.getName())
                 .phoneNumber(receiver.getPhoneNumber())
                 .address(receiver.getAddress())

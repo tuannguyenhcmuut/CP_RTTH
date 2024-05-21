@@ -3,6 +3,7 @@ package org.ut.server.omsserver.mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.ChartStatisticsDto;
 import org.ut.server.omsserver.dto.OrderDto;
 import org.ut.server.omsserver.dto.request.OrderRequest;
@@ -49,7 +50,10 @@ public class OrderMapper {
         // find user
         if (orderRequest == null) return null;
         ShopOwner user = shopOwnerRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(MessageConstants.USER_NOT_FOUND));
+
+        Store store = storeMapper.mapToEntity(orderRequest.getStore(), orderRequest.getUserId());
+        Receiver receiver = receiverMapper.mapDtoToEntity(orderRequest.getReceiver(), orderRequest.getUserId());
         return Order.builder()
                 .code(orderRequest.getCode())
                 .height(orderRequest.getHeight())
@@ -57,8 +61,17 @@ public class OrderMapper {
                 .length(orderRequest.getLength())
                 .items(orderItemMapper.mapDtosToEntities(orderRequest.getItems()))
                 .shopOwner(user)
-                .store(storeMapper.mapToEntity(orderRequest.getStore(), orderRequest.getUserId()))
-                .receiver(receiverMapper.mapDtoToEntity(orderRequest.getReceiver(), orderRequest.getUserId()))
+                .storeId(store.getId())
+                .storeDescription(store.getDescription())
+                .storePickUpTime(store.getStorePickUpTime())
+                .isDefault(store.getIsDefault())
+                .sendAtPost(store.getSendAtPost())
+                .receiverId(receiver.getId())
+                .note(receiver.getNote())
+                .receivedPlace(receiver.getReceivedPlace())
+                .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
+                .callBeforeSend(receiver.getCallBeforeSend())
+                .receiveAtPost(receiver.getReceiveAtPost())
                 .orderStatus(orderRequest.getOrderStatus())
                 .price(orderRequest.getPrice())
                 .delivery(null)
@@ -80,10 +93,10 @@ public class OrderMapper {
         Delivery delivery = null;
         if (orderDto.getDeliveryId() != null) {
             delivery = deliveryRepository.findById(orderDto.getDeliveryId())
-                    .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
+                    .orElseThrow(() -> new DeliveryNotFoundException(MessageConstants.DELIVERY_NOT_FOUND));
         }
         ShopOwner user = shopOwnerRepository.findById(orderDto.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(MessageConstants.USER_NOT_FOUND_MESSAGE));
         return Order.builder()
                 .code(orderDto.getCode())
                 .height(orderDto.getHeight())
@@ -91,8 +104,17 @@ public class OrderMapper {
                 .length(orderDto.getLength())
                 .items(orderItemMapper.mapDtosToEntities(orderDto.getOrderItemDtos()))
                 .shopOwner(user)
-                .store(storeMapper.mapToEntity(orderDto.getStoreDto(), orderDto.getUserId()))
-                .receiver(receiverMapper.mapDtoToEntity(orderDto.getReceiverDto(), orderDto.getUserId()))
+                .storeId(orderDto.getStoreDto().getStoreId())
+                .storeDescription(orderDto.getStoreDto().getDescription())
+                .storePickUpTime(orderDto.getStoreDto().getStorePickUpTime())
+                .isDefault(orderDto.getStoreDto().getIsDefault())
+                .sendAtPost(orderDto.getStoreDto().getSendAtPost())
+                .receiverId(orderDto.getReceiverDto().getReceiverId())
+                .note(orderDto.getReceiverDto().getNote())
+                .receivedPlace(orderDto.getReceiverDto().getReceivedPlace())
+                .deliveryTimeFrame(orderDto.getReceiverDto().getDeliveryTimeFrame())
+                .callBeforeSend(orderDto.getReceiverDto().getCallBeforeSend())
+                .receiveAtPost(orderDto.getReceiverDto().getReceiveAtPost())
                 .orderStatus(orderDto.getOrderStatus())
                 .price(orderDto.getPrice())
                 .delivery(delivery)
@@ -120,11 +142,11 @@ public class OrderMapper {
 //                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
 //                );
 
-        Receiver receiver = receiverRepository.findById(order.getReceiver().getId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
         if (!receiver.getShopOwner().getId().equals(
                 owner != null ? owner.getId() : order.getShopOwner().getId()
         )) {
-            throw new RuntimeException("Receiver and Owner are not matched!");
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
         }
 
 //        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
@@ -132,11 +154,11 @@ public class OrderMapper {
 //                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
 //                );
 
-        Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() -> new RuntimeException("Store not found"));
+        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
         if (!store.getShopOwner().getId().equals(
                 owner != null ? owner.getId() : order.getShopOwner().getId()
         )) {
-            throw new RuntimeException("Store and Owner are not matched!");
+            throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
         }
 
         if (order != null) {

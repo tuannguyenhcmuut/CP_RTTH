@@ -27,7 +27,7 @@ public class StoreMapper {
             return null;
         }
         return StoreDto.builder()
-                .id(store.getId())
+                .storeId(store.getId())
                 .name(store.getName())
                 .phoneNumber(store.getPhoneNumber())
                 .address(store.getAddress())
@@ -47,7 +47,7 @@ public class StoreMapper {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return Store.builder()
-                .id(storeDto.getId())
+                .id(storeDto.getStoreId())
                 .shopOwner(user)
                 .name(storeDto.getName())
                 .phoneNumber(storeDto.getPhoneNumber())

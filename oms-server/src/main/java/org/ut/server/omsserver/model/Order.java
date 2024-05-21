@@ -5,7 +5,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.ut.server.omsserver.model.enums.DeliveryTime;
 import org.ut.server.omsserver.model.enums.OrderStatus;
+import org.ut.server.omsserver.model.enums.ReceivedPlace;
+import org.ut.server.omsserver.model.enums.StorePickUpTime;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -45,13 +48,42 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private ShopOwner shopOwner;
-    @OneToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+//    @OneToOne
+//    @JoinColumn(name = "store_id", nullable = false)
+//    private Store store;
+    @Column(name = "store_id", nullable = false)
+    private Long storeId;
 
-    @OneToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private Receiver receiver;
+    @Column(name = "store_description")
+    private String storeDescription;
+
+    @Column(name = "store_pick_up_time")
+    @Enumerated(EnumType.STRING)
+    private StorePickUpTime storePickUpTime;
+    @Column(name = "is_default")
+    private Boolean isDefault;
+    @Column(name = "send_at_post")
+    private Boolean sendAtPost;
+//
+//    @OneToOne
+//    @JoinColumn(name = "receiver_id", nullable = false)
+//    private Receiver receiver;
+    @Column(name = "receiver_id", nullable = false)
+    private Long receiverId;
+    private String note;
+    @Column(name = "received_place")
+    @Enumerated(EnumType.STRING)
+    private ReceivedPlace receivedPlace;
+
+    @Column(name = "delivery_time_frame")
+    @Enumerated(EnumType.STRING)
+    private DeliveryTime deliveryTimeFrame;
+
+    @Column(name = "call_before_send")
+    private Boolean callBeforeSend;
+
+    @Column(name = "receive_at_post")
+    private Boolean receiveAtPost;
 
 //    @OneToOne(fetch = FetchType.LAZY)
     @Column(name = "status_code", nullable = true)
