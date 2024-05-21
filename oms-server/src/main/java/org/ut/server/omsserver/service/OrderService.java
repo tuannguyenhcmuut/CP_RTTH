@@ -164,8 +164,15 @@ public class OrderService {
         // 2nd save
         newOrder = orderRepository.saveAndFlush(newOrder);
 
-//        Đã tạo đơn hàng
-        orderHistoryService.storeOrderHistory(newOrder, "Đã tạo đơn hàng.");
+        OrderHistory newOrderHistory = OrderHistory.builder()
+                .order(newOrder)
+                .description("Đã tạo đơn hàng.")
+                .build();
+        orderHistoryRepository.save(newOrderHistory);
+
+//        orderHistoryRepository.save(newOrderHistory);
+////        Đã tạo đơn hàng
+//        orderHistoryService.storeOrderHistory(newOrder, "Đã tạo đơn hàng.");
 
         log.debug("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
         return orderMapper.mapToDto(newOrder, null);
@@ -331,8 +338,25 @@ public class OrderService {
         validateOrderStatus(status, order);
 
         order.setOrderStatus(OrderStatus.valueOf(status));
+        OrderHistory newOrderHistory = OrderHistory.builder()
+                .order(order)
+                .build();
         // set order history
-        setOrderHistoryFromStatus(order, status);
+        if (status.equals("CANCELLED")) {
+            newOrderHistory.setDescription("Đơn hàng đã bị huỷ.");
+        }
+        else if (status.equals("PROCESSING")) {
+            newOrderHistory.setDescription("Đơn hàng đang được xử lý.");
+        }
+        else if (status.equals("SHIPPED")) {
+            orderHistoryService.storeOrderHistory(order, "Đơn hàng đã được gửi đi.");
+
+            newOrderHistory.setDescription("Đơn hàng đã được gửi đi.");
+        }
+        else if (status.equals("DELIVERED")) {
+            newOrderHistory.setDescription("Đã giao hàng.");
+        }
+        orderHistoryRepository.save(newOrderHistory);
         ShopOwner user = shopOwnerRepository.findShopOwnerById(userId)
                 .orElseThrow(() -> new RuntimeException(MessageConstants.USER_NOT_FOUND_MESSAGE) );
         order.setLastUpdatedBy(user.getEmail());
@@ -343,7 +367,7 @@ public class OrderService {
 
     private void setOrderHistoryFromStatus(Order order, String status) {
         if (status.equals("CANCELLED")) {
-            orderHistoryService.storeOrderHistory(order, "Đơn hàng đang được xử lý.");
+            orderHistoryService.storeOrderHistory(order, "Đơn hàng đã bị huỷ.");
         }
         else if (status.equals("PROCESSING")) {
             orderHistoryService.storeOrderHistory(order, "Đơn hàng đang được xử lý.");
@@ -535,7 +559,7 @@ public class OrderService {
 //                            () -> new StoreNotFoundException("Store not found by id: " + orderRequest.getStoreId().toString())
 //                    );
 //            orderRequest.setStore(storeMapper.mapToDto(store));
-            store = storeRepository.findById(orderRequest.getStore().getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
+            store = storeRepository.findById(orderRequest.getStore().getStoreId()).orElseThrow(() -> new RuntimeException(MessageConstants.STORE_NOT_FOUND_MESSAGE));
             if (!store.getShopOwner().getId().equals(owner.getId())) {
                 throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
             }
@@ -550,7 +574,7 @@ public class OrderService {
 //                    .orElseThrow(
 //                            () -> new ReceiverNotFoundException("Receiver of owner not found by id: " + orderRequest.getReceiverId().toString())
 //                    );
-            receiver = receiverRepository.findById(orderRequest.getReceiver().getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+            receiver = receiverRepository.findById(orderRequest.getReceiver().getReceiverId()).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
             if (!receiver.getShopOwner().getId().equals(owner.getId())) {
                 throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
             }
@@ -604,7 +628,13 @@ public class OrderService {
         newOrder.setCode("ORDER-" + RandomGenUtils.getRandomInt(1, 1000000));
 
         // 2nd save
-        newOrder = orderRepository.save(newOrder);
+        newOrder = orderRepository.saveAndFlush(newOrder);
+
+        OrderHistory newOrderHistory = OrderHistory.builder()
+                .order(newOrder)
+                .description("Đã tạo đơn hàng.")
+                .build();
+        orderHistoryRepository.save(newOrderHistory);
 
         log.error("ORDER-SERVICE: DEBUG MODE AT createOrder at 2nd save: {}", newOrder.toString());
 
@@ -632,7 +662,7 @@ public class OrderService {
                         () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
                 );
 
-        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (!receiver.getShopOwner().getId().equals(owner.getId())) {
             throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
         }
@@ -640,7 +670,7 @@ public class OrderService {
 //                .orElseThrow(
 //                        () -> new StoreNotFoundException("Store not found by id: " + order.getStoreId().toString())
 //                );
-        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
+        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException(MessageConstants.STORE_NOT_FOUND_MESSAGE));
         if (!store.getShopOwner().getId().equals(owner.getId())) {
             throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
         }

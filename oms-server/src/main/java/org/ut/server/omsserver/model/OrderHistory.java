@@ -33,7 +33,7 @@ public class OrderHistory {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
     private Order order;
 }

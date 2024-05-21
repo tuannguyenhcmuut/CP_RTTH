@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class  Receiver extends Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "receiver_id", nullable = false)
     private Long id;
     private String note;
     @Column(name = "received_place")

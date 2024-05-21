@@ -15,12 +15,12 @@ import org.ut.server.omsserver.repo.OrderHistoryRepository;
 public class OrderHistoryService {
     // get order histories by order id
     // store order history with order id and message
-    private OrderHistoryRepository orderHistoryRepository;
-    public void storeOrderHistory(Order order, String message) {
-
-        orderHistoryRepository.save(OrderHistory.builder()
+    private final OrderHistoryRepository orderHistoryRepository;
+    public OrderHistory storeOrderHistory(Order order, String message) {
+        OrderHistory newOrderHistory = OrderHistory.builder()
                 .order(order)
                 .description(message)
-                .build());
+                .build();
+        return orderHistoryRepository.save(newOrderHistory);
     }
 }

@@ -38,8 +38,6 @@ public class Order {
     private Float width;
     private Float length;
 
-    @OneToMany(mappedBy = "orderId",cascade=CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items;
 
 //    @Column(name = "user_id", nullable = false)
 //    @Type(type="org.hibernate.type.PostgresUUIDType")
@@ -131,10 +129,13 @@ public class Order {
 
     @Column(name = "last_updated_date")
     private LocalDateTime lastUpdatedDate;
+    @OneToMany(mappedBy = "orderId",cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_history_id")
-    private List<OrderHistory> orderHistories;
+//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<OrderHistory> orderHistories;
+
+    // set order history
 //    public void setStore(Store store) {
 //        if (this.store != null) {
 //            this.store.setOrder(null);
@@ -174,4 +175,19 @@ public class Order {
         }
         this.items = items;
     }
+
+//    public void appendOrderHistory(OrderHistory orderHistory) {
+//        orderHistory.setOrder(this);
+//        this.orderHistories.add(orderHistory);
+//    }
+
+//    public void setOrderHistories(List<OrderHistory> items) {
+//
+//        for (OrderHistory item : items) {
+//            // initializing the TestObj instance in Children class (Owner side)
+//            // so that it is not a null and PK can be created
+//            item.setOrder(this);
+//        }
+//        this.orderHistories = items;
+//    }
 }

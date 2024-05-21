@@ -33,6 +33,8 @@ public class MessageConstants {
     public static final String SUCCESS_ORDER_DELETED = "Xóa đơn hàng thành công!";
     public static final String UNSUCCESSFUL_ORDER_DELETED = "Xóa đơn hàng không thành công!";
 
+    // store not found
+    public static final String STORE_NOT_FOUND_MESSAGE = "Không tìm thấy cửa hàng";
     // get list store
     public static final String SUCCESS_GET_STORES = "Lấy danh sách cửa hàng thành công!";
     public static final String UNSUCCESSFUL_GET_STORES = "Lấy danh sách cửa hàng không thành công!";
