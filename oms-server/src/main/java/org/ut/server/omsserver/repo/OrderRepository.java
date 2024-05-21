@@ -21,7 +21,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // native query by user id "SELECT r.name AS receiver_name, SUM(op.total_items_price) AS total_spending
     //FROM receiver r
-    //JOIN "order" o ON r.id = o.receiver_id
+    //JOIN "order" o ON r.receiver_id = o.receiver_id
     //JOIN order_price op ON o.price_id = op.id
     //WHERE o.user_id = 'db67ebe4-260e-4164-bec7-ec5da22e5326'
     //GROUP BY r.name
@@ -30,7 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = "SELECT r.name AS receiver_name, SUM(op.total_items_price) AS total_spending " +
             "FROM receiver r " +
-            "JOIN \"order\" o ON r.id = o.receiver_id " +
+            "JOIN \"order\" o ON r.receiver_id = o.receiver_id " +
             "JOIN order_price op ON o.price_id = op.id " +
             "WHERE o.user_id = :userId " +
             "GROUP BY r.name " +
