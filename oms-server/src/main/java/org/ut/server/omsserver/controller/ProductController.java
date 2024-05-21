@@ -234,5 +234,18 @@ public class ProductController {
                 .build();
     }
 
+    @GetMapping("/statistics")
+    public GenericResponseDTO<Long> getReceiverStatistics(
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        Long productCount = productService.countTotalProductCreatedToday(userId);
+        return GenericResponseDTO.<Long>builder()
+                .data(productCount)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_PRODUCT_STATISTICS)
+                .timestamps(new Date())
+                .build();
+    }
 
 }

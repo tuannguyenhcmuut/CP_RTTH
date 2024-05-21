@@ -159,6 +159,20 @@ public class StoreController {
             .timestamps(new Date())
             .build();
     }
+
+    @GetMapping("statistics")
+    public GenericResponseDTO<Long> getStoreStatistics(
+        @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        Long storesCount = storeService.getTodayStores(userId);
+        return GenericResponseDTO.<Long>builder()
+                .data(storesCount)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_STORE_STATISTICS)
+                .timestamps(new Date())
+                .build();
+    }
     
 
 }

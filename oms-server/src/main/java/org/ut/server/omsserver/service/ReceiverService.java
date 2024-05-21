@@ -126,6 +126,14 @@ public class ReceiverService {
         }
     }
 
+    // receiver added today
+    public Long getTodayReceivers(UUID userId) {
+        ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(MessageConstants.USER_NOT_FOUND)
+        );
+
+        return receiverRepository.countTotalReceiverCreatedToday(userId);
+    }
 //    update receiver by id
 
 

@@ -15,6 +15,7 @@ import org.ut.server.omsserver.model.Store;
 import org.ut.server.omsserver.model.User;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
+import org.ut.server.omsserver.repo.ShopOwnerRepository;
 import org.ut.server.omsserver.repo.StoreRepository;
 import org.ut.server.omsserver.repo.UserRepository;
 
@@ -29,6 +30,7 @@ public class StoreService {
     private final UserRepository userRepository;
     private final StoreMapper storeMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
+    private final ShopOwnerRepository shopOwnerRepository;
 
     public List<StoreDto> getAllStores(UUID userId, Pageable pageable) {
         Optional<User> user = userRepository.findById(userId);
@@ -148,5 +150,14 @@ public class StoreService {
         else {
             throw new RuntimeException(MessageConstants.STORE_AND_USER_NOT_MATCHED);
         }
+    }
+
+    // store added today
+    public Long getTodayStores(UUID userId) {
+        ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(MessageConstants.USER_NOT_FOUND)
+        );
+
+        return storeRepository.countTotalStoreCreatedToday(userId);
     }
 }

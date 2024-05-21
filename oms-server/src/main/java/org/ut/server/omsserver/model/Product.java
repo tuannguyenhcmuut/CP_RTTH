@@ -1,11 +1,13 @@
 package org.ut.server.omsserver.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.ut.server.omsserver.model.enums.ProductStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -59,4 +61,7 @@ public class Product implements Serializable {
     private Float width;
     private Float length;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
 }

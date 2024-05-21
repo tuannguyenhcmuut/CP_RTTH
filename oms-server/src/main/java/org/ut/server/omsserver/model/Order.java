@@ -99,6 +99,10 @@ public class Order {
 
     @Column(name = "last_updated_date")
     private LocalDateTime lastUpdatedDate;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_history_id")
+    private List<OrderHistory> orderHistories;
 //    public void setStore(Store store) {
 //        if (this.store != null) {
 //            this.store.setOrder(null);

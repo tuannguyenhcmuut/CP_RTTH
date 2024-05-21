@@ -168,4 +168,10 @@ public class ProductService {
         }
         return productMapper.mapEntitiesToDtos(products, owner);
     }
+
+    // get total product created today
+    public Long countTotalProductCreatedToday(UUID userId) {
+        // find user
+        return productRepository.countTotalProductCreatedToday(userId);
+    }
 }

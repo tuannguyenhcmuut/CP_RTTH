@@ -155,4 +155,18 @@ public class ReceiverController {
                 .timestamps(new Date())
                 .build();
     }
+
+    @GetMapping("/statistics")
+    public GenericResponseDTO<Long> getReceiverStatistics(
+            @RequestHeader("Authorization") String token
+    ) {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            Long receiversCount = receiverService.getTodayReceivers(userId);
+            return GenericResponseDTO.<Long>builder()
+                    .data(receiversCount)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_GET_RECEIVER_STATISTICS)
+                    .timestamps(new Date())
+                    .build();
+    }
 }
