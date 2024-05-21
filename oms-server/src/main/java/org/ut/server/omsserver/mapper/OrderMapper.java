@@ -62,11 +62,19 @@ public class OrderMapper {
                 .items(orderItemMapper.mapDtosToEntities(orderRequest.getItems()))
                 .shopOwner(user)
                 .storeId(store.getId())
+                .storeName(store.getName())
+                .storePhoneNumber(store.getPhoneNumber())
+                .storeAddress(store.getAddress())
+                .storeDetailedAddress(store.getDetailedAddress())
                 .storeDescription(store.getDescription())
                 .storePickUpTime(store.getStorePickUpTime())
                 .isDefault(store.getIsDefault())
                 .sendAtPost(store.getSendAtPost())
                 .receiverId(receiver.getId())
+                .receiverName(receiver.getName())
+                .receiverPhoneNumber(receiver.getPhoneNumber())
+                .receiverAddress(receiver.getAddress())
+                .receiverDetailedAddress(receiver.getDetailedAddress())
                 .note(receiver.getNote())
                 .receivedPlace(receiver.getReceivedPlace())
                 .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
@@ -105,11 +113,19 @@ public class OrderMapper {
                 .items(orderItemMapper.mapDtosToEntities(orderDto.getOrderItemDtos()))
                 .shopOwner(user)
                 .storeId(orderDto.getStoreDto().getStoreId())
+                .storeName(orderDto.getStoreDto().getName())
+                .storePhoneNumber(orderDto.getStoreDto().getPhoneNumber())
+                .storeAddress(orderDto.getStoreDto().getAddress())
+                .storeDetailedAddress(orderDto.getStoreDto().getDetailedAddress())
                 .storeDescription(orderDto.getStoreDto().getDescription())
                 .storePickUpTime(orderDto.getStoreDto().getStorePickUpTime())
                 .isDefault(orderDto.getStoreDto().getIsDefault())
                 .sendAtPost(orderDto.getStoreDto().getSendAtPost())
                 .receiverId(orderDto.getReceiverDto().getReceiverId())
+                .receiverName(orderDto.getReceiverDto().getName())
+                .receiverPhoneNumber(orderDto.getReceiverDto().getPhoneNumber())
+                .receiverAddress(orderDto.getReceiverDto().getAddress())
+                .receiverDetailedAddress(orderDto.getReceiverDto().getDetailedAddress())
                 .note(orderDto.getReceiverDto().getNote())
                 .receivedPlace(orderDto.getReceiverDto().getReceivedPlace())
                 .deliveryTimeFrame(orderDto.getReceiverDto().getDeliveryTimeFrame())
@@ -142,24 +158,50 @@ public class OrderMapper {
 //                        () -> new ReceiverNotFoundException("Receiver not found by id: " + order.getReceiver().getId().toString())
 //                );
 
-        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
-        if (!receiver.getShopOwner().getId().equals(
-                owner != null ? owner.getId() : order.getShopOwner().getId()
-        )) {
-            throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
-        }
+//        Receiver receiver = receiverRepository.findById(order.getReceiverId()).orElseThrow(() -> new RuntimeException("Receiver not found"));
+//        if (!receiver.getShopOwner().getId().equals(
+//                owner != null ? owner.getId() : order.getShopOwner().getId()
+//        )) {
+//            throw new RuntimeException(MessageConstants.RECEIVER_AND_OWNER_NOT_MATCHED);
+//        }
 
 //        Store store = storeRepository.findStoreByIdAndShopOwner_Id(order.getStore().getId(), order.getShopOwner().getId())
 //                .orElseThrow(
 //                        () -> new StoreNotFoundException("Store not found by id: " + order.getStore().getId().toString())
 //                );
 
-        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
-        if (!store.getShopOwner().getId().equals(
-                owner != null ? owner.getId() : order.getShopOwner().getId()
-        )) {
-            throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
-        }
+//        Store store = storeRepository.findById(order.getStoreId()).orElseThrow(() -> new RuntimeException("Store not found"));
+//        if (!store.getShopOwner().getId().equals(
+//                owner != null ? owner.getId() : order.getShopOwner().getId()
+//        )) {
+//            throw new RuntimeException(MessageConstants.STORE_AND_OWNER_NOT_MATCHED);
+//        }
+
+        Receiver receiver = Receiver.builder()
+                .id(order.getReceiverId())
+                .name(order.getReceiverName())
+                .phoneNumber(order.getReceiverPhoneNumber())
+                .address(order.getReceiverAddress())
+                .detailedAddress(order.getReceiverDetailedAddress())
+                .note(order.getNote())
+                .receivedPlace(order.getReceivedPlace())
+                .deliveryTimeFrame(order.getDeliveryTimeFrame())
+                .callBeforeSend(order.getCallBeforeSend())
+                .receiveAtPost(order.getReceiveAtPost())
+                .shopOwner(order.getShopOwner())
+                .build();
+
+        Store store = Store.builder()
+                .id(order.getStoreId())
+                .name(order.getStoreName())
+                .phoneNumber(order.getStorePhoneNumber())
+                .address(order.getStoreAddress())
+                .detailedAddress(order.getStoreDetailedAddress())
+                .description(order.getStoreDescription())
+                .storePickUpTime(order.getStorePickUpTime())
+                .isDefault(order.getIsDefault())
+                .sendAtPost(order.getSendAtPost())
+                .build();
 
         if (order != null) {
             return OrderDto.builder()

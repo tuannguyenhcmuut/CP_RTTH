@@ -25,8 +25,6 @@ import java.util.List;
 public class Order {
 
     @Id
-//    @GeneratedValue
-//    @Type(type="org.hibernate.type.PostgresUUIDType")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -51,6 +49,10 @@ public class Order {
 //    private Store store;
     @Column(name = "store_id", nullable = false)
     private Long storeId;
+    private String storeName;
+    private String storePhoneNumber;
+    private String storeAddress;
+    private String storeDetailedAddress;
 
     @Column(name = "store_description")
     private String storeDescription;
@@ -68,6 +70,10 @@ public class Order {
 //    private Receiver receiver;
     @Column(name = "receiver_id", nullable = false)
     private Long receiverId;
+    private String receiverName;
+    private String receiverPhoneNumber;
+    private String receiverAddress;
+    private String receiverDetailedAddress;
     private String note;
     @Column(name = "received_place")
     @Enumerated(EnumType.STRING)

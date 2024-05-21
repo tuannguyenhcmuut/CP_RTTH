@@ -125,6 +125,10 @@ public class OrderService {
         newOrder.setItems(newOrder.getItems());  // mapping relationship
 //        newOrder.setStore(store);
         newOrder.setStoreId(store.getId());
+        newOrder.setStoreName(store.getName());
+        newOrder.setStorePhoneNumber(store.getPhoneNumber());
+        newOrder .setStoreAddress(store.getAddress());
+        newOrder.setStoreDetailedAddress(store.getDetailedAddress());
         newOrder.setStoreDescription(store.getDescription());
         newOrder.setStorePickUpTime(store.getStorePickUpTime());
         newOrder.setIsDefault(store.getIsDefault());
@@ -132,6 +136,10 @@ public class OrderService {
         newOrder.setSendAtPost(store.getSendAtPost());
 //        newOrder.setReceiver(receiver);
         newOrder.setReceiverId(receiver.getId());
+        newOrder.setReceiverName(receiver.getName());
+        newOrder.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        newOrder .setReceiverAddress(receiver.getAddress());
+        newOrder.setReceiverDetailedAddress(receiver.getDetailedAddress());
         newOrder.setNote(receiver.getNote());
         newOrder.setReceivedPlace(receiver.getReceivedPlace());
         newOrder.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
@@ -215,6 +223,10 @@ public class OrderService {
 //        order.setReceiver(receiver);
 //        newOrder.setReceiver(receiver);
         order.setReceiverId(receiver.getId());
+        order.setReceiverName(receiver.getName());
+        order.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        order.setReceiverAddress(receiver.getAddress());
+        order.setReceiverDetailedAddress(receiver.getDetailedAddress());
         order.setNote(receiver.getNote());
         order.setReceivedPlace(receiver.getReceivedPlace());
         order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
@@ -250,6 +262,14 @@ public class OrderService {
             throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
         }
         order.setReceiverId(receiver.getId());
+        order.setReceiverName(receiver.getName());
+        order.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        order.setReceiverAddress(receiver.getAddress());
+        order.setReceiverDetailedAddress(receiver.getDetailedAddress());
+        order.setReceiverName(receiver.getName());
+        order.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        order.setReceiverAddress(receiver.getAddress());
+        order.setReceiverDetailedAddress(receiver.getDetailedAddress());
         order.setNote(receiver.getNote());
         order.setReceivedPlace(receiver.getReceivedPlace());
         order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
@@ -278,6 +298,10 @@ public class OrderService {
 //        order.setStore(store);
         //        order.setStore(store);
         order.setStoreId(store.getId());
+        order.setStoreName(store.getName());
+        order.setStorePhoneNumber(store.getPhoneNumber());
+        order .setStoreAddress(store.getAddress());
+        order.setStoreDetailedAddress(store.getDetailedAddress());
         order.setStoreDescription(store.getDescription());
         order.setStorePickUpTime(store.getStorePickUpTime());
         order.setIsDefault(store.getIsDefault());
@@ -316,6 +340,10 @@ public class OrderService {
 //        order.setStore(store);
         //        order.setStore(store);
         order.setStoreId(store.getId());
+        order.setStoreName(store.getName());
+        order.setStorePhoneNumber(store.getPhoneNumber());
+        order .setStoreAddress(store.getAddress());
+        order.setStoreDetailedAddress(store.getDetailedAddress());
         order.setStoreDescription(store.getDescription());
         order.setStorePickUpTime(store.getStorePickUpTime());
         order.setIsDefault(store.getIsDefault());
@@ -462,6 +490,10 @@ public class OrderService {
 //        order.setStore(store);
         //        newOrder.setStore(store);
         order.setStoreId(store.getId());
+        order.setStoreName(store.getName());
+        order.setStorePhoneNumber(store.getPhoneNumber());
+        order .setStoreAddress(store.getAddress());
+        order.setStoreDetailedAddress(store.getDetailedAddress());
         order.setStoreDescription(store.getDescription());
         order.setStorePickUpTime(store.getStorePickUpTime());
         order.setIsDefault(store.getIsDefault());
@@ -469,6 +501,10 @@ public class OrderService {
         order.setSendAtPost(store.getSendAtPost());
 //        order.setReceiver(receiver);
         order.setReceiverId(receiver.getId());
+        order.setReceiverName(receiver.getName());
+        order.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        order.setReceiverAddress(receiver.getAddress());
+        order.setReceiverDetailedAddress(receiver.getDetailedAddress());
         order.setNote(receiver.getNote());
         order.setReceivedPlace(receiver.getReceivedPlace());
         order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
@@ -600,6 +636,10 @@ public class OrderService {
         newOrder.setItems(newOrder.getItems());  // mapping relationship
         //        newOrder.setStore(store);
         newOrder.setStoreId(store.getId());
+        newOrder.setStoreName(store.getName());
+        newOrder.setStorePhoneNumber(store.getPhoneNumber());
+        newOrder .setStoreAddress(store.getAddress());
+        newOrder.setStoreDetailedAddress(store.getDetailedAddress());
         newOrder.setStoreDescription(store.getDescription());
         newOrder.setStorePickUpTime(store.getStorePickUpTime());
         newOrder.setIsDefault(store.getIsDefault());
@@ -607,6 +647,10 @@ public class OrderService {
         newOrder.setSendAtPost(store.getSendAtPost());
 //        newOrder.setReceiver(receiver);
         newOrder.setReceiverId(receiver.getId());
+        newOrder.setReceiverName(receiver.getName());
+        newOrder.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        newOrder .setReceiverAddress(receiver.getAddress());
+        newOrder.setReceiverDetailedAddress(receiver.getDetailedAddress());
         newOrder.setNote(receiver.getNote());
         newOrder.setReceivedPlace(receiver.getReceivedPlace());
         newOrder.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
@@ -682,6 +726,10 @@ public class OrderService {
                 );
         //        newOrder.setStore(store);
         order.setStoreId(store.getId());
+        order.setStoreName(store.getName());
+        order.setStorePhoneNumber(store.getPhoneNumber());
+        order .setStoreAddress(store.getAddress());
+        order.setStoreDetailedAddress(store.getDetailedAddress());
         order.setStoreDescription(store.getDescription());
         order.setStorePickUpTime(store.getStorePickUpTime());
         order.setIsDefault(store.getIsDefault());
@@ -689,6 +737,10 @@ public class OrderService {
         order.setSendAtPost(store.getSendAtPost());
 //        order.setReceiver(receiver);
         order.setReceiverId(receiver.getId());
+        order.setReceiverName(receiver.getName());
+        order.setReceiverPhoneNumber(receiver.getPhoneNumber());
+        order.setReceiverAddress(receiver.getAddress());
+        order.setReceiverDetailedAddress(receiver.getDetailedAddress());
         order.setNote(receiver.getNote());
         order.setReceivedPlace(receiver.getReceivedPlace());
         order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
