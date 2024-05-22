@@ -35,6 +35,7 @@ public class  Receiver extends Person {
     @Column(name = "legit_point") // default is 0
     private Long legitPoint = 0L;
     @Column(name = "legit_level")
+    @Enumerated(EnumType.STRING)
     private LegitLevel legitLevel = LegitLevel.NORMAL;
     @JsonBackReference
     @ToString.Exclude
@@ -50,7 +51,7 @@ public class  Receiver extends Person {
     @Builder
     public Receiver(Long id, String name, String phoneNumber, String address,
                     ShopOwner shopOwner, String detailedAddress, String note, ReceivedPlace receivedPlace,
-                    DeliveryTime deliveryTimeFrame, Boolean callBeforeSend, Boolean receiveAtPost) {
+                    DeliveryTime deliveryTimeFrame, Boolean callBeforeSend, Boolean receiveAtPost, Long legitPoint, LegitLevel legitLevel) {
         super(name, phoneNumber, address, detailedAddress);
         this.id = id;
         this.shopOwner = shopOwner;
@@ -59,5 +60,7 @@ public class  Receiver extends Person {
         this.deliveryTimeFrame = deliveryTimeFrame;
         this.callBeforeSend = callBeforeSend;
         this.receiveAtPost = receiveAtPost;
+        this.legitPoint = legitPoint;
+        this.legitLevel = legitLevel;
     }
 }

@@ -101,13 +101,13 @@ public class DeliveryService {
         if (status.equals(DeliveryStatus.DELIVERED)) {
             delivery.setDeliveryDate(LocalDateTime.now());
         }
-        if (status.equals(DeliveryStatus.SHIPPING)) {
+        if (status.equals(DeliveryStatus.SHIPPED)) {
             delivery.setDeliveryDate(LocalDateTime.now());
         }
         delivery.setLastUpdated(LocalDateTime.now());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        if (status.equals(DeliveryStatus.SHIPPING) || status.equals(DeliveryStatus.DELIVERED) || status.equals(DeliveryStatus.CANCELED)) {
+        if (status.equals(DeliveryStatus.SHIPPED) || status.equals(DeliveryStatus.DELIVERED) || status.equals(DeliveryStatus.CANCELED)) {
             this.updateOrderStatusForShipper(shipperId, savedDelivery.getOrder().getId(), status.toString());
         }
         return deliveryMapper.mapEntityToDto(savedDelivery);
@@ -124,7 +124,7 @@ public class DeliveryService {
             }
         }
 //        PROCESSING -> chi dc update thanh DELIVERED hoac cancelled
-        if (delivery.getStatus().equals(DeliveryStatus.SHIPPING)) {
+        if (delivery.getStatus().equals(DeliveryStatus.SHIPPED)) {
             if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
                 throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_SHIPPING, status));
             }

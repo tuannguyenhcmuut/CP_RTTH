@@ -22,6 +22,8 @@ public class ReceiverDto {
     private DeliveryTime deliveryTimeFrame;
     private Boolean callBeforeSend;
     private Boolean receiveAtPost;
+    private Long legitPoint;
+    private String legitLevel;
     @JsonInclude(Include.NON_NULL)
     private UUID ownerId;
     @JsonInclude(Include.NON_NULL)

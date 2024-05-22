@@ -1,7 +1,7 @@
 package org.ut.server.omsserver.model.enums;
 
 public enum DeliveryStatus {
-    PENDING, SHIPPING, DELIVERED, CANCELED;
+    PENDING, SHIPPED, DELIVERED, CANCELED;
 
     public static boolean contains(String test) {
 

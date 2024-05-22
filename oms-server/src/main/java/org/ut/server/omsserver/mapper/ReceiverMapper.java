@@ -6,6 +6,7 @@ import org.ut.server.omsserver.dto.ReceiverDto;
 import org.ut.server.omsserver.dto.TopReceiverDto;
 import org.ut.server.omsserver.model.Receiver;
 import org.ut.server.omsserver.model.ShopOwner;
+import org.ut.server.omsserver.model.enums.LegitLevel;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
 
 import java.util.List;
@@ -50,6 +51,8 @@ public class ReceiverMapper {
                 .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
                 .callBeforeSend(receiver.getCallBeforeSend())
                 .receiveAtPost(receiver.getReceiveAtPost())
+                .legitPoint(receiver.getLegitPoint())
+                .legitLevel(receiver.getLegitLevel().name())
                 .ownerId(owner == null ? null : owner.getId())
                 .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                 .build();
@@ -78,6 +81,8 @@ public class ReceiverMapper {
                 .receivedPlace(receiverDto.getReceivedPlace())
                 .deliveryTimeFrame(receiverDto.getDeliveryTimeFrame())
                 .callBeforeSend(receiverDto.getCallBeforeSend())
+                .legitPoint(receiverDto.getLegitPoint() == null ? 0L : receiverDto.getLegitPoint())
+                .legitLevel(receiverDto.getLegitLevel() == null ? LegitLevel.NORMAL : LegitLevel.valueOf(receiverDto.getLegitLevel()))
                 .receiveAtPost(receiverDto.getReceiveAtPost())
                 .build();
     }
