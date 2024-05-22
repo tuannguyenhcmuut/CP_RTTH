@@ -22,6 +22,7 @@ public class OrderDto {
     private Float height;
     private Float width;
     private Float length;
+    private Boolean isDraft;
     private List<OrderItemDto> orderItemDtos;
     private UUID userId;
     private StoreDto storeDto;

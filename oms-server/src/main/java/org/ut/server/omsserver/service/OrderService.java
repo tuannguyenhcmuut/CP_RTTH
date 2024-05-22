@@ -515,6 +515,7 @@ public class OrderService {
         order.setHeight(orderDto.getHeight());
         order.setWidth(orderDto.getWidth());
         order.setLength(orderDto.getLength());
+        order.setIsDraft(orderDto.getIsDraft());
         order.setPrice(orderDto.getPrice());
         order.setDelivery(delivery);
         order.setDiscount(orderDto.getDiscount());
@@ -752,6 +753,7 @@ public class OrderService {
         order.setHeight(orderDto.getHeight());
         order.setWidth(orderDto.getWidth());
         order.setLength(orderDto.getLength());
+        order.setIsDraft(orderDto.getIsDraft());
         order.setPrice(orderDto.getPrice());
         order.setDelivery(delivery);
         order.setDiscount(orderDto.getDiscount());

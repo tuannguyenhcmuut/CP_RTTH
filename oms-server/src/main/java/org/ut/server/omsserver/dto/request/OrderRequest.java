@@ -21,6 +21,7 @@ public class OrderRequest {
     private Float height;
     private Float width;
     private Float length;
+    private Boolean isDraft;
     private List<OrderItemDto> items;
     private UUID userId;
     @NotNull

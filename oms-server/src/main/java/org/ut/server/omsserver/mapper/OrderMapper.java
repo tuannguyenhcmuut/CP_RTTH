@@ -59,6 +59,7 @@ public class OrderMapper {
                 .height(orderRequest.getHeight())
                 .width(orderRequest.getWidth())
                 .length(orderRequest.getLength())
+                .isDraft(orderRequest.getIsDraft())
                 .items(orderItemMapper.mapDtosToEntities(orderRequest.getItems()))
                 .shopOwner(user)
                 .storeId(store.getId())
@@ -110,6 +111,7 @@ public class OrderMapper {
                 .height(orderDto.getHeight())
                 .width(orderDto.getWidth())
                 .length(orderDto.getLength())
+                .isDraft(orderDto.getIsDraft())
                 .items(orderItemMapper.mapDtosToEntities(orderDto.getOrderItemDtos()))
                 .shopOwner(user)
                 .storeId(orderDto.getStoreDto().getStoreId())
@@ -210,6 +212,7 @@ public class OrderMapper {
                     .height(order.getHeight())
                     .width(order.getWidth())
                     .length(order.getLength())
+                    .isDraft(order.getIsDraft())
                     .orderItemDtos(
                             order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getShopOwner().getId()) : null
                     )

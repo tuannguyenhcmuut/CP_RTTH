@@ -64,6 +64,7 @@ public class Order {
     private Boolean isDefault;
     @Column(name = "send_at_post")
     private Boolean sendAtPost;
+    private Boolean isDraft;
 //
 //    @OneToOne
 //    @JoinColumn(name = "receiver_id", nullable = false)
