@@ -159,24 +159,30 @@ public class DeliveryService {
     }
 
     private  void checkReceiverIfStatusIsCancelled(String status, Order order) {
-        if (status.equals("CANCELLED")) {
+        if (status.equals("CANCELLED") || status.equals("DELIVERED")) {
+
             Receiver receiver = receiverRepository.findById(order.getReceiverId())
                     .orElseThrow(() -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiverId().toString()));
-            receiver.setLegitPoint(receiver.getLegitPoint() - 1);
+            if (status.equals("CANCELLED")) {
+                receiver.setLegitPoint(receiver.getLegitPoint() - 1);
+            }
+            else if (status.equals("DELIVERED")) {
+                receiver.setLegitPoint(receiver.getLegitPoint() + 1);
+            }
             // set all of the legit level of receiver with the range of legit point
-            if (receiver.getLegitPoint() < -3) {
+            if (receiver.getLegitPoint() < -2) {
                 receiver.setLegitLevel(LegitLevel.VERY_LOW);
             }
-            else  if (receiver.getLegitPoint() >= -3 && receiver.getLegitPoint() < 0 ) {
+            else  if (receiver.getLegitPoint() >= -2 && receiver.getLegitPoint() < 0 ) {
                 receiver.setLegitLevel(LegitLevel.BAD);
             }
-            else if (receiver.getLegitPoint() >= 0 && receiver.getLegitPoint() < 3) {
+            else if (receiver.getLegitPoint() >= 0 && receiver.getLegitPoint() < 10) {
                 receiver.setLegitLevel(LegitLevel.NORMAL);
             }
-            else if (receiver.getLegitPoint() >= 3 && receiver.getLegitPoint() < 5) {
+            else if (receiver.getLegitPoint() >= 10 && receiver.getLegitPoint() < 30) {
                 receiver.setLegitLevel(LegitLevel.HIGH);
             }
-            else if (receiver.getLegitPoint() >= 5) {
+            else if (receiver.getLegitPoint() >= 30) {
                 receiver.setLegitLevel(LegitLevel.VERY_HIGH);
             }
         }
@@ -201,7 +207,7 @@ public class DeliveryService {
         }
 
 //        SHIPPED -> chi dc update thanh delivered hoac cancelled
-        if (order.getOrderStatus().equals(OrderStatus.SHIPPING)) {
+        if (order.getOrderStatus().equals(OrderStatus.SHIPPED)) {
             if (!status.equals("DELIVERED") && !status.equals("CANCELLED")) {
                 throw new OrderUpdateException(String.format(MessageConstants.CANNOT_UPDATE_STATUS_FROM_SHIPPED, status));
             }

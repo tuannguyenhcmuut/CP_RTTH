@@ -3,7 +3,7 @@ package org.ut.server.omsserver.model.enums;
 public enum OrderStatus {
     CREATED,
     PROCESSING,
-    SHIPPING,
+    SHIPPED,
     DELIVERED,
     CANCELLED;
 
