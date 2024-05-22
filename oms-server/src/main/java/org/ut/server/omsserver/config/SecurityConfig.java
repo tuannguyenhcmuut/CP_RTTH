@@ -60,7 +60,10 @@ public class SecurityConfig {
                         "/auth/login",
                         "/auth/register",
                         "/auth/validate",
-                        "/auth/refreshToken")
+                        "/auth/refreshToken",
+                        "api/v1/order/history"
+                )
+
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

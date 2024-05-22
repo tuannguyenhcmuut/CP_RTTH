@@ -1,7 +1,10 @@
 package org.ut.server.omsserver.model.enums;
 
 public enum DeliveryMethod {
-    BA_GIO,
-    MOT_TIENG,
-    MOT_NGAY
+//    Hoả tốc, Bình thường, Tiết kiệm
+    HOA_TOC,
+    BINH_THUONG,
+    TIET_KIEM
+    // viêt tên enum
+
 }

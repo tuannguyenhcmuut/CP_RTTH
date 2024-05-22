@@ -14,6 +14,7 @@ import org.ut.server.omsserver.dto.request.OrderOptionRequest;
 import org.ut.server.omsserver.dto.request.OrderRequest;
 import org.ut.server.omsserver.dto.request.StatusRequest;
 import org.ut.server.omsserver.dto.response.GenericResponseDTO;
+import org.ut.server.omsserver.service.OrderHistoryService;
 import org.ut.server.omsserver.service.OrderService;
 import org.ut.server.omsserver.utils.RestParamUtils;
 
@@ -33,6 +34,7 @@ public class OrderController {
     //    jwtUtils
     private final JwtUtils jwtUtils;
     private final OrderService orderService;
+    private final OrderHistoryService orderHistoryService;
 
     // retrieve all orders of a user
     @GetMapping("")
@@ -290,7 +292,7 @@ public class OrderController {
 
 
 
-    // calculate the total price and option's prices based on order options 
+    // calculate the total price and option's prices based on order options
     @PostMapping("/price/calculate")
     public List<PriceDto> postMethodName(
         @RequestBody List<OrderOptionRequest> options,
@@ -471,6 +473,19 @@ public class OrderController {
     }
 
 
+    // get order history by order code as param
+    @GetMapping("/history")
+    public GenericResponseDTO<List<OrderHistoryDto>> getOrderHistoryByOrderCode(
+            @RequestParam String orderCode
+    ) {
+        List<OrderHistoryDto> orderHistories = orderHistoryService.getOrderHistoriesByOrderCode(orderCode);
+        return GenericResponseDTO.<List<OrderHistoryDto>>builder()
+                .data(orderHistories)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_GET_ORDER_HISTORY)
+                .timestamps(new Date())
+                .build();
+    }
 
     // phân shipper vào
 

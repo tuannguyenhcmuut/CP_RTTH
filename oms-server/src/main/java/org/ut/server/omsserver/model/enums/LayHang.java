@@ -2,5 +2,10 @@ package org.ut.server.omsserver.model.enums;
 
 public enum LayHang {
 
-    CA_NGAY, BA_NGAY
+//    giờ hành chính, buổi sáng, buổi chiều, cả ngày
+    GIO_HANH_CHINH,
+    BUOI_SANG,
+    BUOI_CHIEU,
+    CA_NGAY,
+    NGOAI_GIO_HANH_CHINH
 }
