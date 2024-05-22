@@ -3,6 +3,7 @@ package org.ut.server.omsserver.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.ut.server.omsserver.model.enums.DeliveryTime;
+import org.ut.server.omsserver.model.enums.LegitLevel;
 import org.ut.server.omsserver.model.enums.ReceivedPlace;
 
 import javax.persistence.*;
@@ -31,6 +32,10 @@ public class  Receiver extends Person {
 
     @Column(name = "receive_at_post")
     private Boolean receiveAtPost;
+    @Column(name = "legit_point") // default is 0
+    private Long legitPoint = 0L;
+    @Column(name = "legit_level")
+    private LegitLevel legitLevel = LegitLevel.NORMAL;
     @JsonBackReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

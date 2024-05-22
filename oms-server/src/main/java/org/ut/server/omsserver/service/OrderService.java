@@ -17,6 +17,7 @@ import org.ut.server.omsserver.mapper.ReceiverMapper;
 import org.ut.server.omsserver.mapper.StoreMapper;
 import org.ut.server.omsserver.model.*;
 import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
+import org.ut.server.omsserver.model.enums.LegitLevel;
 import org.ut.server.omsserver.model.enums.OrderStatus;
 import org.ut.server.omsserver.repo.*;
 import org.ut.server.omsserver.service.impl.NotificationService;
@@ -364,7 +365,8 @@ public class OrderService {
 
 //        check the status is valid
         validateOrderStatus(status, order);
-
+        // check receiver if status is cancelled
+        checkReceiverIfStatusIsCancelled(status, order);
         order.setOrderStatus(OrderStatus.valueOf(status));
         OrderHistory newOrderHistory = OrderHistory.builder()
                 .order(order)
@@ -391,6 +393,31 @@ public class OrderService {
         order.setLastUpdatedDate(LocalDateTime.now());
         orderRepository.save(order);
         return orderMapper.mapToDto(order, null);
+    }
+
+    private  void checkReceiverIfStatusIsCancelled(String status, Order order) {
+        if (status.equals("CANCELLED")) {
+           Receiver receiver = receiverRepository.findById(order.getReceiverId())
+                   .orElseThrow(() -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiverId().toString()));
+           receiver.setLegitPoint(receiver.getLegitPoint() - 1);
+           // set all of the legit level of receiver with the range of legit point
+            if (receiver.getLegitPoint() < -3) {
+                receiver.setLegitLevel(LegitLevel.VERY_LOW);
+            }
+             else  if (receiver.getLegitPoint() >= -3 && receiver.getLegitPoint() < 0 ) {
+                receiver.setLegitLevel(LegitLevel.BAD);
+              }
+              else if (receiver.getLegitPoint() >= 0 && receiver.getLegitPoint() < 3) {
+                receiver.setLegitLevel(LegitLevel.NORMAL);
+              }
+              else if (receiver.getLegitPoint() >= 3 && receiver.getLegitPoint() < 5) {
+                receiver.setLegitLevel(LegitLevel.HIGH);
+              }
+              else if (receiver.getLegitPoint() >= 5) {
+                receiver.setLegitLevel(LegitLevel.VERY_HIGH);
+              }
+        }
+
     }
 
     private void setOrderHistoryFromStatus(Order order, String status) {
@@ -510,6 +537,8 @@ public class OrderService {
         order.setDeliveryTimeFrame(receiver.getDeliveryTimeFrame());
         order.setCallBeforeSend(receiver.getCallBeforeSend());
         order.setReceiveAtPost(receiver.getReceiveAtPost());
+        this.validateOrderStatus(orderDto.getOrderStatus().toString(), order);
+        this.checkReceiverIfStatusIsCancelled(orderDto.getOrderStatus().toString(), order);
         order.setOrderStatus(orderDto.getOrderStatus());
         order.setCode(orderDto.getCode());
         order.setHeight(orderDto.getHeight());
@@ -748,6 +777,8 @@ public class OrderService {
         order.setCallBeforeSend(receiver.getCallBeforeSend());
         order.setReceiveAtPost(receiver.getReceiveAtPost());
 
+        this.validateOrderStatus(orderDto.getOrderStatus().toString(), order);
+        this.checkReceiverIfStatusIsCancelled(orderDto.getOrderStatus().toString(), order);
         order.setOrderStatus(orderDto.getOrderStatus());
         order.setCode(orderDto.getCode());
         order.setHeight(orderDto.getHeight());
@@ -789,7 +820,7 @@ public class OrderService {
                 );
 
         validateOrderStatus(status, order);
-
+        checkReceiverIfStatusIsCancelled(status, order);
         order.setOrderStatus(OrderStatus.valueOf(status));
         order.setLastUpdatedBy(employee.getEmail());
         order.setLastUpdatedDate(LocalDateTime.now());
