@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.OrderHistoryDto;
+import org.ut.server.omsserver.exception.OrderNotFoundException;
 import org.ut.server.omsserver.model.Order;
 import org.ut.server.omsserver.model.OrderHistory;
 import org.ut.server.omsserver.repo.OrderHistoryRepository;
@@ -32,6 +34,9 @@ public class OrderHistoryService {
     // get order history by order code
     public List<OrderHistoryDto> getOrderHistoriesByOrderCode(String orderCode) {
         List<Object[]> orderHistories =  orderHistoryRepository.findOrderHistoryInfoByOrderCode(orderCode);
+        if (orderHistories.isEmpty()) {
+            throw new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND);
+        }
         return orderHistories.stream().map(
                 obj -> OrderHistoryDto.builder()
                         .actionDate(((Timestamp) obj[0]).toLocalDateTime())
