@@ -13,6 +13,7 @@ import org.ut.server.omsserver.dto.response.GenericResponseDTO;
 import org.ut.server.omsserver.service.StoreService;
 import org.ut.server.omsserver.utils.RestParamUtils;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/stores")
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class StoreController {
     private final StoreService storeService;
     private final JwtUtils jwtUtils;
@@ -45,8 +47,8 @@ public class StoreController {
                     .build();
         }
         catch  (Exception e){
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            log.error(String.valueOf(e));
+            throw e;
         }
 
     }

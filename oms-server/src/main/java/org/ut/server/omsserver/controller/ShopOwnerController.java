@@ -3,6 +3,7 @@ package org.ut.server.omsserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.server.omsserver.common.MessageCode;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/user")
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ShopOwnerController {
 //    private final ShopOwnerService shopOwnerService;
 

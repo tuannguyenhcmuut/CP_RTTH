@@ -35,7 +35,7 @@ public class ReceiverController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
-        try {
+//        try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
             Pageable pageable = RestParamUtils.getPageable(page, size, sort);
             List<ReceiverDto> receiverDtos = receiverService.getAllReceivers(userId, pageable);
@@ -45,16 +45,16 @@ public class ReceiverController {
                     .message(MessageConstants.SUCCESS_GET_RECEIVERS)
                     .timestamps(new Date())
                     .build();
-        }
-        catch  (Exception e){
-            log.error(e.getMessage());
-//            return GenericResponseDTO.<List<ReceiverDto>>builder()
-//                    .code(e.getMessage())
-//                    .timestamps(new Date())
-//                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
-//                    .build();
-            throw new RuntimeException(e.getMessage());
-        }
+//        }
+//        catch  (Exception e){
+//            log.error(e.getMessage());
+////            return GenericResponseDTO.<List<ReceiverDto>>builder()
+////                    .code(e.getMessage())
+////                    .timestamps(new Date())
+////                    .message(MessageConstant.UNSUCCESSFUL_GET_ORDER)
+////                    .build();
+//            throw new RuntimeException(e.getMessage());
+//        }
 
     }
 
@@ -123,7 +123,7 @@ public class ReceiverController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name,asc") String[] sort
     ) {
-        try {
+//        try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
             Pageable pageable = RestParamUtils.getPageable(page, size, sort);
             List<ReceiverDto> receiverDtos = receiverService.getOwnerReceivers(userId, pageable);
@@ -133,11 +133,11 @@ public class ReceiverController {
                     .message(MessageConstants.SUCCESS_GET_OWNER_RECEIVERS)
                     .timestamps(new Date())
                     .build();
-        }
-        catch  (Exception e){
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
+//        }
+//        catch  (Exception e){
+//            log.error(e.getMessage());
+//            throw new RuntimeException(e.getMessage());
+//        }
     }
 
     @PutMapping("/{receiverId}")

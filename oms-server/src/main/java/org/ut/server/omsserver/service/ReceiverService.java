@@ -1,6 +1,7 @@
 package org.ut.server.omsserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReceiverService {
     private final ReceiverRepository receiverRepository;
     private final ShopOwnerRepository shopOwnerRepository;
@@ -45,6 +47,8 @@ public class ReceiverService {
             List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId, pageable);
             receiverDtos.addAll(ownerReceiverDtos);
         } catch (Exception e) {
+            log.error(e.getMessage());
+            log.error("Error when get owner receivers");
         }
         return receiverDtos;
     }
