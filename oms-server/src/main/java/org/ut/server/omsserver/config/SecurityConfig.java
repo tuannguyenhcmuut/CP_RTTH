@@ -61,7 +61,7 @@ public class SecurityConfig {
                         "/auth/register",
                         "/auth/validate",
                         "/auth/refreshToken",
-                        "api/v1/order/history"
+                        "/api/v1/order/history/**"
                 )
 
                 .permitAll()
