@@ -51,8 +51,8 @@ public class ReceiverMapper {
                 .deliveryTimeFrame(receiver.getDeliveryTimeFrame())
                 .callBeforeSend(receiver.getCallBeforeSend())
                 .receiveAtPost(receiver.getReceiveAtPost())
-                .legitPoint(receiver.getLegitPoint())
-                .legitLevel(receiver.getLegitLevel().name())
+                .legitPoint( receiver.getLegitPoint() == null ? null : receiver.getLegitPoint())
+                .legitLevel(receiver.getLegitLevel() == null ? null :  receiver.getLegitLevel().name() )
                 .ownerId(owner == null ? null : owner.getId())
                 .ownerName(owner == null ? null : String.format("%s %s", owner.getFirstName(), owner.getLastName()))
                 .build();
