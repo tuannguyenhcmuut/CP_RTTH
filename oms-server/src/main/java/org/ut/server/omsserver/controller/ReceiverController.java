@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -95,14 +94,18 @@ public class ReceiverController {
 
     //delete receiver by id
     @DeleteMapping("/{receiverId}")
-    public ResponseEntity<String> deleteReceiverById(
+    public GenericResponseDTO<String>  deleteReceiverById(
             @PathVariable Long receiverId,
             @RequestHeader("Authorization") String token
     ) {
         try {
             UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
             receiverService.deleteReceiverById(receiverId, userId);
-            return ResponseEntity.ok(MessageConstants.SUCCESS_RECEIVER_DELETED);
+            return GenericResponseDTO.<String>builder()
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_RECEIVER_DELETED)
+                    .timestamps(new Date())
+                    .build();
         }
         catch (Exception e) {
             log.error(e.getMessage());

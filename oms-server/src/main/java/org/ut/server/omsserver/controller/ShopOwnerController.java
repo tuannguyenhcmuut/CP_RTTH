@@ -172,9 +172,13 @@ public class ShopOwnerController {
 
 
     @DeleteMapping("{userId}/address/{addressId}")
-    public ResponseEntity<String> deleteAddressById(@PathVariable UUID userId,@PathVariable Long addressId) {
+    public GenericResponseDTO<String>  deleteAddressById(@PathVariable UUID userId,@PathVariable Long addressId) {
         shopOwnerService.deleteAddressById(userId, addressId);
-        return ResponseEntity.ok("Delete address successfully!");
+        return GenericResponseDTO.<String>builder()
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ADDRESS_DELETED)
+                .timestamps(new Date())
+                .build();
     }
 
     //update user by id
