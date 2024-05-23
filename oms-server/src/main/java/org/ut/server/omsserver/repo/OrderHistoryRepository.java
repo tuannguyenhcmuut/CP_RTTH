@@ -21,6 +21,6 @@ ON o.id = oh.id
 WHERE o.code = 'ORDER-91641'
 
     * */
-    @Query(value = "SELECT action_date, description FROM order_history oh JOIN \"order\" o ON o.id = oh.id WHERE o.code = :orderCode", nativeQuery = true)
+    @Query(value = "SELECT action_date, description FROM order_history oh JOIN \"order\" o ON o.id = oh.order_id WHERE o.code = :orderCode", nativeQuery = true)
     List<Object[]> findOrderHistoryInfoByOrderCode(@Param("orderCode") String orderCode);
 }

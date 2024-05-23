@@ -174,7 +174,7 @@ public class OrderService {
         newOrder = orderRepository.saveAndFlush(newOrder);
 
         OrderHistory newOrderHistory = OrderHistory.builder()
-                .order(newOrder)
+                .orderId(newOrder.getId())
                 .description("Đã tạo đơn hàng.")
                 .build();
         orderHistoryRepository.save(newOrderHistory);
@@ -369,7 +369,7 @@ public class OrderService {
         checkReceiverIfStatusIsCancelled(status, order);
         order.setOrderStatus(OrderStatus.valueOf(status));
         OrderHistory newOrderHistory = OrderHistory.builder()
-                .order(order)
+                .orderId(order.getId())
                 .build();
         // set order history
         if (status.equals("CANCELLED")) {
@@ -712,7 +712,7 @@ public class OrderService {
         newOrder = orderRepository.saveAndFlush(newOrder);
 
         OrderHistory newOrderHistory = OrderHistory.builder()
-                .order(newOrder)
+                .orderId(newOrder.getId())
                 .description("Đã tạo đơn hàng.")
                 .build();
         orderHistoryRepository.save(newOrderHistory);

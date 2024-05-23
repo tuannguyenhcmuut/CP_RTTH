@@ -140,7 +140,7 @@ public class Order {
     private List<OrderItem> items;
 
 //    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<OrderHistory> orderHistories;
+//    private List<OrderHistoryh> orderHistories;
 
     // set order history
 //    public void setStore(Store store) {

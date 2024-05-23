@@ -241,6 +241,7 @@ public class MessageConstants {
     public static final String SUCCESS_GET_STORE_STATISTICS = "Lấy thống kê cửa hàng hôm nay thành công!";
     public static final String SUCCESS_GET_PRODUCT_STATISTICS = "Lấy thống kê sản phẩm hôm nay thành công!";
     public static final String SUCCESS_GET_ORDER_HISTORY = "Lấy lịch sử đơn hàng thành công!";
+    public static final String SUCCESS_ORDER_HISTORY_CREATED = "Tạo lịch sử đơn hàng thành công!";
 //    "Receiver and Owner are not matched!"
 
 }
