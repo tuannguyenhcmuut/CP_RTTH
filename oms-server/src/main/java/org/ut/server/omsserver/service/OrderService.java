@@ -398,29 +398,32 @@ public class OrderService {
     private  void checkReceiverIfStatusIsCancelled(String status, Order order) {
         if (status.equals("CANCELLED") || status.equals("DELIVERED")) {
 
-           Receiver receiver = receiverRepository.findById(order.getReceiverId())
-                   .orElseThrow(() -> new ReceiverNotFoundException(MessageConstants.RECEIVER_NOT_FOUND_BY_ID + order.getReceiverId().toString()));
+           Optional<Receiver> receiver = receiverRepository.findById(order.getReceiverId());
+             if (receiver.isEmpty()) {
+                return;
+              }
+
            if (status.equals("CANCELLED")) {
-               receiver.setLegitPoint(receiver.getLegitPoint() - 1);
+               receiver.get().setLegitPoint(receiver.get().getLegitPoint() - 1);
            }
            else if (status.equals("DELIVERED")) {
-               receiver.setLegitPoint(receiver.getLegitPoint() + 1);
+               receiver.get().setLegitPoint(receiver.get().getLegitPoint() + 1);
            }
-           // set all of the legit level of receiver with the range of legit point
-            if (receiver.getLegitPoint() < -2) {
-                receiver.setLegitLevel(LegitLevel.VERY_LOW);
+           // set all of the legit level of receiver.get() with the range of legit point
+            if (receiver.get().getLegitPoint() < -2) {
+                receiver.get().setLegitLevel(LegitLevel.VERY_LOW);
             }
-            else  if (receiver.getLegitPoint() >= -2 && receiver.getLegitPoint() < 0 ) {
-                receiver.setLegitLevel(LegitLevel.BAD);
+            else  if (receiver.get().getLegitPoint() >= -2 && receiver.get().getLegitPoint() < 0 ) {
+                receiver.get().setLegitLevel(LegitLevel.BAD);
             }
-            else if (receiver.getLegitPoint() >= 0 && receiver.getLegitPoint() < 10) {
-                receiver.setLegitLevel(LegitLevel.NORMAL);
+            else if (receiver.get().getLegitPoint() >= 0 && receiver.get().getLegitPoint() < 10) {
+                receiver.get().setLegitLevel(LegitLevel.NORMAL);
             }
-            else if (receiver.getLegitPoint() >= 10 && receiver.getLegitPoint() < 30) {
-                receiver.setLegitLevel(LegitLevel.HIGH);
+            else if (receiver.get().getLegitPoint() >= 10 && receiver.get().getLegitPoint() < 30) {
+                receiver.get().setLegitLevel(LegitLevel.HIGH);
             }
-            else if (receiver.getLegitPoint() >= 30) {
-                receiver.setLegitLevel(LegitLevel.VERY_HIGH);
+            else if (receiver.get().getLegitPoint() >= 30) {
+                receiver.get().setLegitLevel(LegitLevel.VERY_HIGH);
             }
         }
 

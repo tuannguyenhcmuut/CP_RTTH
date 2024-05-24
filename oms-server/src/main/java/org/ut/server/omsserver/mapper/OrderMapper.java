@@ -217,8 +217,8 @@ public class OrderMapper {
                             order.getItems().size() > 0 ? orderItemMapper.mapToDtos(order.getItems(), order.getShopOwner().getId()) : null
                     )
                     .userId(order.getShopOwner().getId())
-                    .storeDto(storeMapper.mapToDto(store, null))
-                    .receiverDto(receiverMapper.mapToDto(receiver,null))
+                    .storeDto(storeMapper.mapToDto(store, owner == null ? null : owner))
+                    .receiverDto(receiverMapper.mapToDto(receiver, owner == null ? null : owner))
                     .orderStatus(order.getOrderStatus() != null ? order.getOrderStatus() : OrderStatus.CREATED)
                     .price(order.getPrice())
                     .discount(order.getDiscount())
