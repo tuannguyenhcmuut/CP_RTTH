@@ -26,6 +26,9 @@ public class OrderHistoryService {
     // store order history with order id and message
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderRepository orderRepository;
+
+
+
     public OrderHistory storeOrderHistory(Order order, String message) {
         OrderHistory newOrderHistory = OrderHistory.builder()
                 .orderId(order.getId())
@@ -57,6 +60,30 @@ public class OrderHistoryService {
         OrderHistory newOrderHistory = OrderHistory.builder()
                 .orderId(order.getId())
                 .actionDate(LocalDateTime.now())
+                .description(message)
+                .build();
+        OrderHistory orderHistory = orderHistoryRepository.save(newOrderHistory);
+        // why i got exception :  Resolved [org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; constraint [fks8ybcps9klk3kn656ler8odm]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statemen
+
+        return OrderHistoryDto.builder()
+                .actionDate(orderHistory.getActionDate())
+                .description(orderHistory.getDescription())
+                .build();
+    }
+
+    public OrderHistoryDto storeOrderHistoriesByOrderIdWithTimestamp(
+            Long orderId,
+            String message,
+            LocalDateTime actionDate
+    ) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderNotFoundException(MessageConstants.ORDER_NOT_FOUND)
+        );
+        // validate actionDate is in the format LocalDateTime
+
+        OrderHistory newOrderHistory = OrderHistory.builder()
+                .orderId(order.getId())
+                .actionDate(actionDate)
                 .description(message)
                 .build();
         OrderHistory orderHistory = orderHistoryRepository.save(newOrderHistory);

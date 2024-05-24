@@ -2,7 +2,6 @@ package org.ut.server.omsserver.model;
 
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class OrderHistory {
 //    @Column(name = "action_type")
 //    private String actionType;
 
-    @CreationTimestamp
+//    @CreationTimestamp
     @Column(name = "action_date")
     private LocalDateTime actionDate;
 

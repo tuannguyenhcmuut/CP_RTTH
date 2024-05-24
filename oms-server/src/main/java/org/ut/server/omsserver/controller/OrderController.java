@@ -501,6 +501,21 @@ public class OrderController {
                 .build();
     }
 
+    @PostMapping("/history/{orderId}/timestamp")
+    public GenericResponseDTO<OrderHistoryDto> storeOrderHistoriesByOrderIdWithTimestamp(
+            @PathVariable Long orderId,
+            @RequestBody MessageResponseDto messageResponseDto
+
+    ) {
+        OrderHistoryDto orderHistory = orderHistoryService.storeOrderHistoriesByOrderIdWithTimestamp(orderId, messageResponseDto.getMessage(), messageResponseDto.getActionDate());
+        return GenericResponseDTO.<OrderHistoryDto>builder()
+                .data(orderHistory)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_ORDER_HISTORY_CREATED)
+                .timestamps(new Date())
+                .build();
+    }
+
     // phân shipper vào
 
     // update status order
