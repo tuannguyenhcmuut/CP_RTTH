@@ -249,4 +249,39 @@ public class ProductController {
                 .build();
     }
 
+    // create product for owner
+    @PostMapping("/owner")
+    @PreAuthorize("hasAnyAuthority('CREATE_PRODUCT', 'UPDATE_PRODUCT')")
+    public GenericResponseDTO<ProductDto> createProductForOwner(
+            @RequestBody ProductDto productDto,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        productDto.setUserId(userId);
+        ProductDto product = productService.createProductForOwner(productDto);
+        return GenericResponseDTO.<ProductDto>builder()
+                .data(product)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.CREATED_PRODUCT_SUCCESSFULLY)
+                .timestamps(new Date())
+                .build();
+    }
+
+    @PutMapping("/owner/{productId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_PRODUCT')")
+    public GenericResponseDTO<ProductDto> updateOwnerProductById(
+            @PathVariable("productId") Long productId,
+            @RequestBody Product updatedProduct,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        ProductDto productDto = productService.updateOwnerProductById(productId, updatedProduct, userId);
+        return GenericResponseDTO.<ProductDto>builder()
+                .data(productDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.UPDATED_PRODUCT_SUCCESSFULLY)
+                .timestamps(new Date())
+                .build();
+    }
+
 }

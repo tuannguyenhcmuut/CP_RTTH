@@ -99,6 +99,27 @@ public class StoreController {
         }
     }
 
+    // add store for owner
+    @PostMapping("/owner")
+    @PreAuthorize("hasAnyAuthority('CREATE_STORE', 'UPDATE_STORE')")
+    @ResponseStatus(HttpStatus.CREATED)
+    public GenericResponseDTO<StoreDto> addStoreForOwner(
+            @RequestBody StoreDto storeDto,
+            @RequestHeader("Authorization") String token
+    ) {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            StoreDto store = storeService.addNewStoreForOwner(storeDto, userId);
+            return GenericResponseDTO.<StoreDto>builder()
+                    .data(store)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_STORE_CREATED)
+                    .timestamps(new Date())
+                    .build();
+
+    }
+
+
+
 //    update store by id
     @PutMapping("/{storeId}")
     public GenericResponseDTO<StoreDto> updateStoreById(
@@ -120,6 +141,24 @@ public class StoreController {
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    // update owner store
+    @PutMapping("/owner/{storeId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_STORE')")
+    public GenericResponseDTO<StoreDto> updateOwnerStoreById(
+            @PathVariable("storeId") Long storeId,
+            @RequestBody StoreDto updatedStore,
+            @RequestHeader("Authorization") String token
+    ) {
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            StoreDto storeDto = storeService.updateOwnerStoreById(storeId, updatedStore, userId);
+            return GenericResponseDTO.<StoreDto>builder()
+                    .data(storeDto)
+                    .code(MessageCode.SUCCESS.toString())
+                    .message(MessageConstants.SUCCESS_STORE_UPDATED)
+                    .timestamps(new Date())
+                    .build();
     }
 
     // delete store by id

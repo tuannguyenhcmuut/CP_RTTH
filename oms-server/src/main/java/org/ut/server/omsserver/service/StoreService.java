@@ -66,6 +66,22 @@ public class StoreService {
         return storeMapper.mapToDto(store, null);
     }
 
+    public StoreDto addNewStoreForOwner(StoreDto storeDto, UUID userId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(
+                userId,
+                EmployeeRequestStatus.ACCEPTED
+        );
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManager();
+        storeDto.setOwnerId(owner.getId());
+        Store store = storeMapper.mapToEntity(storeDto, owner.getId());
+        storeRepository.save(store);
+        return storeMapper.mapToDto(store, owner);
+    }
+
     public void deleteStoreById(Long storeId, UUID userId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
@@ -152,6 +168,61 @@ public class StoreService {
         }
     }
 
+    public StoreDto updateOwnerStoreById(Long storeId, StoreDto updatedStore, UUID userId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(
+                userId,
+                EmployeeRequestStatus.ACCEPTED
+        );
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManager();
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
+        if (store.getShopOwner().getId().equals(owner.getId())) {
+            // name
+            if (updatedStore.getName() != null) {
+                store.setName(updatedStore.getName());
+            }
+            // address
+            if (updatedStore.getAddress() != null) {
+                store.setAddress(updatedStore.getAddress());
+            }
+            // phone
+            if (updatedStore.getPhoneNumber() != null) {
+                store.setPhoneNumber(updatedStore.getPhoneNumber());
+            }
+            //  detailedAddress
+            if (updatedStore.getDetailedAddress() != null) {
+                store.setDetailedAddress(updatedStore.getDetailedAddress());
+            }
+//            description
+            if (updatedStore.getDescription() != null) {
+                store.setDescription(updatedStore.getDescription());
+            }
+//            storePickUpTime
+            if (updatedStore.getStorePickUpTime() != null) {
+                store.setStorePickUpTime(updatedStore.getStorePickUpTime());
+            }
+//            isDefault
+            if (updatedStore.getIsDefault() != null) {
+                store.setIsDefault(updatedStore.getIsDefault());
+            }
+//            sendAtPost
+            if (updatedStore.getSendAtPost() != null) {
+                store.setSendAtPost(updatedStore.getSendAtPost());
+            }
+            storeRepository.save(store);
+            return storeMapper.mapToDto(store, owner);
+        }
+        else {
+            throw new RuntimeException(MessageConstants.STORE_AND_USER_NOT_MATCHED);
+        }
+
+
+
+    }
+
     // store added today
     public Long getTodayStores(UUID userId) {
         ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
@@ -160,4 +231,7 @@ public class StoreService {
 
         return storeRepository.countTotalStoreCreatedToday(userId);
     }
+
+
+
 }

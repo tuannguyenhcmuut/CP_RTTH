@@ -174,4 +174,38 @@ public class ReceiverController {
                     .timestamps(new Date())
                     .build();
     }
+
+    @PostMapping("/owner")
+    @PreAuthorize("hasAnyAuthority('CREATE_RECEIVER', 'UPDATE_RECEIVER')")
+    @ResponseStatus(HttpStatus.CREATED)
+    public GenericResponseDTO<ReceiverDto> addReceiverForOwner(
+            @RequestBody ReceiverDto receiverDto,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        ReceiverDto receiver = receiverService.addNewReceiverForOwner(receiverDto, userId);
+        return GenericResponseDTO.<ReceiverDto>builder()
+                .data(receiver)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_RECEIVER_CREATED)
+                .timestamps(new Date())
+                .build();
+    }
+
+    @PutMapping("/owner/{receiverId}")
+    @PreAuthorize("hasAnyAuthority('UPDATE_RECEIVER')")
+    public GenericResponseDTO<ReceiverDto> updateOwnerReceiverById(
+            @PathVariable Long receiverId,
+            @RequestBody ReceiverDto updatedReceiver,
+            @RequestHeader("Authorization") String token
+    ) {
+        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        ReceiverDto receiverDto = receiverService.updateOwnerReceiverById(receiverId, updatedReceiver, userId);
+        return GenericResponseDTO.<ReceiverDto>builder()
+                .data(receiverDto)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_RECEIVER_UPDATED)
+                .timestamps(new Date())
+                .build();
+    }
 }

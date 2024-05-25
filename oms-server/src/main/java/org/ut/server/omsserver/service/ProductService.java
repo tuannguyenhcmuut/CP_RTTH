@@ -44,6 +44,22 @@ public class ProductService {
         log.info("Product {} is saved", newProduct.getId());
         return productMapper.mapToDto(newProduct,null);
     }
+    public ProductDto createProductForOwner(ProductDto productDto) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(
+                productDto.getUserId(),
+                EmployeeRequestStatus.ACCEPTED
+        );
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManager();
+        productDto.setUserId(owner.getId());
+        Product product = productMapper.mapDtoToEntity(productDto);
+        Product newProduct = productRepository.save(product);
+        log.info("Product {} is saved", newProduct.getId());
+        return productMapper.mapToDto(newProduct, owner);
+    }
 
     //    getAllProducts
     public List<ProductDto> getAllProducts(UUID userId, Pageable pageable) {
@@ -110,6 +126,48 @@ public class ProductService {
         return productMapper.mapToDto(productToUpdate,null);
     }
 
+    public ProductDto updateOwnerProductById(Long productId, Product updatedProduct, UUID userId) {
+        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
+                .orElseThrow(
+                        () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
+                );
+        if (updatedProduct.getCode() != null) {
+            product.setCode(updatedProduct.getCode());
+        }
+        if (updatedProduct.getName() != null) {
+            product.setName(updatedProduct.getName());
+        }
+        if (updatedProduct.getDescription() != null) {
+            product.setDescription(updatedProduct.getDescription());
+        }
+        if (updatedProduct.getPrice() != null) {
+            product.setPrice(updatedProduct.getPrice());
+        }
+        if (updatedProduct.getWeight() != null) {
+            product.setWeight(updatedProduct.getWeight());
+        }
+        if (updatedProduct.getHeight() != null) {
+            product.setHeight(updatedProduct.getHeight());
+        }
+        if (updatedProduct.getWidth() != null) {
+            product.setWidth(updatedProduct.getWidth());
+        }
+        if (updatedProduct.getLength() != null) {
+            product.setLength(updatedProduct.getLength());
+        }
+        if (updatedProduct.getCategories() != null) {
+            product.setCategories(updatedProduct.getCategories());
+        }
+        if (updatedProduct.getPhotoUrl() != null) {
+            product.setPhotoUrl(updatedProduct.getPhotoUrl());
+        }
+        if (updatedProduct.getStatus() != null) {
+            product.setStatus(updatedProduct.getStatus());
+        }
+        productRepository.save(product);
+        return productMapper.mapToDto(product,null);
+    }
+
 
     public void deleteProduct(Long productId, UUID userId) {
         // check if product belongs to user
@@ -174,4 +232,7 @@ public class ProductService {
         // find user
         return productRepository.countTotalProductCreatedToday(userId);
     }
+
+
+
 }

@@ -62,6 +62,22 @@ public class ReceiverService {
         return receiverMapper.mapToDto(receiver, null);
     }
 
+    public ReceiverDto addNewReceiverForOwner(ReceiverDto receiverDto, UUID userId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(
+                userId,
+                EmployeeRequestStatus.ACCEPTED
+        );
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManager();
+        receiverDto.setOwnerId(owner.getId());
+        Receiver receiver = receiverMapper.mapDtoToEntity(receiverDto, owner.getId());
+        receiverRepository.save(receiver);
+        return receiverMapper.mapToDto(receiver, owner);
+    }
+
     public void deleteReceiverById(Long receiverId, UUID userId) {
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (receiver.getShopOwner().getId().equals(userId)) {
@@ -130,6 +146,49 @@ public class ReceiverService {
         }
     }
 
+    public ReceiverDto updateOwnerReceiverById(Long receiverId, ReceiverDto updatedReceiver, UUID userId) {
+        List<EmployeeManagement> emplMgnts = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+        ShopOwner owner = emplMgnt.getManager();
+        Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
+        if (receiver.getShopOwner().getId().equals(owner.getId())) {
+            if (updatedReceiver.getName() != null) {
+                receiver.setName(updatedReceiver.getName());
+            }
+            if (updatedReceiver.getPhoneNumber() != null) {
+                receiver.setPhoneNumber(updatedReceiver.getPhoneNumber());
+            }
+            if (updatedReceiver.getAddress() != null) {
+                receiver.setAddress(updatedReceiver.getAddress());
+            }
+            if (updatedReceiver.getDetailedAddress() != null) {
+                receiver.setDetailedAddress(updatedReceiver.getDetailedAddress());
+            }
+            if (updatedReceiver.getNote() != null) {
+                receiver.setNote(updatedReceiver.getNote());
+            }
+            if (updatedReceiver.getReceivedPlace() != null) {
+                receiver.setReceivedPlace(updatedReceiver.getReceivedPlace());
+            }
+            if (updatedReceiver.getDeliveryTimeFrame() != null) {
+                receiver.setDeliveryTimeFrame(updatedReceiver.getDeliveryTimeFrame());
+            }
+            if (updatedReceiver.getCallBeforeSend() != null) {
+                receiver.setCallBeforeSend(updatedReceiver.getCallBeforeSend());
+            }
+            if (updatedReceiver.getReceiveAtPost() != null) {
+                receiver.setReceiveAtPost(updatedReceiver.getReceiveAtPost());
+            }
+            receiverRepository.save(receiver);
+            return receiverMapper.mapToDto(receiver, owner);
+        } else {
+            throw new RuntimeException(MessageConstants.RECEIVER_AND_USER_NOT_MATCHED);
+        }
+    }
+
     // receiver added today
     public Long getTodayReceivers(UUID userId) {
         ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
@@ -138,6 +197,9 @@ public class ReceiverService {
 
         return receiverRepository.countTotalReceiverCreatedToday(userId);
     }
+
+
+
 //    update receiver by id
 
 

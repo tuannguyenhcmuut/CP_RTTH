@@ -62,7 +62,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         else {
             // throw exception
-            throw new RuntimeException(MessageConstants.EMPLOYEE_NOT_FOUND_WITH_PHONE_OR_EMAIL);
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_NOT_FOUND_WITH_PHONE_OR_EMAIL);
         }
         // find manager by id
         ShopOwner manager = shopOwnerRepository.findById(employeeRequestDto.getManagerId())
@@ -186,7 +186,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         else {
             if (isEmployeeGetAll) {
                 // find managerId
-                EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByEmployee_Id(employeeId)
+                EmployeeManagement employeeManagement = employeeManagementRepository.findByEmployee_Id(employeeId)
                         .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
 
                 return getEmployeeRequests(employeeId, employeeManagement.getManager().getId(), status);

@@ -34,4 +34,6 @@ public interface EmployeeManagementRepository extends JpaRepository<EmployeeMana
     Optional<EmployeeManagement> findEmployeeManagementByEmployee_Id(UUID employeeId);
 
     Optional<EmployeeManagement> findEmployeeManagementByEmployee(ShopOwner employee);
+
+    Optional<EmployeeManagement> findByEmployee_Id(UUID employeeId);
 }
