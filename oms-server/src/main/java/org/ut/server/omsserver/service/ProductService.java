@@ -19,6 +19,7 @@ import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.OrderItemRepository;
 import org.ut.server.omsserver.repo.ProductRepository;
+import org.ut.server.omsserver.service.impl.NotificationService;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class ProductService {
     private final OrderItemRepository orderItemRepository;
     private final IImageService imageService;
     private final EmployeeManagementRepository employeeManagementRepository;
+    private final NotificationService notificationService;
 
 
     public ProductDto createProduct(ProductDto productDto) {
@@ -54,10 +56,16 @@ public class ProductService {
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManager();
+        ShopOwner user = emplMgnt.getEmployee();
         productDto.setUserId(owner.getId());
         Product product = productMapper.mapDtoToEntity(productDto);
         Product newProduct = productRepository.save(product);
         log.info("Product {} is saved", newProduct.getId());
+        // notify to owner
+        notificationService.notifyOrderInfoToOwner(
+                owner, user, null,
+                String.format(MessageConstants.EMPLOYEE_PRODUCT_CREATED_MESSAGE, user.getEmail(), newProduct.getName())
+        );
         return productMapper.mapToDto(newProduct, owner);
     }
 
@@ -85,11 +93,6 @@ public class ProductService {
 
         return productDtos;
 
-    }
-
-    private List<ProductDto> getProductsFromOwner(UUID userId) {
-
-        return null;
     }
 
 
@@ -127,6 +130,15 @@ public class ProductService {
     }
 
     public ProductDto updateOwnerProductById(Long productId, Product updatedProduct, UUID userId) {
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+        if (emplMgnts.isEmpty()) {
+            throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
+        }
+        EmployeeManagement emplMgnt = emplMgnts.get(0);
+
+        ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
+
         Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
                 .orElseThrow(
                         () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
@@ -165,7 +177,12 @@ public class ProductService {
             product.setStatus(updatedProduct.getStatus());
         }
         productRepository.save(product);
-        return productMapper.mapToDto(product,null);
+        // notify to owner
+        notificationService.notifyOrderInfoToOwner(
+                owner, employee, null,
+                String.format(MessageConstants.EMPLOYEE_PRODUCT_UPDATED_MESSAGE, employee.getEmail(), product.getName())
+        );
+        return productMapper.mapToDto(product, owner);
     }
 
 

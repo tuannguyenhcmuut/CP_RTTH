@@ -16,6 +16,7 @@ import org.ut.server.omsserver.model.enums.EmployeeRequestStatus;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.ReceiverRepository;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
+import org.ut.server.omsserver.service.impl.NotificationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class ReceiverService {
     private final ShopOwnerRepository shopOwnerRepository;
     private final ReceiverMapper receiverMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
+    private final NotificationService notificationService;
 
     public List<ReceiverDto> getAllReceivers(UUID userId, Pageable pageable) {
         ShopOwner owner = shopOwnerRepository.findById(userId).orElseThrow(
@@ -72,9 +74,14 @@ public class ReceiverService {
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         receiverDto.setOwnerId(owner.getId());
         Receiver receiver = receiverMapper.mapDtoToEntity(receiverDto, owner.getId());
         receiverRepository.save(receiver);
+        notificationService.notifyOrderInfoToOwner(
+                owner, employee, null,
+                String.format(MessageConstants.EMPLOYEE_RECEIVER_CREATED_MESSAGE, employee.getEmail(), receiver.getName())
+        );
         return receiverMapper.mapToDto(receiver, owner);
     }
 
@@ -153,6 +160,7 @@ public class ReceiverService {
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         Receiver receiver = receiverRepository.findById(receiverId).orElseThrow(() -> new RuntimeException(MessageConstants.RECEIVER_NOT_FOUND));
         if (receiver.getShopOwner().getId().equals(owner.getId())) {
             if (updatedReceiver.getName() != null) {
@@ -183,6 +191,11 @@ public class ReceiverService {
                 receiver.setReceiveAtPost(updatedReceiver.getReceiveAtPost());
             }
             receiverRepository.save(receiver);
+            // notify to owner
+            notificationService.notifyOrderInfoToOwner(
+                    owner, employee, null,
+                    String.format(MessageConstants.EMPLOYEE_RECEIVER_UPDATED_MESSAGE, employee.getEmail(), receiver.getName())
+            );
             return receiverMapper.mapToDto(receiver, owner);
         } else {
             throw new RuntimeException(MessageConstants.RECEIVER_AND_USER_NOT_MATCHED);

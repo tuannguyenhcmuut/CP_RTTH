@@ -18,6 +18,7 @@ import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
 import org.ut.server.omsserver.repo.StoreRepository;
 import org.ut.server.omsserver.repo.UserRepository;
+import org.ut.server.omsserver.service.impl.NotificationService;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class StoreService {
     private final StoreMapper storeMapper;
     private final EmployeeManagementRepository employeeManagementRepository;
     private final ShopOwnerRepository shopOwnerRepository;
+    private final NotificationService notificationService;
 
     public List<StoreDto> getAllStores(UUID userId, Pageable pageable) {
         Optional<User> user = userRepository.findById(userId);
@@ -76,9 +78,14 @@ public class StoreService {
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         storeDto.setOwnerId(owner.getId());
         Store store = storeMapper.mapToEntity(storeDto, owner.getId());
         storeRepository.save(store);
+        notificationService.notifyOrderInfoToOwner(
+                owner, employee, null,
+                String.format(MessageConstants.EMPLOYEE_STORE_CREATED_MESSAGE, employee.getEmail(), store.getName())
+        );
         return storeMapper.mapToDto(store, owner);
     }
 
@@ -160,7 +167,6 @@ public class StoreService {
             if (updatedStore.getSendAtPost() != null) {
                 store.setSendAtPost(updatedStore.getSendAtPost());
             }
-            storeRepository.save(store);
             return storeMapper.mapToDto(store, null);
         }
         else {
@@ -178,6 +184,7 @@ public class StoreService {
         }
         EmployeeManagement emplMgnt = emplMgnts.get(0);
         ShopOwner owner = emplMgnt.getManager();
+        ShopOwner employee = emplMgnt.getEmployee();
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException(MessageConstants.STORE_NOT_FOUND));
         if (store.getShopOwner().getId().equals(owner.getId())) {
             // name
@@ -212,7 +219,12 @@ public class StoreService {
             if (updatedStore.getSendAtPost() != null) {
                 store.setSendAtPost(updatedStore.getSendAtPost());
             }
+
             storeRepository.save(store);
+            notificationService.notifyOrderInfoToOwner(
+                    owner, employee, null,
+                    String.format(MessageConstants.EMPLOYEE_STORE_UPDATED_MESSAGE, employee.getEmail(), store.getName())
+            );
             return storeMapper.mapToDto(store, owner);
         }
         else {
