@@ -8,6 +8,7 @@ import org.ut.server.omsserver.common.MessageConstants;
 import org.ut.server.omsserver.dto.EmployeeInfoDto;
 import org.ut.server.omsserver.dto.EmployeeManagementDto;
 import org.ut.server.omsserver.dto.request.EmployeeRequestDto;
+import org.ut.server.omsserver.exception.ApiRequestException;
 import org.ut.server.omsserver.mapper.EmployeeManagementMapper;
 import org.ut.server.omsserver.model.EmployeeManagement;
 import org.ut.server.omsserver.model.Role;
@@ -158,14 +159,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public void rejectEmployeeRequest(UUID employeeId, Long requestId) {
         EmployeeManagement employeeManagementOptional = employeeManagementRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + requestId));
+                .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + requestId));
 
         if (!employeeManagementOptional.getEmployee().getId().equals(employeeId)) {
-            throw new RuntimeException(MessageConstants.EMPLOYEE_ID_MISMATCH);
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_ID_MISMATCH);
         }
         // check if the current status is pending or not
         if (employeeManagementOptional.getApprovalStatus() != EmployeeRequestStatus.PENDING) {
-            throw new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_PENDING);
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_PENDING);
         }
         employeeManagementOptional.setApprovalStatus(EmployeeRequestStatus.REJECTED);
         employeeManagementRepository.save(employeeManagementOptional);
@@ -186,7 +187,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (isEmployeeGetAll) {
                 // find managerId
                 EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByEmployee_Id(employeeId)
-                        .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
+                        .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
 
                 return getEmployeeRequests(employeeId, employeeManagement.getManager().getId(), status);
             }
@@ -199,7 +200,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<PermissionLevel> getEmployeePermissions(UUID employeeId, Long emplMgntId) {
         // find employee management by id
         EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByIdAndEmployee_Id(emplMgntId, employeeId)
-                .orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
+                .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId));
         // return the permission level of the employee
         return List.copyOf(employeeManagement.getPermissionLevel());
     }
@@ -256,7 +257,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 // find all employee requests by employee id
                 List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployee_Id(employeeId);
                 if (employeeManagements.isEmpty()) {
-                    throw new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId);
+                    throw new ApiRequestException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId);
                 }
                 // Convert the EmployeeManagement entities to EmployeeManagementDto objects and return the list
                 return employeeManagements.stream()
@@ -273,7 +274,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByManagerAndEmployee(
                 shopOwnerRepository.findShopOwnerById(ownerId).orElseThrow(() -> new RuntimeException(MessageConstants.MANAGER_NOT_FOUND + ownerId)),
                 shopOwnerRepository.findShopOwnerById(employeeId).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId))
-        ).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
+        ).orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
         // return the permission level of the employee
         return List.copyOf(employeeManagement.getPermissionLevel());
     }
@@ -282,5 +283,24 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<PermissionLevel> getPermissions() {
         // return all permission levels  value of PermissionLevel enum
         return List.of(PermissionLevel.values());
+    }
+
+    @Override
+    public void deleteEmployeeManagement(UUID ownerId, Long emplMgntId) {
+        // find employee management by id
+        EmployeeManagement employeeManagement = employeeManagementRepository.findById(emplMgntId)
+                .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + emplMgntId));
+
+        // check if the owner id is matched with the manager id of the employee management
+        if (!employeeManagement.getManager().getId().equals(ownerId)) {
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_MATCHED);
+        }
+
+        // delete the employee management
+        try {
+            employeeManagementRepository.deleteById(emplMgntId);
+        } catch (Exception e) {
+            throw new RuntimeException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_DELETED);
+        }
     }
 }

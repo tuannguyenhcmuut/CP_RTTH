@@ -57,15 +57,15 @@ public class ProductService {
         }
         log.info("Products: {}", products);
 
-        // get product from their owner
         List<ProductDto> productDtos =  productMapper.mapEntitiesToDtos(products, null);
 
-        try {
-            List<ProductDto> ownerProductDtos = this.getAllProductsByOwner(userId, pageable);
-            productDtos.addAll(ownerProductDtos);
-        }
-        catch (Exception e) {
-        }
+        // get product from their owner
+//        try {
+//            List<ProductDto> ownerProductDtos = this.getAllProductsByOwner(userId, pageable);
+//            productDtos.addAll(ownerProductDtos);
+//        }
+//        catch (Exception e) {
+//        }
 
         return productDtos;
 

@@ -242,6 +242,9 @@ public class MessageConstants {
     public static final String SUCCESS_GET_PRODUCT_STATISTICS = "Lấy thống kê sản phẩm hôm nay thành công!";
     public static final String SUCCESS_GET_ORDER_HISTORY = "Lấy lịch sử đơn hàng thành công!";
     public static final String SUCCESS_ORDER_HISTORY_CREATED = "Tạo lịch sử đơn hàng thành công!";
+    public static final String SUCCESS_DELETE_EMPLOYEE_MANAGEMENT = "Xóa quản lý nhân viên thành công!";
+    public static final String EMPLOYEE_MANAGEMENT_NOT_MATCHED = "Quản lý nhân viên không khớp!";
+    public static final String EMPLOYEE_MANAGEMENT_NOT_DELETED = "Quản lý nhân viên không xóa được!";
 //    "Receiver and Owner are not matched!"
 
 }

@@ -33,6 +33,8 @@ public interface IEmployeeService {
 
     List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId);
 
+    void deleteEmployeeManagement(UUID ownerId, Long emplMgntId);
+
     // approve employee
 
     // reject employee

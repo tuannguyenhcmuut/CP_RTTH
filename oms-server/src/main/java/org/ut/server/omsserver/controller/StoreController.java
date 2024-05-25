@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ut.server.omsserver.common.MessageCode;
 import org.ut.server.omsserver.common.MessageConstants;
@@ -145,6 +146,7 @@ public class StoreController {
 
     // get all stores of owner
     @GetMapping("/owner/getall")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public GenericResponseDTO<List<StoreDto>> getOwnerStores(
         @RequestHeader("Authorization") String token,
         @RequestParam(defaultValue = "0") int page,

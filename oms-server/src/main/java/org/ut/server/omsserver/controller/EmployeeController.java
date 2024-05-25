@@ -57,6 +57,23 @@ public class EmployeeController {
                 .build();
     }
 
+    // delete employee management that is accepted
+    @DeleteMapping("/{empl_mgnt_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public GenericResponseDTO<String> deleteEmployeeManagement(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long empl_mgnt_id
+    ) {
+        // delete employee management that is accepted
+        UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        employeeService.deleteEmployeeManagement(employeeId, empl_mgnt_id);
+        return GenericResponseDTO.<String>builder()
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_DELETE_EMPLOYEE_MANAGEMENT)
+                .timestamps(new Date())
+                .build();
+    }
+
     // approve employee
     @PatchMapping("/{requestId}/approve")
     @ResponseStatus(HttpStatus.OK)

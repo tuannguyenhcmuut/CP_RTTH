@@ -47,12 +47,12 @@ public class StoreService {
         }
         List<StoreDto> storeDtos = storeMapper.mapToDtos(stores, null);
 //        get owner stores
-        try {
-            List<StoreDto> ownerStoreDtos = this.getOwnerStores(userId, pageable);
-            storeDtos.addAll(ownerStoreDtos);
-        }
-        catch (Exception e) {
-        }
+//        try {
+//            List<StoreDto> ownerStoreDtos = this.getOwnerStores(userId, pageable);
+//            storeDtos.addAll(ownerStoreDtos);
+//        }
+//        catch (Exception e) {
+//        }
         return storeDtos;
     }
 

@@ -43,13 +43,13 @@ public class ReceiverService {
         }
 
         List<ReceiverDto> receiverDtos = receiverMapper.mapToDtos(receivers, null);
-        try {
-            List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId, pageable);
-            receiverDtos.addAll(ownerReceiverDtos);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error("Error when get owner receivers");
-        }
+//        try {
+//            List<ReceiverDto> ownerReceiverDtos = this.getOwnerReceivers(userId, pageable);
+//            receiverDtos.addAll(ownerReceiverDtos);
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            log.error("Error when get owner receivers");
+//        }
         return receiverDtos;
     }
 

@@ -164,7 +164,7 @@ public class ProductController {
 
     ) {
 //        try {
-        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+            UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
             productService.deleteProduct(productId, userId);
             return GenericResponseDTO.<String>builder()
                     .code(MessageCode.SUCCESS.toString())
@@ -217,6 +217,7 @@ public class ProductController {
     }
 
     @GetMapping("/owner/getall")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public GenericResponseDTO<List<ProductDto>> getAllProductByOwner(
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
