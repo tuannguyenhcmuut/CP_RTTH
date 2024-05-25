@@ -32,6 +32,7 @@ public class OrderHistoryService {
     public OrderHistory storeOrderHistory(Order order, String message) {
         OrderHistory newOrderHistory = OrderHistory.builder()
                 .orderId(order.getId())
+                .actionDate(LocalDateTime.now())
                 .description(message)
                 .build();
         return orderHistoryRepository.save(newOrderHistory);
