@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.ut.server.omsserver.dto.NotificationDTO;
 import org.ut.server.omsserver.model.Order;
 import org.ut.server.omsserver.model.ShopOwner;
+import org.ut.server.omsserver.model.enums.PermissionLevel;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -18,4 +20,8 @@ public interface INotificationService {
     public void markAsRead(UUID userId, Long notificationId);
     public void requestEmployee(UUID employeeId, UUID managerId);
     public void notifyOrderInfoToOwner(ShopOwner owner, ShopOwner employee, Order order, String message);
+
+    void deleteEmployeeManagement(UUID ownerId, UUID employeeId);
+
+    void updateEmployeeManagement(UUID employeeId, UUID managerId, Set<PermissionLevel> permissionLevels);
 }

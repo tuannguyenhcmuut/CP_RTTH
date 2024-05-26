@@ -251,6 +251,9 @@ public class MessageConstants {
     public static final String EMPLOYEE_RECEIVER_CREATED_MESSAGE = "Nhân viên %s đã tạo một người nhận mới: %s";
     public static final String EMPLOYEE_STORE_UPDATED_MESSAGE = "Nhân viên %s đã cập nhập thông tin cửa hàng : %s.";
     public static final String EMPLOYEE_STORE_CREATED_MESSAGE = "Nhân viên %s đã tạo một cửa hàng mới: %s";
+    public static final String SUCCESS_UPDATE_EMPLOYEE_MANAGEMENT = "Cập nhật quản lý nhân viên thành công!";
+    public static final String DELETE_EMPLOYEE_MESSAGE = "Bạn đã bị xoá khỏi danh sách nhân viên của ";
+    public static final String UPDATE_EMPLOYEE_MESSAGE = "Quyền của bạn đã được cập nhật bởi %s thành [%s].";
 //    "Receiver and Owner are not matched!"
 
 }

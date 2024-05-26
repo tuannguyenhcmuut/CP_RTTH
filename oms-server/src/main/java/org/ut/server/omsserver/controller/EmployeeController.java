@@ -57,22 +57,44 @@ public class EmployeeController {
                 .build();
     }
 
+    // update
+    @PutMapping("/{employeeId}")
+    @ResponseStatus(HttpStatus.OK)
+    public GenericResponseDTO<EmployeeManagementDto> updateEmployeeManagement(
+            @RequestHeader("Authorization") String token,
+            @PathVariable UUID employeeId,
+            @RequestBody EmployeeRequestDto employeeRequestDto
+    ) {
+        // update employee management
+        UUID ownerId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        employeeRequestDto.setManagerId(ownerId);
+        EmployeeManagementDto employeeManagementResponse = employeeService.updateEmployeeManagement(employeeId, employeeRequestDto);
+        return GenericResponseDTO.<EmployeeManagementDto>builder()
+                .data(employeeManagementResponse)
+                .code(MessageCode.SUCCESS.toString())
+                .message(MessageConstants.SUCCESS_UPDATE_EMPLOYEE_MANAGEMENT)
+                .timestamps(new Date())
+                .build();
+    }
+
     // delete employee management that is accepted
-    @DeleteMapping("/{empl_mgnt_id}")
+    @DeleteMapping("/{employeeId}")
     @ResponseStatus(HttpStatus.OK)
     public GenericResponseDTO<String> deleteEmployeeManagement(
             @RequestHeader("Authorization") String token,
-            @PathVariable Long empl_mgnt_id
+            @PathVariable UUID employeeId
     ) {
         // delete employee management that is accepted
-        UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        employeeService.deleteEmployeeManagement(employeeId, empl_mgnt_id);
+        UUID ownerId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        employeeService.deleteEmployeeManagement(ownerId, employeeId);
         return GenericResponseDTO.<String>builder()
                 .code(MessageCode.SUCCESS.toString())
                 .message(MessageConstants.SUCCESS_DELETE_EMPLOYEE_MANAGEMENT)
                 .timestamps(new Date())
                 .build();
     }
+
+
 
     // approve employee
     @PatchMapping("/{requestId}/approve")

@@ -11,6 +11,7 @@ import org.ut.server.omsserver.model.Notification;
 import org.ut.server.omsserver.model.Order;
 import org.ut.server.omsserver.model.ShopOwner;
 import org.ut.server.omsserver.model.enums.NotificationType;
+import org.ut.server.omsserver.model.enums.PermissionLevel;
 import org.ut.server.omsserver.repo.EmployeeManagementRepository;
 import org.ut.server.omsserver.repo.NotificationRepository;
 import org.ut.server.omsserver.repo.ShopOwnerRepository;
@@ -19,6 +20,7 @@ import org.ut.server.omsserver.service.INotificationService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -126,5 +128,83 @@ public class NotificationService implements INotificationService {
                 .orElseThrow(() -> new RuntimeException("Notification not found with id " + notificationId));
         notification.setRead(true);
         notificationRepository.save(notification);
+    }
+
+    @Override
+    public void deleteEmployeeManagement(UUID ownerId, UUID employeeId) {
+        // existing code...
+        // find employee by id
+        ShopOwner employee = shopOwnerRepository.findShopOwnerById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+
+        // mamager
+        ShopOwner manager = shopOwnerRepository.findShopOwnerById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id " + ownerId));
+        Notification notification = new Notification();
+        notification.setMessage(MessageConstants.DELETE_EMPLOYEE_MESSAGE + manager.getAccount().getUsername());
+        notification.setReceiver(employee);
+        notification.setRead(false);
+        notification.setType(
+                NotificationType.DELETE_EMPLOYEE.toString()
+        );
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void updateEmployeeManagement(UUID employeeId, UUID managerId, Set<PermissionLevel> permissionLevels) {
+        // existing code...
+        // find employee by id
+        ShopOwner employee = shopOwnerRepository.findShopOwnerById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + employeeId));
+
+        // mamager
+        ShopOwner manager = shopOwnerRepository.findShopOwnerById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id " + managerId));
+        Notification notification = new Notification();
+        String permissionLevelsStr = permissionLevels.stream()
+                .map(PermissionLevel::convertPermissionLevelStr)
+                .collect(Collectors.joining(", "));
+        notification.setMessage(String.format(
+                MessageConstants.UPDATE_EMPLOYEE_MESSAGE,
+                manager.getAccount().getUsername(),
+                permissionLevelsStr
+        ));
+        notification.setReceiver(employee);
+        notification.setRead(false);
+        notification.setType(
+                NotificationType.UPDATE_EMPLOYEE.toString()
+        );
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationRepository.save(notification);
+
+    }
+
+    private String convertPermissionLevelStr(PermissionLevel permissionLevel) {
+        if (permissionLevel == PermissionLevel.VIEW_ONLY) {
+            return "Chỉ xem đơn hàng";
+        } else if (permissionLevel == PermissionLevel.CREATE_ORDER) {
+            return  "Tạo đơn hàng";
+        } else if (permissionLevel == PermissionLevel.UPDATE_ORDER) {
+            return "Cập nhật đơn hàng";
+        } else if (permissionLevel == PermissionLevel.MANAGE_ORDER) {
+            return "Quản lý đơn hàng";
+        } else if (permissionLevel == PermissionLevel.CREATE_PRODUCT) {
+            return "Tạo sản phẩm";
+        } else if (permissionLevel == PermissionLevel.UPDATE_PRODUCT) {
+            return "Cập nhật sản phẩm";
+        } else if (permissionLevel == PermissionLevel.CREATE_RECEIVER) {
+            return  "Tạo người nhận";
+        } else if (permissionLevel == PermissionLevel.UPDATE_RECEIVER) {
+            return "Cập nhật người nhận";
+        } else if (permissionLevel == PermissionLevel.CREATE_STORE) {
+            return  "Tạo cửa hàng";
+        } else if (permissionLevel == PermissionLevel.UPDATE_STORE) {
+            return "Cập nhật cửa hàng";
+        } else {
+            return "Unknown";
+        }
     }
 }

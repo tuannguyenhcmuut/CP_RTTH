@@ -286,19 +286,49 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public void deleteEmployeeManagement(UUID ownerId, Long emplMgntId) {
+    public EmployeeManagementDto updateEmployeeManagement(UUID employeeId, EmployeeRequestDto employeeRequestDto) {
         // find employee management by id
-        EmployeeManagement employeeManagement = employeeManagementRepository.findById(emplMgntId)
-                .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + emplMgntId));
-
+        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndManager_Id(
+                employeeId, employeeRequestDto.getManagerId()
+        );
         // check if the owner id is matched with the manager id of the employee management
-        if (!employeeManagement.getManager().getId().equals(ownerId)) {
-            throw new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_MATCHED);
+        if (employeeManagements.isEmpty()) {
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND);
         }
+        // get the first employee management
+        EmployeeManagement employeeManagement = employeeManagements.get(0);
+        // update the permission level of the employee management
+        employeeManagement.setPermissionLevel(mapPermissionLevelEnum(employeeRequestDto.getPermissions()));
+        // save the updated employee management
+        EmployeeManagement updatedEmployeeManagement = employeeManagementRepository.save(employeeManagement);
+
+        notificationService.updateEmployeeManagement(
+                employeeId, employeeRequestDto.getManagerId(),
+                employeeManagement.getPermissionLevel()
+        );
+        // return the updated employee management
+        return employeeManagementMapper.mapToDto(updatedEmployeeManagement);
+    }
+
+    @Override
+    public void deleteEmployeeManagement(UUID ownerId, UUID employeeId) {
+        // find employee management by id
+        List<EmployeeManagement> employeeManagements = employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndManager_Id(
+                employeeId, ownerId
+        );
+        // check if the owner id is matched with the manager id of the employee management
+        if (employeeManagements.isEmpty()) {
+            throw new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND);
+        }
+        // get the first employee management
+        EmployeeManagement employeeManagement = employeeManagements.get(0);
 
         // delete the employee management
         try {
-            employeeManagementRepository.deleteById(emplMgntId);
+            employeeManagementRepository.deleteById(employeeManagement.getId());
+            notificationService.deleteEmployeeManagement(
+                    ownerId, employeeId
+            );
         } catch (Exception e) {
             throw new RuntimeException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_DELETED);
         }

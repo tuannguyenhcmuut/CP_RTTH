@@ -33,7 +33,9 @@ public interface IEmployeeService {
 
     List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId);
 
-    void deleteEmployeeManagement(UUID ownerId, Long emplMgntId);
+    void deleteEmployeeManagement(UUID ownerId, UUID employeeId);
+
+    EmployeeManagementDto updateEmployeeManagement(UUID employeeId, EmployeeRequestDto employeeRequestDto);
 
     // approve employee
 
