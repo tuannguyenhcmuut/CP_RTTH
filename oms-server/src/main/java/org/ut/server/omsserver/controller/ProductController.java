@@ -274,8 +274,8 @@ public class ProductController {
             @RequestBody Product updatedProduct,
             @RequestHeader("Authorization") String token
     ) {
-        UUID userId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        ProductDto productDto = productService.updateOwnerProductById(productId, updatedProduct, userId);
+        UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
+        ProductDto productDto = productService.updateOwnerProductById(productId, updatedProduct, employeeId);
         return GenericResponseDTO.<ProductDto>builder()
                 .data(productDto)
                 .code(MessageCode.SUCCESS.toString())

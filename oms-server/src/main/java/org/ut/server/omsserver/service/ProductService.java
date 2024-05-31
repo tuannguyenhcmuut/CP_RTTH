@@ -129,8 +129,12 @@ public class ProductService {
         return productMapper.mapToDto(productToUpdate,null);
     }
 
-    public ProductDto updateOwnerProductById(Long productId, Product updatedProduct, UUID userId) {
-        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(userId, EmployeeRequestStatus.ACCEPTED);
+    public ProductDto updateOwnerProductById(Long productId, Product updatedProduct, UUID employeeId) {
+
+        List<EmployeeManagement> emplMgnts= employeeManagementRepository.findEmployeeManagementsByEmployee_IdAndApprovalStatus(
+                employeeId,
+                EmployeeRequestStatus.ACCEPTED
+        );
         if (emplMgnts.isEmpty()) {
             throw new EmployeeManagementException(MessageConstants.ERROR_USER_NOT_HAS_OWNER);
         }
@@ -139,7 +143,7 @@ public class ProductService {
         ShopOwner owner = emplMgnt.getManager();
         ShopOwner employee = emplMgnt.getEmployee();
 
-        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, userId)
+        Product product = productRepository.findProductByIdAndShopOwner_Id(productId, owner.getId())
                 .orElseThrow(
                         () -> new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, productId.toString()))
                 );
