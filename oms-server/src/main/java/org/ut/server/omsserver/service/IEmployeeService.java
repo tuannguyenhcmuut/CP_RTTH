@@ -31,7 +31,7 @@ public interface IEmployeeService {
 //    List<EmployeeInfoDto> getAllEmployees(UUID managerId);
     List<EmployeeInfoDto> getAllEmployees(UUID managerId, Pageable pageable);
 
-    List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId);
+    List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId);
 
     void deleteEmployeeManagement(UUID ownerId, UUID employeeId);
 

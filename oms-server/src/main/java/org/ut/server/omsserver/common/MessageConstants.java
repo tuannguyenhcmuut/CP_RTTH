@@ -101,7 +101,7 @@ public class MessageConstants {
 
     public static final String SUCCESS_GET_PERMISSIONS = "Lấy quyền thành công.";
     public static final String SUCCESS_APPROVE_EMPLOYEE_REQUEST = "Yêu cầu đã được chấp thuận thành công!";
-    public static final String SUCCESS_REJECT_EMPLOYEE_REQUEST = "Yêu cầu đã được từ chối thành công!";
+    public static final String SUCCESS_REJECT_EMPLOYEE_REQUEST = "Yêu cầu đã bị được từ chối !";
     public static final String SUCCESS_GET_EMPLOYEES = "Lấy danh sách nhân viên thành công!";
     public static final String SUCCESS_CREATE_EMPLOYEE_REQUEST = "Tạo yêu cầu nhân viên thành công!";
     public static final String SUCCESS_GET_PENDING_REQUESTS = "Lấy danh sách yêu cầu đang chờ xử lý thành công!";

@@ -268,13 +268,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
-    public List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId, UUID ownerId) {
+    public List<PermissionLevel> getEmployeePermissionsByManager(UUID employeeId) {
         // find employee management by employee id and manager id
         // TODO: limit the request between 2 user is  unique
-            EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByManagerAndEmployee(
-                shopOwnerRepository.findShopOwnerById(ownerId).orElseThrow(() -> new RuntimeException(MessageConstants.MANAGER_NOT_FOUND + ownerId)),
-                shopOwnerRepository.findShopOwnerById(employeeId).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId))
-        ).orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
+//            EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByManagerAndEmployee(
+//                shopOwnerRepository.findShopOwnerById(ownerId).orElseThrow(() -> new RuntimeException(MessageConstants.MANAGER_NOT_FOUND + ownerId)),
+//                shopOwnerRepository.findShopOwnerById(employeeId).orElseThrow(() -> new RuntimeException(MessageConstants.EMPLOYEE_REQUEST_NOT_FOUND + employeeId))
+//        ).orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
+
+        EmployeeManagement employeeManagement = employeeManagementRepository.findEmployeeManagementByEmployee_Id(employeeId)
+                .orElseThrow(() -> new ApiRequestException(MessageConstants.EMPLOYEE_MANAGEMENT_NOT_FOUND + employeeId));
         // return the permission level of the employee
         return List.copyOf(employeeManagement.getPermissionLevel());
     }

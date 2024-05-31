@@ -200,13 +200,13 @@ public class EmployeeController {
 
 
     // get permission of an employee with the managerId
-    @GetMapping("employee/{ownerId}/permissions")
+    @GetMapping("employee/permissions")
     public GenericResponseDTO<List<PermissionLevel>> getEmployeePermissions(
-            @RequestHeader("Authorization") String token,
-            @PathVariable UUID ownerId
+            @RequestHeader("Authorization") String token
+//            @PathVariable UUID ownerId
     ) {
         UUID employeeId = UUID.fromString(jwtUtils.extractUserIdFromBearerToken(token));
-        List<PermissionLevel> permissions =  employeeService.getEmployeePermissionsByManager(employeeId, ownerId);
+        List<PermissionLevel> permissions =  employeeService.getEmployeePermissionsByManager(employeeId);
         return GenericResponseDTO.<List<PermissionLevel>>builder()
                 .data(permissions)
                 .code(MessageCode.SUCCESS.toString())
