@@ -1,0 +1,28 @@
+[
+  {
+    "serviceCode": "ALL",
+    "serviceName": "Tổng tiền",
+    "price": "2000"
+  },
+  {
+    "serviceCode": "isDocument",
+    "serviceName": "Tài liệu",
+    "price": "2000"
+  },
+  {
+    "serviceCode": "isBulky",
+    "serviceName": "Hàng cồng kềnh",
+    "price": "2000"
+  },
+  {
+    "serviceCode": "isFragile",
+    "serviceName": "Hàng dễ vỡ",
+    "price": "2000"
+  },
+  {
+    "serviceCode": "isValuable",
+    "serviceName": "Hàng quý giá",
+    "price": "2000"
+  }
+
+]
